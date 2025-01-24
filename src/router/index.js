@@ -5,18 +5,30 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'login',
+      name: 'loginView',
       component: () => import('../views/LoginView.vue'),
+      children: [
+        {
+          path: '',
+          name: 'login',
+          component: () => import('../components/login/login.vue'),
+        }, 
+        {
+          path: 'forget-password',
+          name: 'forget-password',
+          component: () => import('../components/login/forgetPassword.vue'),
+        }
+      ]
     },
-    {
-      path: '/forget-password',
-      name: 'forget-password',
-      component: () => import('../views/ForgetPasswordView.vue'),
-    }, 
     {
       path: '/home',
       name: 'home',
       component: () => import('../views/HomeView.vue'),
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: () => import('../components/Map.vue'),
     }
   ],
 })
