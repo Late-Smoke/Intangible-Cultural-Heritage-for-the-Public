@@ -1,9 +1,14 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, watchEffect } from 'vue';
 import router from '@/router';
+import { useTypeStore } from '@/stores/user';
 
 // 创建表单引用
-const type = ref(true);// 真为验证码登录，假为密码登录
+const type = useTypeStore();// 真为验证码登录，假为密码登录
+const changeType = (formEl) => {
+    type.changeType(!type.type);
+    formEl.resetFields();
+};
 const agreed = ref(false);// 切换协议
 const formRef = ref(null);
 const form = reactive({
@@ -42,10 +47,6 @@ const rules = reactive({
     code: [{ validator: validateCode, trigger: 'blur' }],
 })
 
-const changeType = (formEl) => {
-    type.value = !type.value;
-    formEl.resetFields();
-};
 
 // 获取验证码函数
 const handleGetCode = () => {
@@ -54,7 +55,7 @@ const handleGetCode = () => {
 
 // 忘记密码函数
 const handleForgetPassword = () => {
-    router.push('/forget-password');
+    router.push({ name: 'forget-password' });
 };
 
 const submitForm = (formEl) => {
@@ -83,16 +84,14 @@ const handlePrivacyPolicyClick = () => {
 const handleChildProtectionClick = () => {
     console.log('儿童青少年个人信息保护规则点击');
 };
+
 </script>
 
 <template>
-    <div class="title">
-        <span>非遗进大众</span>
-    </div>
     <div class="login">
         <div class="login-box">
             <div class="login-title">
-                <span v-if="type">验证登录</span>
+                <span v-if="type.type">验证登录</span>
                 <span v-else>密码登录</span>
             </div>
             <div class="login-input">
@@ -110,7 +109,7 @@ const handleChildProtectionClick = () => {
                             <el-input v-model="form.phone"/>
                         </div>
                     </el-form-item>
-                    <el-form-item v-if="type" label="验证码" label-position="left" prop="code">
+                    <el-form-item v-if="type.type" label="验证码" label-position="left" prop="code">
                         <div class="container">
                             <div class="input-code">
                                 <el-input v-model="form.code"/>
@@ -130,7 +129,7 @@ const handleChildProtectionClick = () => {
                         <div class="login-method">
                             <el-button round @click="changeType(formRef)" class="small-button type-button">
                                 <el-icon><Switch /></el-icon>
-                                <span v-if="type">密码登录</span>
+                                <span v-if="type.type">密码登录</span>
                                 <span v-else>验证码登录</span>
                             </el-button>
                         </div>
@@ -156,30 +155,8 @@ const handleChildProtectionClick = () => {
 </template>
 
 <style scoped>
-.box {
-    width: 100%;
-    height: 100%;
-    background-color: #EBD5BAD6;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-/*title*/
-.title span {
-    font-family: "Alimama DaoLiTi";
-    font-size: 58px;
-    font-weight: 400;
-    line-height: 69.37px;
-    color: #FFFFFF;
-    text-align: center;
-    text-shadow: -1px -1px 0 #B19780, 1px -1px 0 #B19780, -1px 1px 0 #B19780, 1px 1px 0 #B19780;
-    margin-bottom: 20px; /* 调整标题与登录框之间的间距 */
-}
-
 /*login*/
 .login {
-    width: 100%;
     display: flex;
     flex-direction: column;
 }

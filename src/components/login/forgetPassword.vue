@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import router from '@/router'
+import { useTypeStore } from '@/stores/user';
 
 const ruleFormRef = ref(null)
 
@@ -51,18 +52,17 @@ const submitForm = (formEl) => {
 const resetForm = (formEl) => {
     if (!formEl) return;
     formEl.resetFields();
-    router.push('/');
+    useTypeStore().changeType(false);
+    router.push({ name: 'login'});
 }
 </script>
 
 <template>
+  <div class="forget-password">
     <div class="title">
         <span>忘记密码</span>
     </div>
     <div class="form">
-        <div class="form-title">
-            <span>请输入至少6位数密码</span>
-        </div>
         <el-form
         ref="ruleFormRef"
         style="max-width: 600px"
@@ -84,39 +84,82 @@ const resetForm = (formEl) => {
             </el-form-item>
             <el-form-item>
                 <div class="button">
-                    <el-button @click="resetForm(ruleFormRef)">取消</el-button>
-                    <el-button type="primary" @click="submitForm(ruleFormRef)">
+                    <el-button @click="resetForm(ruleFormRef)" class="btn reset">取消</el-button>
+                    <el-button @click="submitForm(ruleFormRef)" class="btn submit">
                         确认
                     </el-button>
                 </div>
             </el-form-item>
         </el-form>
     </div>
+  </div>
 </template>
 
 <style scoped>
-.title{
-    height: 10vh;
-    display: flex;
-    justify-content: center; 
-    align-items: center;
+/*标题*/
+.forget-password {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column; 
 }
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.title span {
+  font-family: "Microsoft YaHei UI";
+  font-size: 32px;
+  font-weight: 400;
+  text-shadow: -1px -1px 0 #B19780, 1px -1px 0 #B19780, -1px 1px 0 #B19780, 1px 1px 0 #B19780;
+}
+
+/*表单*/
 .form{
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   justify-content: center; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; 
 }
-.form-title{
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 20px; 
+:deep(.el-form-item__label){
+  font-family: "Microsoft YaHei UI";
+  font-size: 24px;
+  color: #000000;
 }
+:deep(.el-input__wrapper){
+  border-radius: 5px;
+  border: solid 1px #B19780;
+  background-color:#FAE5DEFA;
+  margin-right: 20px;
+}
+
+/*按钮*/
 .button{
-    display: grid;
-    width: 100%;
-    grid-template-columns: 1fr 1fr;
-    grid-gap:25%;
-    padding: 0 10%;
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
+  grid-gap:25%;
+  margin-top: 10px;
+  padding: 0 10%;
+}
+.btn {
+  width: 85px;
+  height: 43px;
+  margin: 0;
+  padding: 8px 10px;
+  height: 46px;
+  border-radius: 8px;
+  font-family: "Microsoft YaHei UI";
+  font-size: 20px;
+}
+.reset {
+    border: solid 0.5px #B19780;
+    color: #000000;
+    background-color:#FAE8CBF2;
+}
+.submit {
+    border: none;
+    color: #FFFFFF;
+    background-color: #D75757;
 }
 </style>
