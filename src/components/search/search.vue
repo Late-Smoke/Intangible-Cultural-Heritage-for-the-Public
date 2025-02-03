@@ -1,16 +1,69 @@
 <script setup>
 import { ref , onMounted} from 'vue';
+
 const input = ref('');
+
+const historyShow = ref(false);
+const historyDelete = ref(false);
+
 const photoClick = () => {
     console.log('点击了图片'); 
 }
-const historyRecords = ref(['晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦']);
+
+let row = 1;// 行数
+let len = 0;// 长度
+let overIndex = 0; // 第一个开始隐藏的索引
+const record = ref([]); // 被处理过的历史记录
+const recordShow = ref([]);
+const historyRecords = ref(['晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦','晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦','晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦']);
+const historyRecordsShow = ref([...historyRecords.value]);
+const dialogVisible = ref(false); // 删除弹窗
+const hotPoints = ref({
+    text:['李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化'],
+    number:['750W','750W','750W']
+});
+
 
 // 处理长文本的方法
-const handleLongText = (text) => {
-  if (text.length > 8) return text.slice(0, 7) + '...';
-  return text;
+const handleLongText = (containerWidth) => {
+    historyRecords.value.forEach((item, index) => {
+        if (item.length > 8) record.value[index] = item.slice(0, 7) + '...';
+        else record.value[index] = item;
+        // 判断行数
+        len += item.length * 16;
+        if(len > containerWidth){// 超过容器宽度
+            row++;
+            len = item.length * 16;
+        }
+        if(row<=3){
+            overIndex++; 
+        }
+    });
+    recordShow.value = [...record.value];
 };
+const handleDelete = (index) => { // 删除单个
+  recordShow.value.splice(index, 1);
+  historyRecordsShow.value.splice(index, 1);
+  console.log(recordShow.value);
+}
+const handleDeleteAll = () => { // 全部删除
+    dialogVisible.value = false;
+    recordShow.value = [];
+    historyRecordsShow.value = [];
+    historyDelete.value = false;
+}
+const handleFinish = () => {
+    historyDelete.value = false;
+    //api传被删除的历史记录
+}
+
+onMounted(() => {
+    const container = document.querySelector('.history-container');
+    const containerWidth = container.offsetWidth;
+    //获取历史记录数组
+    handleLongText(containerWidth - 60);
+})
+
 </script>
 
 <template>
@@ -31,31 +84,57 @@ const handleLongText = (text) => {
             <el-button type="text" class="search-btn">搜索</el-button>
         </el-header>
         <el-main>
+            <el-dialog
+                v-model="dialogVisible"
+                title="提示"
+                width="90%"
+            >
+                <span>是否确认全部删除</span>
+                <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="dialogVisible = false" class="cancel">取消</el-button>
+                    <el-button type="primary" @click="handleDeleteAll">
+                    确认
+                    </el-button>
+                </div>
+                </template>
+            </el-dialog>
             <div class="title">
-                <el-button type="text" class="back-btn">
+                <el-button type="text" class="back-btn" @click="historyShow = !historyShow;">
                     <div class="old">
                         <span>历史记录</span>                    
-                        <svg width="13" height="9" viewBox="0 0 13 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg :class="{ 'rotated': historyShow }" width="13" height="9" viewBox="0 0 13 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12.8636 0H11.5807C11.4934 0 11.4113 0.0439454 11.36 0.116016L6.50032 6.99961L1.64064 0.116016C1.58932 0.0439454 1.50722 0 1.41998 0H0.137061C0.025875 0 -0.0391261 0.130078 0.025875 0.223242L6.05729 8.76797C6.27624 9.07734 6.72441 9.07734 6.94165 8.76797L12.9731 0.223242C13.0398 0.130078 12.9748 0 12.8636 0Z" fill="black"/>
                         </svg>
                     </div>
                 </el-button>
                 <div class="delete">
-                    <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5.4375 1.71H5.25C5.35313 1.71 5.4375 1.6245 5.4375 1.52V1.71H12.5625V1.52C12.5625 1.6245 12.6469 1.71 12.75 1.71H12.5625V3.42H14.25V1.52C14.25 0.681625 13.5773 0 12.75 0H5.25C4.42266 0 3.75 0.681625 3.75 1.52V3.42H5.4375V1.71ZM17.25 3.42H0.75C0.335156 3.42 0 3.75962 0 4.18V4.94C0 5.0445 0.084375 5.13 0.1875 5.13H1.60312L2.18203 17.5513C2.21953 18.3611 2.88047 19 3.67969 19H14.3203C15.1219 19 15.7805 18.3635 15.818 17.5513L16.3969 5.13H17.8125C17.9156 5.13 18 5.0445 18 4.94V4.18C18 3.75962 17.6648 3.42 17.25 3.42ZM14.1398 17.29H3.86016L3.29297 5.13H14.707L14.1398 17.29Z" fill="#C2BEBE" fill-opacity="0.85"/>
-                    </svg>
+                    <el-button v-show="!historyDelete" type="text" class="text-delete" @click="historyDelete = true;">
+                        <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.4375 1.71H5.25C5.35313 1.71 5.4375 1.6245 5.4375 1.52V1.71H12.5625V1.52C12.5625 1.6245 12.6469 1.71 12.75 1.71H12.5625V3.42H14.25V1.52C14.25 0.681625 13.5773 0 12.75 0H5.25C4.42266 0 3.75 0.681625 3.75 1.52V3.42H5.4375V1.71ZM17.25 3.42H0.75C0.335156 3.42 0 3.75962 0 4.18V4.94C0 5.0445 0.084375 5.13 0.1875 5.13H1.60312L2.18203 17.5513C2.21953 18.3611 2.88047 19 3.67969 19H14.3203C15.1219 19 15.7805 18.3635 15.818 17.5513L16.3969 5.13H17.8125C17.9156 5.13 18 5.0445 18 4.94V4.18C18 3.75962 17.6648 3.42 17.25 3.42ZM14.1398 17.29H3.86016L3.29297 5.13H14.707L14.1398 17.29Z" fill="#C2BEBE" fill-opacity="0.85"/>
+                        </svg>
+                    </el-button>
+                    <div v-show="historyDelete">
+                        <el-button type="text" class="text-delete" @click="dialogVisible = true">全部删除</el-button>
+                        <span>                            
+                            <svg width="1" height="18" viewBox="0 0 1 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="0.5" x2="0.5" y2="18" stroke="#E1DCDC"/>
+                            </svg>
+                        </span>
+                        <el-button type="text" class="text-delete" @click="handleFinish">完成</el-button>
+                    </div> 
                 </div>
             </div>
             <div class="history-container">
-                <div class="history" v-for="(historyRecords, index) in historyRecords" :key="index">
-                    <div class="text">
-                        {{ handleLongText(historyRecords) }}   
-                        <el-button type="text" class="text-delete">                
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6.98924 6L11.9638 0.241104C12.0472 0.145399 11.9771 0 11.8482 0H10.336C10.2469 0 10.1616 0.0386503 10.1029 0.104908L6 4.85521L1.89714 0.104908C1.84028 0.0386503 1.755 0 1.66404 0H0.151759C0.022893 0 -0.0472254 0.145399 0.0361585 0.241104L5.01076 6L0.0361585 11.7589C0.0174797 11.7802 0.00549658 11.8063 0.00163129 11.8341C-0.00223399 11.8618 0.00218092 11.8901 0.0143523 11.9154C0.0265238 11.9408 0.0459405 11.9623 0.0702967 11.9773C0.094653 11.9923 0.122926 12.0002 0.151759 12H1.66404C1.75311 12 1.83839 11.9613 1.89714 11.8951L6 7.14478L10.1029 11.8951C10.1597 11.9613 10.245 12 10.336 12H11.8482C11.9771 12 12.0472 11.8546 11.9638 11.7589L6.98924 6Z" fill="#B2A3A3" fill-opacity="0.85"/>
-                            </svg>
-                        </el-button>
-                    </div>
+                <div class="history" v-for="(item, index) in recordShow" :key="index" :class="{ 'hidden-history': (index >= overIndex) && !historyShow}">
+                    <el-button text class="text" :disabled="historyDelete">
+                        {{ item }}   
+                    </el-button>
+                    <el-button v-show="historyDelete" type="text" class="text-delete">                
+                        <svg @click="handleDelete(index)" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.98924 6L11.9638 0.241104C12.0472 0.145399 11.9771 0 11.8482 0H10.336C10.2469 0 10.1616 0.0386503 10.1029 0.104908L6 4.85521L1.89714 0.104908C1.84028 0.0386503 1.755 0 1.66404 0H0.151759C0.022893 0 -0.0472254 0.145399 0.0361585 0.241104L5.01076 6L0.0361585 11.7589C0.0174797 11.7802 0.00549658 11.8063 0.00163129 11.8341C-0.00223399 11.8618 0.00218092 11.8901 0.0143523 11.9154C0.0265238 11.9408 0.0459405 11.9623 0.0702967 11.9773C0.094653 11.9923 0.122926 12.0002 0.151759 12H1.66404C1.75311 12 1.83839 11.9613 1.89714 11.8951L6 7.14478L10.1029 11.8951C10.1597 11.9613 10.245 12 10.336 12H11.8482C11.9771 12 12.0472 11.8546 11.9638 11.7589L6.98924 6Z" fill="#B2A3A3" fill-opacity="0.85"/>
+                        </svg>
+                    </el-button>
                 </div>
             </div>
         </el-main>
@@ -71,9 +150,9 @@ const handleLongText = (text) => {
                     <span>浏览量</span>
                 </div>
             </div>
-            <!-- <div class="list" v-for="(historyRecords, index) in historyRecords" :key="index">
-                <div>{{ handleLongText(historyRecords) }}</div>
-            </div> -->
+            <div class="list" v-for="(hot, index) in hotPoints" :key="index">
+                <div>{{ hot }}</div>
+            </div>
             <div class="rule">
                 <el-button type="text" class="rule-btn">
                     榜单规则说明        
@@ -102,6 +181,8 @@ const handleLongText = (text) => {
 }
 .el-main {
     background-color: #E9EEF3;
+    width: 100%;
+    height: auto;
 }
 .el-footer {
     width: 100%;
@@ -129,22 +210,39 @@ const handleLongText = (text) => {
     justify-content: space-between;
     align-items: center;
 }
+.rotated {
+    transform-origin: center;
+    transform: rotate(180deg);
+}
+.cancel {
+    margin-right: 10px;
+}
 .history-container {
   display: flex;
   flex-wrap: wrap; 
   gap: 10px; 
 }
 .history {
+  display: flex;
+  align-items: center;
   width: auto; 
   border: 1px solid #ccc;
   border-radius: 55px;
-  padding: 0px 10px 0px 10px;
 }
-.text {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
+.hidden-history {
+  display: none;
+}
+.newline-history {
+    flex-basis: 40%;
+    background-color: antiquewhite;
+}
+:deep(.text-delete) {
+    padding: 5px 10px;
+    height: auto;
+    padding-left: 0;
+}
+.el-button+.el-button {
+    margin-left: 0; 
 }
 
 /*footer*/

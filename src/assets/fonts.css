@@ -1,8 +1,8 @@
 @font-face {
     font-family: "Alimama DaoLiTi";
-    src: url('public/fonts/AlimamaDaoLiTi.woff2') format('woff2'),
-         url('public/fonts/AlimamaDaoLiTi.woff') format('woff'),
-         url('public/fonts/AlimamaDaoLiTi.ttf') format('truetype');
+    src: url('/fonts/AlimamaDaoLiTi.woff2') format('woff2'),
+         url('/fonts/AlimamaDaoLiTi.woff') format('woff'),
+         url('/fonts/AlimamaDaoLiTi.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -10,7 +10,7 @@
 
 @font-face {
     font-family: "字魂水云行楷";
-    src: url('public/fonts/字魂水云行楷.ttf') format('truetype');
+    src: url('/fonts/字魂水云行楷.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
