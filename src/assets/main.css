@@ -1,2 +1,11 @@
 @import './base.css';
 @import './fonts.css';
+
+.custom-message {
+    width: 80% !important;
+    height: 100px !important;
+    border-radius: 15px !important;
+  }
+  .custom-message .el-message__icon {
+    font-size: 40px; /* 设置图标大小 */
+  }

@@ -15,4 +15,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+      '/users': {
+        target: 'http://182.43.22.191:31789', // 服务器地址
+        changeOrigin: true, // 允许代理修改请求来源，解决跨域问题
+      },
+    },
+  },
 })

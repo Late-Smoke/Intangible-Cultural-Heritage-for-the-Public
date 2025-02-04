@@ -21,15 +21,6 @@
                 <div class="icon icon2">
                     <img src="/icon/icon2.png" alt="">
                 </div>
-                <div class="icon icon3">
-                    <img src="/icon/icon3.png" alt="">
-                </div>
-                <div class="icon icon4">
-                    <img src="/icon/icon4.png" alt="">
-                </div>
-                <div class="icon icon5">
-                    <img src="/icon/icon5.png" alt="">
-                </div>
             </div>
         </div>
         <div class="router">
@@ -122,30 +113,10 @@
     transform: translateX(-50%);
 }
 .icon2 {
-    top: 13%;
-    right: 13%;
-    width: 67px;
-    height: 67px; 
-    padding: 10px;
-}
-.icon3 {
-    width: 48px;
-    height: 48px;
-    top: 30%;
-    left: 7%;
-    padding: 10px;
-}
-.icon4 {
-    width: 100px;
-    height: 100px;
-    bottom: 14%; 
-    left: 8%;
-}
-.icon5 {
-    width: 80px;
-    height: 80px;
+    width: 96px;
+    height: 96px;
     bottom:10%;
-    left: 50%; 
+    left:30%; 
     transform: translateX(-50%); 
     padding: 15px;
 }

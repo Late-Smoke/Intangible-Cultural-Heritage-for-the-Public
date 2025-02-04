@@ -73,13 +73,14 @@ const resetForm = (formEl) => {
         class="demo-ruleForm"
         >
             <el-form-item label="修改密码" prop="pass">
-                <el-input v-model="ruleForm.pass" type="password" autocomplete="off" />
+                <el-input v-model="ruleForm.pass" type="password" autocomplete="off" show-password/>
             </el-form-item>
             <el-form-item label="确认密码" prop="checkPass">
                 <el-input
                 v-model="ruleForm.checkPass"
                 type="password"
                 autocomplete="off"
+                show-password 
                 />
             </el-form-item>
             <el-form-item>

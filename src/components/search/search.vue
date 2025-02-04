@@ -18,11 +18,8 @@ const recordShow = ref([]);
 const historyRecords = ref(['晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦','晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦','晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦']);
 const historyRecordsShow = ref([...historyRecords.value]);
 const dialogVisible = ref(false); // 删除弹窗
-const hotPoints = ref({
-    text:['李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化'],
-    number:['750W','750W','750W']
-});
-
+const hotText = ref(['李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化']);
+const hotView = ref(['750W','750W','750W']);
 
 // 处理长文本的方法
 const handleLongText = (containerWidth) => {
@@ -65,7 +62,6 @@ onMounted(() => {
 })
 
 </script>
-
 <template>
     <el-container>
         <el-header>
@@ -150,8 +146,11 @@ onMounted(() => {
                     <span>浏览量</span>
                 </div>
             </div>
-            <div class="list" v-for="(hot, index) in hotPoints" :key="index">
-                <div>{{ hot }}</div>
+            <div v-for="(text, index) in hotText" :key="index">
+                <div class="hot-box">
+                    <div class="text">{{ text}}</div>
+                    <div class="number">{{ hotView[index] }}</div>
+                </div>
             </div>
             <div class="rule">
                 <el-button type="text" class="rule-btn">
@@ -249,5 +248,10 @@ onMounted(() => {
 .rule {
     display: flex;
     justify-content: center;
+}
+.hot-box {
+    width: 200px;
+    height: 200px;
+    background-color: #3685ec;
 }
 </style>

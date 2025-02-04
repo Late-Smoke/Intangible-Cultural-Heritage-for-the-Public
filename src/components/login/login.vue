@@ -1,7 +1,9 @@
 <script setup>
-import { ref, reactive, watchEffect } from 'vue';
+import { ref, reactive } from 'vue';
 import router from '@/router';
 import { useTypeStore } from '@/stores/user';
+import { ElMessage } from 'element-plus';
+import { getCodeApi,codeLoginApi,passwordLoginApi} from '@/axios/api/login';
 
 // 创建表单引用
 const type = useTypeStore();// 真为验证码登录，假为密码登录
@@ -18,26 +20,28 @@ const form = reactive({
 });
 
 // 表单验证规则
+const ifPhoneRight = ref(false);//手机号是否合法
 const validatePhone = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请输入手机号'));
   } else if (!/^1[3-9]\d{9}$/.test(value)) {
     callback(new Error("手机号格式不正确！"));
   } else {
+    ifPhoneRight.value = true;
     callback();
   }
 };
 const validatePass = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请输入密码'));
-  } else {
-    callback();
-  }
+  }else if (value.length < 6) {
+    callback(new Error('密码长度至少为 6 位'));
+  }else callback();
 };
 const validateCode = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请输入验证码'));
-  } else {
+  }else {
     callback();
   }
 };
@@ -48,9 +52,37 @@ const rules = reactive({
 })
 
 
-// 获取验证码函数
-const handleGetCode = () => {
-    console.log('获取验证码');
+const isCounting = ref(false);
+const buttonText = ref('获取验证码');
+const countdown = ref(60);
+// 处理点击获取验证码按钮的事件
+const handleGetCode = async() => {// 待修改
+    if (isCounting.value || !ifPhoneRight.value) return;
+    try {
+    const response = await getCodeApi(form.phone);
+    console.log('后端响应:',response);
+    // 假设 API 调用成功后返回的数据中有一个字段表示操作结果
+    if (response.status === 200) {
+      isCounting.value = true;//开始倒计时
+      buttonText.value = `${countdown.value}s`;
+      const timer = setInterval(() => {
+        countdown.value--;
+        buttonText.value = `${countdown.value}s`;
+        if (countdown.value <= 0) {
+          clearInterval(timer);
+          isCounting.value = false;
+          buttonText.value = '获取验证码';
+          countdown.value = 60;
+        }
+      }, 1000);
+    } else {
+      // API 调用成功但业务逻辑失败，给出相应提示
+      console.error('网络繁忙:', response.data.message);
+    }
+  } catch (error) {
+    // API 调用出错，给出相应提示
+    console.error('api调用出错:', error);
+  }
 };
 
 // 忘记密码函数
@@ -60,14 +92,33 @@ const handleForgetPassword = () => {
 
 const submitForm = (formEl) => {
     if (!formEl) return;
-    formEl.validate((valid) => {
+    formEl.validate(async(valid) => {
         if (valid) {
-            console.log('submit!');
-            // 表单数据合规，执行登录/注册逻辑
-            // 例如：this.$router.push('/dashboard');
-        } else {
-            console.log('error submit!');
-            // 表单数据不合规，提示用户
+            if(type.type){// 验证码登录
+                const response = await codeLoginApi(form.phone,form.code);
+                console.log('验证码登录：',response.data);
+                if(response.data.success === true){
+                    router.push({ name: 'home' }); 
+                }else{
+                    ElMessage.error('验证码错误！')
+                }
+            }
+            else{ 
+                //密码登录
+                const response = await passwordLoginApi(form.phone,form.password);
+                console.log('密码登录：',response.data);
+                if(response.data.success === true){
+                    router.push({ name: 'home' }); 
+                }else{
+                    ElMessage({
+                        dangerouslyUseHTMLString: true,
+                        message: `<span style="font-size:20px;line-height: 1.5;">密码或账户不存在，请检查后重试。</span>`,
+                        type: 'error',
+                        grouping: true,
+                        customClass: 'custom-message' // 添加自定义类名
+                    });
+                 }
+            }
         }
     });
 };
@@ -114,13 +165,13 @@ const handleChildProtectionClick = () => {
                             <div class="input-code">
                                 <el-input v-model="form.code"/>
                             </div>
-                            <el-button round class="small-button">获取验证码</el-button>
+                            <el-button round class="small-button" @click="handleGetCode" :disabled="isCounting">{{ buttonText }}</el-button>
                         </div>
                     </el-form-item>
                     <el-form-item v-else="type" label="密码" label-position="left" prop="password">
                         <div class="container">
                             <div class="input-password">
-                                <el-input v-model="form.password"/>
+                                <el-input v-model="form.password" show-password/>
                             </div>
                             <el-button round class="small-button" @click="handleForgetPassword">忘记密码</el-button>
                         </div>
@@ -143,12 +194,12 @@ const handleChildProtectionClick = () => {
         </div>
         <div class="agreement">
             <span>
-                <el-radio v-model="agreed" :value="true" :key="agreed" size="large" @click="agreed =!agreed">
-                </el-radio>
-                我已阅读并同意
-                <el-link type="primary" href="#" @click="handleUserAgreementClick">《用户协议》</el-link>
-                <el-link type="primary" href="#" @click="handlePrivacyPolicyClick">《隐私政策》</el-link>
-                <el-link type="primary" href="#" @click="handleChildProtectionClick">《儿童青少年个人信息保护规则》</el-link>
+            <el-radio v-model="agreed" :value="true" :key="agreed" size="large" @click="agreed =!agreed">
+            </el-radio>
+                    我已阅读并同意
+                    <el-link type="primary" href="#" @click="handleUserAgreementClick">《用户协议》</el-link>
+                    <el-link type="primary" href="#" @click="handlePrivacyPolicyClick">《隐私政策》</el-link>
+                    <el-link type="primary" href="#" @click="handleChildProtectionClick">《儿童青少年个人信息保护规则》</el-link>
             </span>
         </div>
     </div>
