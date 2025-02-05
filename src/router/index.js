@@ -6,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'loginView',
-      component: () => import('../views/LoginView.vue'),
+      component: () => import('../views/login/loginView.vue'),
       children: [
         {
           path: '',
@@ -31,9 +31,21 @@ const router = createRouter({
       component: () => import('../components/Map.vue'),
     },
     {
-      path: '/search',
-      name:'search',
-      component: () => import('../components/search/search.vue'),
+      path: '/searchView',
+      name:'searchView',
+      component: () => import('../views/search/searchView.vue'),
+      children: [
+        {
+          path: 'history',
+          name: 'history',
+          component: () => import('../components/login/login.vue'),
+        }, 
+        {
+          path: 'result',
+          name: 'result',
+          component: () => import('../components/login/forgetPassword.vue'),
+        }
+      ]
     }
   ],
 })
