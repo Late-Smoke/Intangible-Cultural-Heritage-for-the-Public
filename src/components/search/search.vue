@@ -166,6 +166,7 @@ onMounted(() => {
 .old, .hot {
     display: flex;
     align-items: center;
+    padding: 0 5px;
     gap: 10px;
     font-size: 24px;
     color: #000000;

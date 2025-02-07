@@ -1,11 +1,16 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import router from '@/router';
 
 const videoElement = ref(null);
 const canvasElement = ref(null);
 const capturedImage = ref('');
 const hasCameraAccess = ref(false);
 const isHistoryExpanded = ref(false);
+
+const handelReturn = () => {
+    router.push('/searchView');
+};
 
 const openCamera = async () => {
     try {
@@ -28,7 +33,6 @@ const takePhoto = () => {
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     const dataUrl = canvas.toDataURL('image/png');
     capturedImage.value = dataUrl;
-    console.log('拍摄的照片:', dataUrl);
 };
 
 const toggleHistoryExpand = () => {
@@ -41,7 +45,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <el-button class="return-btn" circle size="default" color="#F0E4D4">
+    <el-button class="return-btn" circle size="default" color="#F0E4D4" @click="handelReturn">
         <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="17.5" cy="17.5" r="17.5" fill="#F0E4D4"/>
             <path d="M20 26L12 18L20 10" stroke="#987B5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -63,9 +67,9 @@ onMounted(() => {
                 <span>相册</span>
                 <span>搜索历史</span>
             </div>
-            <el-button class="expand-btn" text @click="toggleHistoryExpand">
+            <el-button class="expand-btn" type="text" @click="toggleHistoryExpand">
                 {{ isHistoryExpanded ? '收起' : '展开' }}                                
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg :class="{ 'rotated': isHistoryExpanded }" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M7 14.5834L12.0008 10L17 14.5834" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </el-button>
@@ -135,5 +139,16 @@ video {
 .expand-btn {
     font-size: 18px;
     color: #000000;
+}
+.el-button:focus,
+.el-button:active {
+  outline: none;
+  color: black;
+  background-color: transparent;
+  box-shadow: none;
+}
+.rotated {
+    transform-origin: center;
+    transform: rotate(180deg);
 }
 </style>

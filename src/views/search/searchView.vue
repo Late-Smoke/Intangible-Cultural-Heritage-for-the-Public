@@ -6,7 +6,7 @@ const handleClean = () => {
     search.value = '';
 }
 const photoClick = () => {
-    console.log('点击了图片'); 
+    router.push('/searchView/pictureView');
 }
 const handleSearch = () => {
     if(search.value){

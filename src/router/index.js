@@ -44,11 +44,34 @@ const router = createRouter({
           path: 'result',
           name: 'result',
           component: () => import('../components/search/result.vue'),
+          redirect: { name: 'comprehensive' }, 
+          children: [
+            {
+              path: 'comprehensive',
+              name:'comprehensive',
+              component: () => import('../components/search/result/comprehensive.vue'),
+            }, 
+            {
+              path:'activity',
+              name:'activity',
+              component: () => import('../components/search/result/activity.vue'),
+            },
+            {
+              path:'info',
+              name:'info',
+              component: () => import('../components/search/result/info.vue'), 
+            },
+            {
+              path:'user',
+              name:'user',
+              component: () => import('../components/search/result/user.vue'), 
+            }
+          ]
         }
       ]
     },
     {
-      path: '/pictureView',
+      path: '/searchView/pictureView',
       name:'pictureView',
       component: () => import('../views/search/pictureView.vue'), 
     }

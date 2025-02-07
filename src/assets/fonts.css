@@ -15,3 +15,11 @@
     font-style: normal;
     font-display: swap;
 }
+
+@font-face {
+    font-family: "微软雅黑";
+    src: url('/fonts/微软雅黑.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}

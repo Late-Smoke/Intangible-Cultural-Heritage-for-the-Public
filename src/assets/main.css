@@ -1,6 +1,10 @@
 @import './base.css';
 @import './fonts.css';
 
+.el-button,.el-input__inner::placeholder {
+    font-family: "Microsoft YaHei"; 
+}
+
 /*login*/
 .custom-message {
     width: 80% !important;
@@ -38,4 +42,11 @@
     background-color: #F0E4D4;
     border: none;
     color: #000000;
+}
+
+.sort-popover{
+    background-color: #F8F0E6!important;
+    border: solid 1px #E6DBCD !important;
+    border-radius: 14px !important;
+    box-shadow: none !important;
 }
