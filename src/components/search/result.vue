@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref , onMounted} from 'vue';
 import router from '@/router';
 
 const selectedTab = ref('comprehensive');
@@ -7,6 +7,10 @@ const handleTabClick = (tab) => {
     selectedTab.value = tab;
     router.push(`/searchView/result/${tab}`);
 }
+
+onMounted(() => {
+    handleTabClick(selectedTab.value);
+})
 </script>
 
 <template>

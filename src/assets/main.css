@@ -50,3 +50,10 @@
     border-radius: 14px !important;
     box-shadow: none !important;
 }
+
+.user-popover{
+    border: solid 1px #987B5B!important;
+    border-radius: 10px!important; 
+    box-shadow: none !important;
+    margin-left: 10px !important;
+}
