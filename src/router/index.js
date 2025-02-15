@@ -74,6 +74,47 @@ const router = createRouter({
       path: '/searchView/pictureView',
       name:'pictureView',
       component: () => import('../views/search/pictureView.vue'), 
+    },
+    {
+      path: '/mainPageView',
+      name:'mainPageView',
+      component: () => import('../views/mainPage/mainPageView.vue'), 
+      redirect: { name: 'homePage' },
+      children: [
+        {
+          path: 'homePage',
+          name:'homePage',
+          component: () => import('../components/mainPage/homePage.vue'),
+          redirect: { name: 'cultureMap' },
+          children: [
+            {
+              path: 'cultureMap',
+              name:'cultureMap',
+              component: () => import('../components/mainPage/homePage/cultureMap.vue'), 
+            },
+            {
+              path: 'advice',
+              name:'advice',
+              component: () => import('../components/mainPage/homePage/advice.vue'), 
+            },
+            {
+              path: 'sort',
+              name:'sort',
+              component: () => import('../components/mainPage/homePage/sort.vue'), 
+            }, 
+          ] 
+        },
+        {
+          path: 'activityPage',
+          name:'activityPage',
+          component: () => import('../components/mainPage/activityPage.vue'),
+        },
+        {
+          path: 'myPage',
+          name:'myPage',
+          component: () => import('../components/mainPage/myPage.vue'), 
+        }  
+      ]
     }
   ],
 })

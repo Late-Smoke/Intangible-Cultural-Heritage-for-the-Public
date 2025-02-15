@@ -1,10 +1,6 @@
 @import './base.css';
 @import './fonts.css';
 
-.el-button,.el-input__inner::placeholder {
-    font-family: "Microsoft YaHei"; 
-}
-
 /*login*/
 .custom-message {
     width: 80% !important;
@@ -57,3 +53,4 @@
     box-shadow: none !important;
     margin-left: 10px !important;
 }
+

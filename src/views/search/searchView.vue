@@ -2,6 +2,9 @@
 import { ref  } from 'vue';
 import router from '@/router';
 const search = ref('');//输入框绑定值
+const handleBack = () => {
+    router.push('/mainPageView/homePage/cultureMap');
+}
 const handleClean = () => {
     search.value = '';
 }
@@ -19,7 +22,7 @@ const handleSearch = () => {
 
 <template>
     <el-header>
-        <el-button class="return-btn" circle size="default" color="#F0E4D4">
+        <el-button class="return-btn" @click="handleBack" circle size="default" color="#F0E4D4">
             <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="17.5" cy="17.5" r="17.5" fill="#F0E4D4"/>
                 <path d="M20 26L12 18L20 10" stroke="#987B5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>

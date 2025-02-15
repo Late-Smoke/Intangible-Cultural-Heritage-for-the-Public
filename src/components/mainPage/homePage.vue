@@ -1,20 +1,36 @@
 <script setup>
-import { ref , onMounted} from 'vue';
+import { ref , onMounted , watch} from 'vue';
 import router from '@/router';
+import { useScrollStore } from '@/stores/user';
 
 const photoClick = () => {
     router.push('/searchView/pictureView');
 }
 
-// const selectedTab = ref('map');
-// const handleTabClick = (tab) => {
-//     selectedTab.value = tab;
-//     router.push(`/searchView/result/${tab}`);
-// }
+const selectedTab = ref('cultureMap');
+const handleTabClick = (tab) => {
+    selectedTab.value = tab;
+    router.push(`/mainPageView/homePage/${tab}`);
+}
 
-// onMounted(() => {
-//     handleTabClick(selectedTab.value);
-// })
+const scrollStore = useScrollStore();
+const scrollRef = ref(null);
+scrollStore.setScrollContainer(scrollRef);
+const scrolling = (e) => {
+    const clientHeight = e.target.clientHeight;
+    const scrollHeight = e.target.scrollHeight;
+    const scrollTop = e.target.scrollTop;
+    if (!scrollTop){
+        scrollStore.changeScrollTop(true);
+        scrollStore.changeScrollBottom(false);
+    }
+    else{
+        scrollStore.changeScrollTop(false);
+        if (scrollTop + clientHeight >= scrollHeight) {
+            scrollStore.changeScrollBottom(true);
+        }
+    }
+  }
 </script>
 
 <template>
@@ -44,8 +60,8 @@ const photoClick = () => {
     </el-header>
     <div class="title">
         <div class="tab">
-            <span @click="handleTabClick('map')">非遗地图</span>            
-            <svg v-show="selectedTab == 'map'" width="25" height="2" viewBox="0 0 25 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <span @click="handleTabClick('cultureMap')">非遗地图</span>            
+            <svg v-show="selectedTab == 'cultureMap'" width="25" height="2" viewBox="0 0 25 2" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M1 1H24" stroke="#987B5B" stroke-width="2" stroke-linecap="round"/>
             </svg>
         </div>
@@ -62,7 +78,7 @@ const photoClick = () => {
             </svg>
         </div>
     </div>
-    <div class="router">
+    <div class="router" @scroll="scrolling" ref="scrollRef">
         <router-view />
     </div>
 </template>
@@ -98,11 +114,15 @@ const photoClick = () => {
     font-size: 18px;
     gap: 40px;
 }
-
 .tab {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px; 
+}
+
+.router {
+    overflow-y: auto;
+    height: calc(100vh  - 200px); 
 }
 </style>

@@ -1,20 +1,19 @@
 <script setup>
-import { ref ,onMounted} from 'vue';
+import { ref , onMounted , onUnmounted} from 'vue';
 import router from '@/router';
+import { useScrollStore } from '@/stores/user';
 const selected = ref('homePage');
 const handleClick = (name) => {
     selected.value = name;
     router.push(`/mainPageView/${name}`);
 }
 
-onMounted(() => {
-    handleClick(selected.value);
-})
+const scrollStore = useScrollStore();
 </script>
 
 <template>
     <div class="container">
-        <div class="router">
+        <div class="router">  
             <router-view />
         </div>
         <div class="bottom">
@@ -26,7 +25,8 @@ onMounted(() => {
                     <path d="M11.25 17.691V26.25L6 26.25C4.75736 26.25 3.75 25.292 3.75 24.1103V11.7701C3.75 11.3083 3.98502 10.8751 4.38071 10.6075L14.1307 4.01396C14.6512 3.66201 15.3488 3.66201 15.8693 4.01397L25.6193 10.6075C26.015 10.8751 26.25 11.3083 26.25 11.7701V24.1103C26.25 25.292 25.2426 26.25 24 26.25L18.75 26.25V17.691C18.75 16.9032 18.0784 16.2645 17.25 16.2645H12.75C11.9216 16.2645 11.25 16.9032 11.25 17.691Z" fill="#CDAD86" fill-opacity="0.84"/>
                     <path d="M11.25 26.25L11.25 27.25H12.25V26.25H11.25ZM18.75 26.25H17.75V27.25H18.75V26.25ZM4.38071 10.6075L3.82052 9.77917H3.82052L4.38071 10.6075ZM14.1307 4.01396L13.5705 3.1856L14.1307 4.01396ZM15.8693 4.01397L16.4295 3.1856V3.1856L15.8693 4.01397ZM25.6193 10.6075L25.0591 11.4359L25.6193 10.6075ZM6 26.25V27.25H6L6 26.25ZM24 26.25V27.25V26.25ZM12.25 26.25V17.691H10.25V26.25H12.25ZM12.75 17.2645H17.25V15.2645H12.75V17.2645ZM17.75 17.691V26.25H19.75V17.691H17.75ZM17.25 17.2645C17.5741 17.2645 17.75 17.5022 17.75 17.691H19.75C19.75 16.3042 18.5828 15.2645 17.25 15.2645V17.2645ZM12.25 17.691C12.25 17.5022 12.4259 17.2645 12.75 17.2645V15.2645C11.4172 15.2645 10.25 16.3042 10.25 17.691H12.25ZM25.25 11.7701V24.1103H27.25V11.7701H25.25ZM4.75 24.1103V11.7701H2.75V24.1103H4.75ZM4.94091 11.4359L14.6909 4.84233L13.5705 3.1856L3.82052 9.77917L4.94091 11.4359ZM15.3091 4.84233L25.0591 11.4359L26.1795 9.77917L16.4295 3.1856L15.3091 4.84233ZM14.6909 4.84233C14.8729 4.71922 15.1271 4.71922 15.3091 4.84233L16.4295 3.1856C15.5706 2.6048 14.4294 2.6048 13.5705 3.1856L14.6909 4.84233ZM6 25.25C5.2617 25.25 4.75 24.693 4.75 24.1103H2.75C2.75 25.891 4.25302 27.25 6 27.25V25.25ZM25.25 24.1103C25.25 24.693 24.7383 25.25 24 25.25V27.25C25.747 27.25 27.25 25.891 27.25 24.1103H25.25ZM27.25 11.7701C27.25 10.9628 26.8388 10.2251 26.1795 9.77917L25.0591 11.4359C25.1911 11.5252 25.25 11.6538 25.25 11.7701H27.25ZM4.75 11.7701C4.75 11.6538 4.80888 11.5252 4.94091 11.4359L3.82052 9.77917C3.16116 10.2251 2.75 10.9628 2.75 11.7701H4.75ZM6 27.25L11.25 27.25L11.25 25.25L6 25.25L6 27.25ZM18.75 27.25L24 27.25V25.25L18.75 25.25V27.25Z" fill="black"/>
                 </svg>
-                首页
+                <span v-if="!scrollStore.scrollTop" @click="scrollStore.scrollToTop">回顶部</span>
+                <span v-else>首页</span>
             </div>
             <div class="activityPage" @click="handleClick('activityPage')">                
                 <svg v-show="selected != 'activityPage'" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -66,10 +66,12 @@ onMounted(() => {
 }
 .router {
     flex-grow: 1;
-    background-color: beige;
+    overflow-y: auto;
+    height: calc(100vh - 70px); 
 }
 .bottom {
     display: flex;
+    height: 70px;
     justify-content: space-around;
     align-items: center;
     padding-top: 10px;
