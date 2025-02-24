@@ -36,7 +36,7 @@ const scrolling = (e) => {
   }
 
 onMounted(() => {
-   handleTabClick('cultureMap'); 
+//    handleTabClick('cultureMap'); 
 })
 </script>
 

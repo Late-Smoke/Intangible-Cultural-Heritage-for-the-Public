@@ -8,6 +8,7 @@ import App from './App.vue'
 import router from './router'
 import 'element-plus/dist/index.css';
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import apiClient from './axios/axios';
 
 const app = createApp(App)
 
@@ -19,5 +20,11 @@ app.use(ElementPlus,{locale: zhCn});
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
 }
+
+
+// 读取token
+let token = localStorage.getItem('token')
+if (token) apiClient.defaults.headers.common['Authorization'] = token
+
 
 app.mount('#app')

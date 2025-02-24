@@ -5,6 +5,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'root',
+      redirect: { name: 'cultureMap' },
+    },
+    {
+      path: '/login',
       name: 'loginView',
       component: () => import('../views/login/loginView.vue'),
       children: [
@@ -12,7 +17,7 @@ const router = createRouter({
           path: '',
           name: 'login',
           component: () => import('../components/login/login.vue'),
-        }, 
+        },
         {
           path: 'forget-password',
           name: 'forget-password',
@@ -21,7 +26,7 @@ const router = createRouter({
         {
           path: 'code',
           name: 'code',
-          component: () => import('../components/login/code.vue'), 
+          component: () => import('../components/login/code.vue'),
         }
       ]
     },
@@ -37,39 +42,39 @@ const router = createRouter({
     },
     {
       path: '/searchView',
-      name:'searchView',
+      name: 'searchView',
       component: () => import('../views/search/searchView.vue'),
       children: [
         {
           path: '',
           name: 'search',
           component: () => import('../components/search/search.vue'),
-        }, 
+        },
         {
           path: 'result',
           name: 'result',
           component: () => import('../components/search/result.vue'),
-          redirect: { name: 'comprehensive' }, 
+          redirect: { name: 'comprehensive' },
           children: [
             {
               path: 'comprehensive',
-              name:'comprehensive',
+              name: 'comprehensive',
               component: () => import('../components/search/result/comprehensive.vue'),
-            }, 
+            },
             {
-              path:'activity',
-              name:'activity',
+              path: 'activity',
+              name: 'activity',
               component: () => import('../components/search/result/activity.vue'),
             },
             {
-              path:'info',
-              name:'info',
-              component: () => import('../components/slot/info.vue'), 
+              path: 'info',
+              name: 'info',
+              component: () => import('../components/slot/info.vue'),
             },
             {
-              path:'user',
-              name:'user',
-              component: () => import('../components/search/result/user.vue'), 
+              path: 'user',
+              name: 'user',
+              component: () => import('../components/search/result/user.vue'),
             }
           ]
         }
@@ -77,53 +82,53 @@ const router = createRouter({
     },
     {
       path: '/searchView/pictureView',
-      name:'pictureView',
-      component: () => import('../views/search/pictureView.vue'), 
+      name: 'pictureView',
+      component: () => import('../views/search/pictureView.vue'),
     },
     {
       path: '/searchView/result/activity/cityView',
-      name:'activityView',
+      name: 'activityView',
       component: () => import('../views/search/cityView.vue'),
     },
     {
       path: '/mainPageView',
-      name:'mainPageView',
-      component: () => import('../views/mainPage/mainPageView.vue'), 
+      name: 'mainPageView',
+      component: () => import('../views/mainPage/mainPageView.vue'),
       redirect: { name: 'homePage' },
       children: [
         {
           path: 'homePage',
-          name:'homePage',
+          name: 'homePage',
           component: () => import('../components/mainPage/homePage.vue'),
           redirect: { name: 'cultureMap' },
           children: [
             {
               path: 'cultureMap',
-              name:'cultureMap',
-              component: () => import('../components/mainPage/homePage/cultureMap.vue'), 
+              name: 'cultureMap',
+              component: () => import('../components/mainPage/homePage/cultureMap.vue'),
             },
             {
               path: 'advice',
-              name:'advice',
-              component: () => import('../components/mainPage/homePage/advice.vue'), 
+              name: 'advice',
+              component: () => import('../components/mainPage/homePage/advice.vue'),
             },
             {
               path: 'sort',
-              name:'sort',
-              component: () => import('../components/mainPage/homePage/sort.vue'), 
-            }, 
-          ] 
+              name: 'sort',
+              component: () => import('../components/mainPage/homePage/sort.vue'),
+            },
+          ]
         },
         {
           path: 'activityPage',
-          name:'activityPage',
+          name: 'activityPage',
           component: () => import('../components/mainPage/activityPage.vue'),
         },
         {
           path: 'myPage',
-          name:'myPage',
-          component: () => import('../components/mainPage/myPage.vue'), 
-        }  
+          name: 'myPage',
+          component: () => import('../components/mainPage/myPage.vue'),
+        }
       ]
     }
   ],

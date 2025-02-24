@@ -11,7 +11,7 @@ const handleClick = (name) => {
 
 const scrollStore = useScrollStore();
 onMounted(() => {
-    handleClick('homePage');
+    // handleClick('homePage');
 })
 </script>
 
