@@ -13,9 +13,11 @@
     "@amap/amap-jsapi-loader": "^1.0.1",
     "@element-plus/icons-vue": "^2.3.1",
     "axios": "^1.7.9",
+    "echarts-gl": "^2.0.9",
     "element-plus": "^2.9.3",
     "pinia": "^2.3.0",
     "vue": "^3.5.13",
+    "vue-echarts": "^7.0.3",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {

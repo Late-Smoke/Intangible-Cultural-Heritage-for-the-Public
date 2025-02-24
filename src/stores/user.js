@@ -1,5 +1,20 @@
 import { defineStore } from 'pinia';
 
+export const usePositionStore = defineStore('position', {
+  state: () => ({
+    latitude: null,
+    longitude: null,
+  }), 
+  actions: {
+   changeLatitude(newLatitude) {
+    this.latitude = newLatitude;
+   },
+   changeLongitude(newLongitude) {
+    this.longitude = newLongitude; 
+   } 
+  }
+})
+
 export const useTypeStore = defineStore('type', {
   state: () => ({ type: true }),
   actions: {
@@ -8,6 +23,24 @@ export const useTypeStore = defineStore('type', {
     }
   }
 });
+
+export const usePasswordStore = defineStore('password', {
+  state: () => ({
+    phone: '',
+    code: null,
+  }), 
+  actions: {
+   changePassword(newPassword) {
+    this.password = newPassword;
+   }, 
+   changeCode(newCode) {
+    this.code = newCode; 
+   },
+   changePhone(newPhone) {
+    this.phone = newPhone; 
+   }
+  }
+})
 
 export const useScrollStore = defineStore('scroll', {
   state: () => ({
@@ -35,3 +68,22 @@ export const useScrollStore = defineStore('scroll', {
       },
   },
 });
+
+export const useActivityStore = defineStore('activity', {
+  state: () => ({
+    show: false,
+    position: '全国',
+    time: '全部时间',
+  }), 
+  actions: {
+   changeShow(show) {
+    this.show = show; 
+   },
+   changePosition(position) {
+    this.position = position;
+   }, 
+   changeTime(time) {
+    this.time = time;
+   },
+  }
+})

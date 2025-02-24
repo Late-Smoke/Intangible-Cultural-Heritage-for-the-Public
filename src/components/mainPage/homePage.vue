@@ -1,8 +1,11 @@
 <script setup>
-import { ref , onMounted , watch} from 'vue';
+import { ref , onMounted } from 'vue';
 import router from '@/router';
 import { useScrollStore } from '@/stores/user';
 
+const handleInput = () => {
+    router.push('/searchView');
+}
 const photoClick = () => {
     router.push('/searchView/pictureView');
 }
@@ -31,15 +34,21 @@ const scrolling = (e) => {
         }
     }
   }
+
+onMounted(() => {
+   handleTabClick('cultureMap'); 
+})
 </script>
 
 <template>
     <el-header>
         <el-input 
+        class="homePage-input"
             v-model="search" 
             style="width:257px;height:32px;font-size: 18px;color:#BBB6B6;" 
             placeholder="搜获帖子、活动或用户" 
-            size="default">
+            size="default"
+            @click="handleInput">
             <template #prefix>
                 <svg width="16.8" height="16.8" style="margin-right:5px;" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M14.9269 14.5401L18.4 17.9001M17.28 8.9401C17.28 13.27 13.7699 16.7801 9.44001 16.7801C5.11009 16.7801 1.60001 13.27 1.60001 8.9401C1.60001 4.61019 5.11009 1.1001 9.44001 1.1001C13.7699 1.1001 17.28 4.61019 17.28 8.9401Z" stroke="#BBB6B6" stroke-width="2" stroke-linecap="round"/>
@@ -51,12 +60,12 @@ const scrolling = (e) => {
                 </svg>
             </template>
         </el-input>
-        <el-button @click="handlePost" class="post-btn" color="#F0E4D4">            
+        <div @click="handlePost" class="post-btn">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12.5365 19.2428L13.2788 18.4109C14.1896 17.3902 15.8236 17.5229 16.5577 18.6772C17.2416 19.7525 18.7274 19.9563 19.6757 19.105L21.0211 17.8969M2.97888 19.4699L7.34487 18.5902C7.57664 18.5435 7.78946 18.4293 7.9566 18.2621L17.7303 8.48307C18.1989 8.01422 18.1986 7.25423 17.7296 6.78577L15.6591 4.71769C15.1903 4.24942 14.4307 4.24974 13.9623 4.7184L4.18764 14.4985C4.02083 14.6654 3.90693 14.8777 3.86018 15.109L2.97888 19.4699Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             发帖
-        </el-button>
+        </div>
     </el-header>
     <div class="title">
         <div class="tab">
@@ -87,32 +96,40 @@ const scrolling = (e) => {
 <style scoped>
 .el-header {
     width: 100%;
-    height: auto;
-    padding: 48px 15px 10px 15px;
+    height: 90px;
+    padding: 40px 15px 10px 15px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
 }
 .post-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #F0E4D4;
     font-size: 13px;
-    padding: 8px 10px;
+    padding: 0px 5px;
+    border-radius: 8px;
 }
-:deep(.el-input__wrapper) {
+:deep(.homePage-input .el-input__wrapper) {
     width: 200px;
     border-radius: 55px;
     background-color: #F3D2A42E;
     border: solid 1px #987B5B;
     box-shadow: none;
 }
-:deep(.el-input__inner::placeholder) {
+:deep(.homePage-input .el-input__inner::placeholder) {
     font-size: 18px; 
     color:#BBB6B6;
 }
+
 .title {
     display: flex;
-    margin: 5px 15px;
+    height: 50px;
+    padding: 10px 15px;
     font-size: 18px;
     gap: 40px;
+    box-shadow: 0px 2px 2px 0px #00000026;
 }
 .tab {
     display: flex;
@@ -123,6 +140,6 @@ const scrolling = (e) => {
 
 .router {
     overflow-y: auto;
-    height: calc(100vh  - 200px); 
+    height: calc(100vh  - 210px); 
 }
 </style>

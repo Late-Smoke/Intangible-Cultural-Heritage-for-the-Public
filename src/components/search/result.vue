@@ -1,15 +1,20 @@
 <script setup>
 import { ref , onMounted} from 'vue';
 import router from '@/router';
+import { useActivityStore } from '@/stores/user';
+const activity = useActivityStore();
 
 const selectedTab = ref('comprehensive');
 const handleTabClick = (tab) => {
+    if(tab == 'activity') activity.changeShow(true);
+    else activity.changeShow(false);
     selectedTab.value = tab;
     router.push(`/searchView/result/${tab}`);
 }
 
 onMounted(() => {
-    handleTabClick(selectedTab.value);
+    if(activity.show) handleTabClick('activity');
+    else handleTabClick(selectedTab.value);
 })
 </script>
 

@@ -2,6 +2,7 @@
 import { ref , onMounted , onUnmounted} from 'vue';
 import router from '@/router';
 import { useScrollStore } from '@/stores/user';
+
 const selected = ref('homePage');
 const handleClick = (name) => {
     selected.value = name;
@@ -9,6 +10,9 @@ const handleClick = (name) => {
 }
 
 const scrollStore = useScrollStore();
+onMounted(() => {
+    handleClick('homePage');
+})
 </script>
 
 <template>

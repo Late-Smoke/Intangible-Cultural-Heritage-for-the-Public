@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import RelatedPost from '@/components/slot/relatedPost.vue'
+import { getBaiKeApi , getNewPostApi , getHotPostApi} from '@/axios/api/search';
 const sort = ref('最热');
 const sortShow = ref(false);
 </script>
@@ -43,7 +44,9 @@ const sortShow = ref(false);
                 </template>
             </el-popover>
         </div>
-        <related-post></related-post>
+        <div class="related-post">
+            <related-post />
+        </div>
     </div>
 </template>
 
@@ -99,5 +102,9 @@ const sortShow = ref(false);
     font-size: 18px;
     color: #000000;
     padding: 0;
+}
+
+.related-post {
+    margin-top: 10px;
 }
 </style>

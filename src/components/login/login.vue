@@ -8,10 +8,10 @@ import { getCodeApi,codeLoginApi,passwordLoginApi} from '@/axios/api/login';
 // 创建表单引用
 const type = useTypeStore();// 真为验证码登录，假为密码登录
 const changeType = (formEl) => {
-    type.changeType(!type.type);
     formEl.resetFields();
+    type.changeType(!type.type);
 };
-const agreed = ref(false);// 切换协议
+const agreed = ref(false);// 同意协议
 const formRef = ref(null);
 const form = reactive({
     phone: '',
@@ -59,26 +59,24 @@ const countdown = ref(60);
 const handleGetCode = async() => {// 待修改
     if (isCounting.value || !ifPhoneRight.value) return;
     try {
-    const response = await getCodeApi(form.phone);
-    console.log('后端响应:',response);
-    // 假设 API 调用成功后返回的数据中有一个字段表示操作结果
-    if (response.status === 200) {
-      isCounting.value = true;//开始倒计时
-      buttonText.value = `${countdown.value}s`;
-      const timer = setInterval(() => {
-        countdown.value--;
-        buttonText.value = `${countdown.value}s`;
-        if (countdown.value <= 0) {
-          clearInterval(timer);
-          isCounting.value = false;
-          buttonText.value = '获取验证码';
-          countdown.value = 60;
+        const response = await getCodeApi(form.phone);
+        console.log('后端响应:',response);
+        if (response.status === 200) {
+            isCounting.value = true;//开始倒计时
+            buttonText.value = `${countdown.value}s`;
+            const timer = setInterval(() => {
+                countdown.value--;
+                buttonText.value = `${countdown.value}s`;
+                if (countdown.value <= 0) {
+                clearInterval(timer);
+                isCounting.value = false;
+                buttonText.value = '获取验证码';
+                countdown.value = 60;
+                }
+            }, 1000);
+        } else {
+        console.error('网络繁忙:', response.data.errorMsg);
         }
-      }, 1000);
-    } else {
-      // API 调用成功但业务逻辑失败，给出相应提示
-      console.error('网络繁忙:', response.data.message);
-    }
   } catch (error) {
     // API 调用出错，给出相应提示
     console.error('api调用出错:', error);
@@ -87,18 +85,20 @@ const handleGetCode = async() => {// 待修改
 
 // 忘记密码函数
 const handleForgetPassword = () => {
-    router.push({ name: 'forget-password' });
+    type.changeType(false);
+    router.push({ name: 'code' });
 };
 
 const submitForm = (formEl) => {
     if (!formEl) return;
+    ifLogin.value = true;
     formEl.validate(async(valid) => {
-        if (valid) {
+        if (valid && agreed.value) {
             if(type.type){// 验证码登录
                 const response = await codeLoginApi(form.phone,form.code);
                 console.log('验证码登录：',response.data);
                 if(response.data.success === true){
-                    router.push({ name: 'home' }); 
+                    router.push({ name: 'mainPageView' }); 
                 }else{
                     ElMessage.error('验证码错误！')
                 }
@@ -108,7 +108,7 @@ const submitForm = (formEl) => {
                 const response = await passwordLoginApi(form.phone,form.password);
                 console.log('密码登录：',response.data);
                 if(response.data.success === true){
-                    router.push({ name: 'home' }); 
+                    router.push({ name: 'mainPageView' }); 
                 }else{
                     ElMessage({
                         dangerouslyUseHTMLString: true,
@@ -124,6 +124,7 @@ const submitForm = (formEl) => {
 };
 
 // 三个协议点击（后期增加点击后效果）
+const ifLogin = ref(false);
 const handleUserAgreementClick = () => {
     console.log('用户协议点击');
 };
@@ -192,7 +193,10 @@ const handleChildProtectionClick = () => {
                 </el-form>
             </div>
         </div>
-        <div class="agreement">
+        <!-- <div class="agreement">
+            <span v-show="ifLogin && !agreed">
+                未勾选协议
+            </span>
             <span>
             <el-radio v-model="agreed" :value="true" :key="agreed" size="large" @click="agreed =!agreed">
             </el-radio>
@@ -201,6 +205,20 @@ const handleChildProtectionClick = () => {
                     <el-link type="primary" href="#" @click="handlePrivacyPolicyClick">《隐私政策》</el-link>
                     <el-link type="primary" href="#" @click="handleChildProtectionClick">《儿童青少年个人信息保护规则》</el-link>
             </span>
+        </div> -->
+        <div class="agreement">
+            <div v-show="ifLogin && !agreed" class="agreement-error">
+            未勾选协议
+            </div>
+            <div class="agreement-content">
+                <el-radio v-model="agreed" :value="true" :key="agreed" size="large" @click="agreed =!agreed" class="agreement-radio" />
+                <span class="agreement-text">
+                    我已阅读并同意
+                    <el-link type="primary" href="#" @click="handleUserAgreementClick" class="agreement-link">《用户协议》</el-link>
+                    <el-link type="primary" href="#" @click="handlePrivacyPolicyClick" class="agreement-link">《隐私政策》</el-link>
+                    <el-link type="primary" href="#" @click="handleChildProtectionClick" class="agreement-link">《儿童青少年个人信息保护规则》</el-link>
+                </span>
+            </div>
         </div>
     </div>
 </template>
@@ -287,8 +305,15 @@ const handleChildProtectionClick = () => {
 .agreement {
     text-align: center;
     font-size: 13px; 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 .el-radio.el-radio--large {
     margin: 0;
+}
+.agreement-error {
+    color: red;
+    margin-left: 80px; 
 }
 </style>

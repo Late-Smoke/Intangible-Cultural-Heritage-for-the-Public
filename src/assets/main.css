@@ -54,3 +54,27 @@
     margin-left: 10px !important;
 }
 
+/*cultureMap*/
+.select-popper {
+    background-color: #F0E4D4 !important;
+    border-radius: 5px !important;
+}
+.sex-popper {
+ position:absolute;
+ left: -30px; 
+}
+
+/*calendar*/
+.calendar-popover {
+    padding: 12px 0 !important;
+    position: absolute !important;
+    top: 175px !important;
+    left: 15px !important;
+    width: calc(100vw - 30px) !important;
+    border-radius: 8px !important;
+    border: 1px solid #AA8C4C !important;
+    box-shadow: none!important;
+}
+.select-month .el-select__caret {
+    color:#000000;
+}

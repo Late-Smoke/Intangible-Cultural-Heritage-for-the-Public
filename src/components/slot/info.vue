@@ -53,7 +53,7 @@ const itemTime = ref('1天前');
     justify-content: flex-end;
 }
 .content {
-    margin: 5px 20px;
+    margin: 15px 20px;
     padding: 10px 15px;
     padding-right: 10px;
     gap: 10px;

@@ -17,6 +17,11 @@ const router = createRouter({
           path: 'forget-password',
           name: 'forget-password',
           component: () => import('../components/login/forgetPassword.vue'),
+        },
+        {
+          path: 'code',
+          name: 'code',
+          component: () => import('../components/login/code.vue'), 
         }
       ]
     },
@@ -59,7 +64,7 @@ const router = createRouter({
             {
               path:'info',
               name:'info',
-              component: () => import('../components/search/result/info.vue'), 
+              component: () => import('../components/slot/info.vue'), 
             },
             {
               path:'user',
@@ -74,6 +79,11 @@ const router = createRouter({
       path: '/searchView/pictureView',
       name:'pictureView',
       component: () => import('../views/search/pictureView.vue'), 
+    },
+    {
+      path: '/searchView/result/activity/cityView',
+      name:'activityView',
+      component: () => import('../views/search/cityView.vue'),
     },
     {
       path: '/mainPageView',

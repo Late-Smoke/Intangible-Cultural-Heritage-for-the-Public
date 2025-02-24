@@ -1,15 +1,18 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import router from '@/router'
-import { useTypeStore } from '@/stores/user';
+import { ElMessage } from 'element-plus';
+import { usePasswordStore } from '@/stores/user';
+import { updatePasswordApi} from '@/axios/api/login';
 
+const passwordStore = usePasswordStore();
 const ruleFormRef = ref(null)
 
 const validatePass = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请输入修改的密码'));
-  } else if (value.length < 6) {
-    callback(new Error('密码长度至少为 6 位'));
+  } else if (value.length < 8) {
+    callback(new Error('密码长度至少为 8 位'));
   } else {
     if (ruleForm.checkPass!== '') {
       if (!ruleFormRef.value) return;
@@ -40,9 +43,16 @@ const rules = reactive({
 
 const submitForm = (formEl) => {
     if (!formEl) return;
-    formEl.validate((valid) => {
+    formEl.validate(async(valid) => {
         if (valid) {
-        console.log('submit!');
+          console.log('submit!');
+          const response = await updatePasswordApi(passwordStore.phone,passwordStore.code,ruleForm.pass);
+          console.log('更新密码：',response.data);
+          if(response.data.success === true){
+              router.push({ name: 'mainPageView' }); 
+          }else{
+              ElMessage.error('用户未注册！')
+          }
         } else {
         console.log('error submit!');
         }
@@ -50,10 +60,10 @@ const submitForm = (formEl) => {
 }
 
 const resetForm = (formEl) => {
-    if (!formEl) return;
-    formEl.resetFields();
-    useTypeStore().changeType(false);
-    router.push({ name: 'login'});
+    if (formEl) formEl.resetFields();
+    passwordStore.phone = '';
+    passwordStore.code = null;
+    router.push({ name: 'loginView'});
 }
 </script>
 

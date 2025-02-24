@@ -1,5 +1,51 @@
 <script setup>
+import { ref , onMounted } from 'vue';
+import { usePositionStore } from '@/stores/user';
+const positionStore = usePositionStore();
+const latitude = ref(positionStore.latitude);
+const longitude = ref(positionStore.longitude);
+const errorMessage = ref('');
 
+const getLocation = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // 成功获取位置信息
+        latitude.value = position.coords.latitude;
+        longitude.value = position.coords.longitude;
+        errorMessage.value = '';
+        positionStore.changeLatitude(latitude.value);
+        positionStore.changeLongitude(longitude.value);
+      },
+      (error) => {
+        // 处理错误情况
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage.value = '用户拒绝了地理定位请求。';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage.value = '位置信息不可用。';
+            break;
+          case error.TIMEOUT:
+            errorMessage.value = '请求用户位置超时。';
+            break;
+          case error.UNKNOWN_ERROR:
+            errorMessage.value = '发生未知错误。';
+            break;
+        }
+        latitude.value = null;
+        longitude.value = null;
+      }
+    );
+  } 
+  else {
+    errorMessage.value = '该浏览器不支持地理定位。';
+  }
+};
+
+onMounted(() => {
+  getLocation();
+});
 </script>
 
 <template>

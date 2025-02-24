@@ -1,8 +1,12 @@
 <script setup>
 import { ref  } from 'vue';
 import router from '@/router';
+import { useActivityStore } from '@/stores/user';
+
+const activityStore = useActivityStore();
 const search = ref('');//输入框绑定值
 const handleBack = () => {
+    activityStore.changeShow(false);
     router.push('/mainPageView/homePage/cultureMap');
 }
 const handleClean = () => {
@@ -26,12 +30,13 @@ const handleSearch = () => {
             <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="17.5" cy="17.5" r="17.5" fill="#F0E4D4"/>
                 <path d="M20 26L12 18L20 10" stroke="#987B5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+            </svg>
         </el-button>
         <el-input 
             v-model="search" 
             style="width:257px;height:32px;font-size: 18px;color:#BBB6B6;" 
-            placeholder="搜获帖子、活动或用户" 
+            placeholder="搜获帖子、活动或用户"
+            class="search-input" 
             size="default">
             <template #prefix>
                 <svg width="16.8" height="16.8" style="margin-right:5px;" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -81,14 +86,14 @@ const handleSearch = () => {
     font-size: 18px;
     padding: 8px 10px;
 }
-:deep(.el-input__wrapper) {
+:deep(.search-input .el-input__wrapper) {
     width: 200px;
     border-radius: 55px;
     background-color: #F3D2A42E;
     border: solid 1px #987B5B;
     box-shadow: none;
 }
-:deep(.el-input__inner::placeholder) {
+:deep(.search-input .el-input__inner::placeholder) {
     font-size: 18px; 
     color:#BBB6B6;
 }
