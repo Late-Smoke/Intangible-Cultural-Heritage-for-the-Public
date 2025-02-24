@@ -1,5 +1,5 @@
 import apiClient from "../axios";
-import { Response } from "./comon";
+import { Response } from "./common";
 
 export interface Self {
     /**

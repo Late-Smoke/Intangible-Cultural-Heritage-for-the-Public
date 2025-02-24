@@ -1,5 +1,5 @@
 import apiClient from "../axios";
-import { Response } from "./comon";
+import { Response } from "./common";
 
 export interface HotPost {
     /**
@@ -148,6 +148,9 @@ export interface Post {
      * 浏览量
      */
     views: number;
+
+    createdTime: string
+
     [property: string]: any;
 }
 
@@ -156,6 +159,6 @@ export function getHotPosts() {
     return apiClient.get<HotPost>('/postnews/hot')
 }
 
-export function getPostById(id: Number) {
+export function getPostById(id) {
     return apiClient.get<Response<Post>>(`/postnews/${id}`)
 }

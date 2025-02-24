@@ -58,7 +58,7 @@ const confirm = () => {
      handleDeleteAll();
     })
     .catch(() => {
-      dialogVisible = false;
+      dialogVisible.value = false;
     })
 }
 const handleFinish = () => {
