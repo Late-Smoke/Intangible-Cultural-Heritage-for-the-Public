@@ -1,26 +1,26 @@
 <template>
     <template v-if="post">
         <div class="header">
-            <el-button text circle icon="ArrowLeft" size="large"></el-button>
+            <el-button text circle icon="ArrowLeft" size="large" @click="router.back()"></el-button>
             <img class="avatar" :src="post.avatarUrl">
             <div class="name">{{ post.nickName }}</div>
-            <el-button v-if="!authorFollowed" type="primary" round>关注</el-button>
+            <el-button v-if="!authorFollowed" type="primary" round @click="Follow.follow(post.userId)">关注</el-button>
             <el-button v-else round>已关注</el-button>
             <el-button text circle icon="share" size="large"></el-button>
         </div>
 
         <el-carousel v-if="post.urls" trigger="click" height="40vh">
-            <el-carousel-item v-for="item in post.urls" :key="item.url">
+            <el-carousel-item v-for="item in post.urls">
                 <img v-if="item.type == 0" :src="item.url">
                 <video v-if="item.type == 1" :src="item.url"></video>
             </el-carousel-item>
         </el-carousel>
 
-        <h3 class="post-title" style="margin: 8px;">{{ post.title }}</h3>
-        <p class="post-body" style="margin: 8px;">{{ post.content }}</p>
+        <h3 style="margin: 8px;">{{ post.title }}</h3>
+        <p style="margin: 8px;">{{ post.content }}</p>
 
         <div v-if="typeof post.tag == 'string'">
-            <el-tag v-for="item in post.tag.split(' ')" :key="item" type="info" effect="plain" round></el-tag>
+            <el-tag v-for="item in post.tag.split(' ')" type="info" effect="plain" round></el-tag>
         </div>
 
         <div class="post-time">
@@ -31,26 +31,118 @@
             <el-button type="warning" round size="small">支持作者</el-button>
         </div>
 
-        <div class="footer">
-            <el-input class="input" placeholder="发表评论…" @focus="() => { showReply = true; nextTick(() => replyInput.focus()) }" />
-            <el-button text icon="comment">{{ post.comments }}</el-button>
-            <el-button text icon="pointer">{{ post.likes }}</el-button>
-            <el-button text icon="star">{{ post.favorite }}</el-button>
+        <div class="comments-header">
+            <div style="flex: 1;">全部评论</div>
+            <div style="font-size: 0.8em;">
+                <span @click="commentsSort = Sort.hotest" :class="{ fade: commentsSort != Sort.hotest }">热门</span>
+                <span style="color: #ccc;"> | </span>
+                <span @click="commentsSort = Sort.latest" :class="{ fade: commentsSort != Sort.latest }">最新</span>
+            </div>
         </div>
 
         <template v-if="comments">
-            <div>{{ JSON.stringify(comments) }}</div>
+            <div v-for="item in comments" :key="item.id" class="comment">
+                <img class="avatar" :src="item.avatarUrl">
+                <div class="content">
+                    <div class="root-name">
+                        <div class="author-name">{{ item.nickName }}</div>
+                        <div v-if="item.userId == post.userId" class="author-label">楼主</div>
+                    </div>
+
+                    <div style="margin: 8px 0;">{{ item.content }}</div>
+
+                    <comment-actions :comment="item" :reply-action="() => reply.reply(item.id, item.id)"></comment-actions>
+
+                    <div v-if="item.children && item.children.length" class="reply-block" @click="router.push({ name: 'postComment', params: { postId, commentId: item.id } })">
+                        <div v-for="item1 in item.children.slice(0, 3)" :key="item1.id">
+                            <span style="color: #555;">{{ item1.nickName }}<span v-if="item1.userId == post.userId" class="author-label">楼主</span>: </span>
+                            <span>{{ item1.content }}</span>
+                        </div>
+                        <div v-if="item.children.length > 0" class="more-btn">
+                            <span>查看全部{{ item.children.length }}条</span>
+                            <el-icon>
+                                <ArrowRight />
+                            </el-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </template>
 
-        <div class="comment-overlay">
-            <div></div>
-            <div class="comment"></div>
+        <div style="padding: 20px 0 80px; text-align: center; color: #888;">- 已经到底啦 -</div>
+
+        <div class="footer">
+            <el-input class="input" placeholder="发表评论…" @focus="reply.reply()" />
+
+            <button @click="reply.reply()">
+                <mdiForumOutline />{{ post.comments }}
+            </button>
+
+            <button v-if="post.currentUserLike" @click="Posts.removeLike(post.id)">
+                <mdiThumbUp color="red" />{{ post.likes }}
+            </button>
+            <button v-else @click="Posts.addLike(post.id)">
+                <mdiThumbUpOutline />{{ post.likes }}
+            </button>
+
+            <button v-if="post.currentUserFavorite" @click="Posts.removeFav(post.id)">
+                <mdiStar color="gold" />{{ post.favorite }}
+            </button>
+            <button v-else @click="Posts.addFav(post.id)">
+                <mdiStarOutline />{{ post.favorite }}
+            </button>
         </div>
 
-        <div v-show="showReply" class="reply-overlay" @click="showReply = false">
+        <div v-if="commentViewing" class="comment-overlay" @click="router.back()">
+            <div class="card" @click="e => e.stopPropagation()">
+                <div class="card-title">
+                    <div>评论详情</div>
+                    <el-button text circle icon="close" @click="router.back()"></el-button>
+                </div>
+
+                <div class="comment">
+                    <img class="avatar" :src="commentViewing.avatarUrl">
+                    <div class="content">
+                        <div class="root-name">
+                            <div class="author-name">{{ commentViewing.nickName }}</div>
+                            <div v-if="commentViewing.userId == post.userId" class="author-label">楼主</div>
+                        </div>
+
+                        <div style="margin: 8px 0;">{{ commentViewing.content }}</div>
+
+                        <comment-actions :comment="commentViewing" :reply-action="() => reply.reply(commentViewing.id, commentViewing.id)"></comment-actions>
+                    </div>
+                </div>
+
+                <template v-if="commentViewing.children && commentViewing.children.length">
+                    <div style="padding: 12px;">全部回复</div>
+
+                    <div v-for="item in commentViewing.children" :key="item.id" class="comment">
+                        <img class="avatar" :src="item.avatarUrl">
+                        <div class="content">
+                            <div class="root-name">
+                                <div class="author-name">{{ item.nickName }}</div>
+                                <div v-if="item.userId == post.userId" class="author-label">楼主</div>
+                            </div>
+
+                            <div style="margin: 8px 0;">
+                                <span v-if="item.parentId != item.rootCommentId">
+                                    回复 <span style="color: #09f;">{{commentViewing.children.find(x => x.id == item.parentId)?.nickName}}</span>:
+                                </span>
+                                {{ item.content }}
+                            </div>
+
+                            <comment-actions :comment="item" :reply-action="() => reply.reply(commentViewing.id, item.id)"></comment-actions>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <div v-show="reply.show" class="reply-overlay" @click="reply.show = false">
             <div class="reply" @click="e => e.stopPropagation()">
-                <el-input ref="replyInput" v-model="replyMsg"></el-input>
-                <el-button type="primary">发送</el-button>
+                <el-input ref="replyInput" v-model="reply.data.content"></el-input>
+                <el-button ref="replySendBtn" type="primary" @click="reply.send()">发送</el-button>
             </div>
         </div>
     </template>
@@ -58,11 +150,6 @@
     <div v-else-if="error" class="error">
         <div>{{ error }}</div>
     </div>
-
-    <div>Post: {{ postId }}</div>
-    <div>Comment: {{ commentId }}</div>
-    <button @click="gotoComment(2)">Go to comment 2</button>
-
 </template>
 
 <script setup lang="ts">
@@ -71,51 +158,261 @@ import router from '@/router';
 import { ref, watch } from 'vue';
 import * as Posts from '@/axios/api/posts'
 import * as Comments from '@/axios/api/comments'
-import { onMounted } from 'vue';
-import { ElInput } from 'element-plus';
-import { nextTick } from 'vue';
+import * as Follow from '@/axios/api/follow'
+import { onMounted, nextTick, reactive, computed } from 'vue';
+import { ElButton, ElInput, ElMessage } from 'element-plus';
+import commentActions from '@/components/posts/commentActions.vue';
 
 const route = useRoute()
-const postId = ref(route.params.postId)
-const commentId = ref(route.params.commentId)
+
+const postId = ref(typeof route.params.postId == 'string' ? parseInt(route.params.postId) : null)
+const commentId = ref(typeof route.params.commentId == 'string' ? parseInt(route.params.commentId) : null)
 
 watch(() => route.params.commentId, (newId) => {
-    commentId.value = newId
+    if (typeof newId != 'object') commentId.value = parseInt(newId) || null
 })
 
 
-const post = ref<Posts.Post>(null)
-const comments = ref<Comments.Comment[]>(null)
+const post = ref<Posts.Post>()
+const comments = ref<Comments.Comment[]>()
+
+const commentViewing = computed(() => {
+    if (!commentId.value) return null
+    return comments.value.find(x => x.id == commentId.value)
+})
+
+// post.value = {
+//     createdTime: '2025-02-20T14:07:53',
+//     "id": 3,
+//     "category": "资讯",
+//     "title": "非遗文化之美",
+//     "content": "今天，我们来探讨一下神经病非物质文化遗产的独特魅力……",
+//     "userId": 3,
+//     "nickName": "哈哈哈",
+//     "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+//     "sex": 0,
+//     "userType": 3,
+//     "tag": null,
+//     "views": 0,
+//     "likes": 0,
+//     "favorite": 0,
+//     "comments": 0,
+//     "urls": [
+//         {
+//             "type": 0,                                //0代表图片
+//             "url": "https://example.com/image1.jpg",
+//             "postId": 3,
+//             "deletedSign": 0,
+//             "createdTime": "2025-02-20T14:07:53"
+//         },
+//         {
+//             "type": 1,                               //1代表视频
+//             "url": "https://example.com/video1.mp4",
+//             "postId": 3,
+//             "deletedSign": 0,
+//             "createdTime": "2025-02-20T14:07:53"
+//         }
+//     ],
+//     "currentUserLike": false,
+//     currentUserFavorite: true,
+// }
+// comments.value = [
+//     {
+//         "id": 22,
+//         "postId": 20,
+//         "parentId": null,
+//         "rootCommentId": null,
+//         "userId": 23,
+//         "nickName": "可可学打铁花",
+//         "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+//         "content": "这篇写得好",
+//         "status": 1,
+//         "likes": 0,
+//         "disLikes": 0,
+//         "createdTime": "2025-02-25T00:53:35",
+//         "children": []
+//     },
+//     {
+//         "id": 23,
+//         "postId": 20,
+//         "parentId": null,
+//         "rootCommentId": null,
+//         "userId": 3,
+//         "nickName": "可可学打铁花",
+//         "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+//         "content": "这篇写得好",
+//         "status": 1,
+//         "likes": 0,
+//         "disLikes": 0,
+//         "createdTime": "2025-02-25T00:53:38",
+//         "children": [
+//             {
+//                 "id": 24,
+//                 "postId": 20,
+//                 "parentId": 23,
+//                 "rootCommentId": 23,
+//                 "userId": 3,
+//                 "nickName": "可可学打铁花",
+//                 "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+//                 "content": "哈哈",
+//                 "status": 2,
+//                 "likes": 0,
+//                 "disLikes": 0,
+//                 "createdTime": "2025-02-25T00:54:30",
+//                 "children": [
+//                     {
+//                         "id": 26,
+//                         "postId": 20,
+//                         "parentId": 24,
+//                         "rootCommentId": 24,
+//                         "userId": 23,
+//                         "nickName": "可可学打铁花",
+//                         "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+//                         "content": "哈哈",
+//                         "status": 2,
+//                         "likes": null,
+//                         "disLikes": null,
+//                         "createdTime": "2025-02-25T00:55:52",
+//                         "children": null
+//                     }
+//                 ]
+//             },
+//             {
+//                 "id": 24,
+//                 "postId": 20,
+//                 "parentId": 24,
+//                 "rootCommentId": 23,
+//                 "userId": 3,
+//                 "nickName": "可可学打铁花",
+//                 "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+//                 "content": "哈哈",
+//                 "status": 2,
+//                 "likes": 0,
+//                 "disLikes": 0,
+//                 "createdTime": "2025-02-25T00:54:30",
+//                 "children": [
+//                     {
+//                         "id": 26,
+//                         "postId": 20,
+//                         "parentId": 24,
+//                         "rootCommentId": 24,
+//                         "userId": 23,
+//                         "nickName": "可可学打铁花",
+//                         "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+//                         "content": "哈哈",
+//                         "status": 2,
+//                         "likes": null,
+//                         "disLikes": null,
+//                         "createdTime": "2025-02-25T00:55:52",
+//                         "children": null
+//                     }
+//                 ]
+//             }
+//         ]
+//     },
+//     {
+//         "id": 25,
+//         "postId": 20,
+//         "parentId": null,
+//         "rootCommentId": null,
+//         "userId": 23,
+//         "nickName": "可可学打铁花",
+//         "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+//         "content": "哈哈",
+//         "status": 1,
+//         "likes": 0,
+//         "disLikes": 0,
+//         "createdTime": "2025-02-25T00:54:51",
+//         "children": []
+//     }
+// ]
+
+
+enum Sort {
+    hotest,
+    latest,
+}
+const commentsSort = ref(Sort.hotest)
+watch(commentsSort, loadComments)
+
 const error = ref('')
 
 const authorFollowed = ref(false)
 
 const replyInput = ref<InstanceType<typeof ElInput>>()
-const showReply = ref(false)
-const replyMsg = ref('')
+const replySendBtn = ref<InstanceType<typeof ElButton>>()
 
-function gotoComment(id) {
-    router.push({ name: 'postComment', params: { postId: postId.value, commentId: id } })
-}
+const reply = reactive({
+    show: false,
+    data: {
+        postId: null,
+        rootCommentId: null,
+        parentId: null,
+        content: '',
+        status: null
+    },
 
-onMounted(() => {
+    reply(rootCommentId = null, parentId = null) {
+        reply.data.postId = post.value.id
+        reply.data.rootCommentId = rootCommentId
+        reply.data.parentId = parentId
+        reply.data.status = (rootCommentId && parentId) ? 2 : 1
+        reply.show = true
+        nextTick(() => replyInput.value.focus())
+    },
+
+    send() {
+        if (!reply.data.content) {
+            ElMessage.info('回复不能为空')
+            return
+        }
+
+        replySendBtn.value.$el.disabled = true
+        Comments.postComment(reply.data).then(r => {
+            if (r.data.success) {
+                reply.data.content = ''
+                reply.show = false
+                ElMessage.success('回复成功')
+                loadComments()
+            } else ElMessage.error(r.data.errorMsg)
+        }).finally(() => {
+            replySendBtn.value.$el.disabled = false
+        })
+    },
+})
+
+
+function loadPost() {
     Posts.getPostById(postId.value).then(r => {
         if (r.data.success) post.value = r.data.data
         else error.value = r.data.errorMsg
     })
-    Comments.getHotCommentsForPost(postId.value).then(r=>{
-        comments.value = r.data.data
-    })
+}
+
+function loadComments() {
+    if (commentsSort.value == Sort.hotest) Comments.getHotCommentsForPost(postId.value).then(r => comments.value = r.data.data)
+    if (commentsSort.value == Sort.latest) Comments.getLatestCommentsForPost(postId.value).then(r => comments.value = r.data.data)
+}
+
+onMounted(() => {
+    loadPost()
+    loadComments()
 })
 </script>
 
 <style scoped lang="less">
 .header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 8px;
-    background-color: rgba(0, 0, 0, 0.025);
+    background-color: rgba(240, 240, 240, 0.75);
+    backdrop-filter: blur(8px);
+    z-index: 10;
 
     .avatar {
         width: 40px;
@@ -151,8 +448,77 @@ onMounted(() => {
 
     .date {
         font-size: 0.8em;
-        color: 888;
         flex: 1;
+    }
+}
+
+.comments-header {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+
+    .fade {
+        color: #888;
+    }
+}
+
+.comment {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px;
+    border-bottom: 1px solid #ccc;
+    gap: 8px;
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 100%;
+    }
+
+    .content {
+        flex: 1;
+
+        .author-label {
+            font-size: 0.8em;
+            color: #09f;
+            border: 1px solid #09f;
+            padding: 0.2em 0.3em;
+            border-radius: 0.6em;
+        }
+
+        .root-name {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin: 10px 0;
+
+            .author-name {
+                font-size: 0.9em;
+            }
+        }
+
+        .reply-block {
+            background-color: rgba(0, 0, 0, 0.025);
+            width: 90%;
+            font-size: 0.8em;
+            margin: 8px 0;
+            padding: 3px 0;
+
+            div {
+                padding: 3px 6px;
+            }
+
+            .author-label {
+                padding: 0 0.2em;
+                margin-left: 0.2em;
+            }
+
+            .more-btn {
+                color: #09f;
+                display: flex;
+                align-items: center;
+            }
+        }
     }
 }
 
@@ -170,6 +536,61 @@ onMounted(() => {
 
     button {
         margin: 0;
+        padding: 8px;
+        border: none;
+        background: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1em;
+    }
+}
+
+.comment-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.25);
+    z-index: 50;
+    padding-top: 25vh;
+    overflow: auto;
+    animation: show-comment-overlay 0.2s;
+
+    .card {
+        min-height: 100%;
+        background-color: white;
+        border-radius: 16px 16px 0 0;
+        animation: show-card 0.2s;
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+        }
+    }
+
+    @keyframes show-card {
+        from {
+            transform: translateY(100%);
+        }
+
+        to {
+            transform: translateY(0);
+        }
+    }
+}
+
+
+@keyframes show-comment-overlay {
+    from {
+        background-color: rgba(0, 0, 0, 0);
+    }
+
+    to {
+        background-color: rgba(0, 0, 0, 0.25);
     }
 }
 
@@ -179,7 +600,8 @@ onMounted(() => {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.25);
+    z-index: 100;
 
     .reply {
         position: absolute;

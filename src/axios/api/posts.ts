@@ -22,6 +22,9 @@ export interface HotPost {
      * 当前用户是否点赞过的标识
      */
     currentUserLike: boolean;
+
+    currentUserFavorite: boolean
+
     /**
      * 收藏量
      */
@@ -104,6 +107,9 @@ export interface Post {
      * 是否点赞, 当前用户是否点过赞
      */
     currentUserLike: boolean;
+
+    currentUserFavorite: boolean
+
     /**
      * 收藏量
      */
@@ -127,7 +133,7 @@ export interface Post {
     /**
      * 标签
      */
-    tag: null;
+    tag: string | null;
     /**
      * 帖子标题
      */
@@ -161,4 +167,17 @@ export function getHotPosts() {
 
 export function getPostById(id) {
     return apiClient.get<Response<Post>>(`/postnews/${id}`)
+}
+
+export function addLike(id) {
+    return apiClient.put(`/postnews/like/${id}`)
+}
+export function removeLike(id) {
+    return apiClient.delete(`/postnews/unlike/${id}`)
+}
+export function addFav(id) {
+    return apiClient.put(`/postnews/favorite/${id}`)
+}
+export function removeFav(id) {
+    return apiClient.delete(`/postnews/unfavorite/${id}`)
 }
