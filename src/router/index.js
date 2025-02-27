@@ -36,11 +36,6 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue'),
     },
     {
-      path: '/map',
-      name: 'map',
-      component: () => import('../components/slot/map.vue'),
-    },
-    {
       path: '/gaode',
       name:'gaode',
       component: () => import('../components/slot/gaode.vue'), 

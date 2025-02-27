@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import router from '@/router'
-import { usePasswordStore } from '@/stores/user';
+import { usePasswordStore , useTypeStore} from '@/stores/user';
 import { getCodeApi,codeLoginApi} from '@/axios/api/login';
 
 const passwordStore = usePasswordStore();

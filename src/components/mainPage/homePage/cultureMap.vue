@@ -160,6 +160,7 @@ const searchName = ref('');
 
 <style scoped>
 .bigMap {
+  position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
   background: url('/icon/map-background.png') no-repeat center center;

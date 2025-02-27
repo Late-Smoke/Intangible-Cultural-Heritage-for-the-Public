@@ -9,7 +9,11 @@ import router from './router'
 import 'element-plus/dist/index.css';
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import * as mdiIcons from '@mdi/js';
-
+if (process.env.NODE_ENV === 'development') {
+  window.__DEV__ = true;
+} else {
+  window.__DEV__ = false;
+}
 const app = createApp(App)
 
 app.use(createPinia())
