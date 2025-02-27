@@ -145,7 +145,17 @@ const router = createRouter({
       path: '/posts/:postId/comment/:commentId',
       name: 'postComment',
       component: () => import('@/views/posts/post.vue'),
-    }
+    },
+    {
+      path: '/activity',
+      name: 'activityRoot',
+      component: () => import('@/views/activity/home.vue'),
+    },
+    {
+      path: '/activity/:id',
+      name: 'activityDetail',
+      component: () => import('@/views/activity/detail.vue'),
+    },
   ],
 })
 

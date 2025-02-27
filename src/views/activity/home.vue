@@ -64,8 +64,7 @@
     </div>
 
     <template v-if="activities">
-
-        <div class="activity-card" v-for="item in activities">
+        <div class="activity-card" v-for="item in activities" @click="router.push({ name: 'activityDetail', params: { id: item.id } })">
             <img class="img" v-if="item.acmedias.length" :src="item.acmedias[0].url">
             <div class="img" v-else>{{ item.title }}</div>
 
@@ -100,6 +99,7 @@ import { watch } from 'vue'
 import * as ExampleData from '@/axios/example-data'
 import HorizonalDateSelector from '@/components/slot/HorizonalDateSelector.vue'
 import OverlayCard from '@/components/slot/OverlayCard.vue'
+import router from '@/router'
 
 const region = ref('全国')
 
@@ -114,17 +114,14 @@ const timeRangePicker = reactive({
     apply() {
         timeRange.value = [timeRangePicker.start, timeRangePicker.end]
         timeRangeOption.value = timeRangeOptions.range
+        nextTick(() => timeRangePicker.show = false)
     },
 })
 
 watch(timeRangeOption, (newValue, oldValue) => {
-    if (newValue == timeRangeOptions.range) {
-        if (timeRangePicker.show) {
-            timeRangePicker.show = false
-        } else {
-            timeRangeOption.value = oldValue
-            timeRangePicker.show = true
-        }
+    if (newValue == timeRangeOptions.range && !timeRangePicker.show) {
+        timeRangeOption.value = oldValue
+        timeRangePicker.show = true
     }
     updateSearchOptionsTimeRange()
 })
@@ -166,7 +163,6 @@ const searchOptions = reactive<Activity.ActivitySearch>({
 watch(searchOptions, loadActivities)
 
 const activities = ref<Activity.Activity[]>()
-activities.value = ExampleData.Activities
 const nearActivities = ref<Activity.Activity[]>()
 
 function loadActivities() {

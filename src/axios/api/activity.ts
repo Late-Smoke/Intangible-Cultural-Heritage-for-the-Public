@@ -63,3 +63,11 @@ export function searchActivities(params: ActivitySearch) {
 export function getNearActivities() {
     return apiClient.get<Response<Activity[]>>('/activities/LocationBased')
 }
+
+export function getActicity(id) {
+    return apiClient.get<Response<Activity>>(`/activities/${id}`)
+}
+
+export function addFav(id) {
+    return apiClient.put(`/activities/favorite/${id}`)
+}

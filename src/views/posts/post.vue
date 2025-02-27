@@ -140,9 +140,7 @@
         </div>
     </template>
 
-    <div v-else-if="error" class="error">
-        <div>{{ error }}</div>
-    </div>
+    <ErrorPage v-else-if="error" :message="error" />
 </template>
 
 <script setup lang="ts">
@@ -156,6 +154,7 @@ import { onMounted, nextTick, reactive, computed } from 'vue';
 import { ElButton, ElInput, ElMessage } from 'element-plus';
 import commentActions from '@/components/posts/CommentActions.vue';
 import OverlayCard from '@/components/slot/OverlayCard.vue';
+import ErrorPage from '@/components/ErrorPage.vue';
 
 const route = useRoute()
 
@@ -417,12 +416,5 @@ onMounted(() => {
         padding: 8px;
         gap: 8px;
     }
-}
-
-.error {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 </style>

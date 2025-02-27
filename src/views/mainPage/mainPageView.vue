@@ -18,7 +18,11 @@ onMounted(() => {
 <template>
     <div class="container">
         <div class="router">  
-            <router-view />
+            <router-view v-slot="{ Component }">
+                <keep-alive>
+                    <component :is="Component" />
+                </keep-alive>
+            </router-view>
         </div>
         <div class="bottom">
             <div class="homePage" @click="handleClick('homePage')">                
