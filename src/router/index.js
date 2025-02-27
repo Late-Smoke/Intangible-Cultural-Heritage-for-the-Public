@@ -33,7 +33,12 @@ const router = createRouter({
     {
       path: '/map',
       name: 'map',
-      component: () => import('../components/Map.vue'),
+      component: () => import('../components/slot/map.vue'),
+    },
+    {
+      path: '/gaode',
+      name:'gaode',
+      component: () => import('../components/slot/gaode.vue'), 
     },
     {
       path: '/searchView',

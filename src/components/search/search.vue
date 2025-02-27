@@ -11,7 +11,7 @@ const record = ref([]); // 被处理过的历史记录
 const recordShow = ref([]);
 const historyRecords = ref(['晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦','晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦','晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦']);
 const historyRecordsShow = ref([...historyRecords.value]);
-const dialogVisible = ref(false); // 删除弹窗
+let dialogVisible = ref(false); // 删除弹窗
 const hotText = ref(['李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化']);
 const hotView = ref(['750W','750W','750W','750W','750W','750W','750W','750W','750W','750W']);
 
@@ -58,7 +58,7 @@ const confirm = () => {
      handleDeleteAll();
     })
     .catch(() => {
-      dialogVisible = false;
+      dialogVisible.value = false;
     })
 }
 const handleFinish = () => {
