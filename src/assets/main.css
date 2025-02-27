@@ -1,5 +1,7 @@
 @import './base.css';
 @import './fonts.css';
+@import './layout.css';
+/* @import "tailwindcss"; */
 
 /*login*/
 .custom-message {
