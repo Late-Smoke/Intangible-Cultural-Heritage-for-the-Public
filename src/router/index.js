@@ -41,6 +41,11 @@ const router = createRouter({
       component: () => import('../components/slot/gaode.vue'), 
     },
     {
+      path: '/baiduMap',
+      name:'baiduMap',
+      component: () => import('../components/slot/baiduMap.vue'), 
+    },
+    {
       path: '/searchView',
       name: 'searchView',
       component: () => import('../views/search/searchView.vue'),
@@ -120,9 +125,9 @@ const router = createRouter({
           ]
         },
         {
-          path: 'activityPage',
-          name: 'activityPage',
-          component: () => import('../components/mainPage/activityPage.vue'),
+          path: 'activity',
+          name: 'activity',
+          component: () => import('@/views/activity/home.vue'),
         },
         {
           path: 'myPage',
