@@ -70,10 +70,12 @@ function rangeIsDay(date: Date) {
 
 .day {
     margin: 4px;
+    white-space: nowrap;
 }
 
 .date {
     margin: 4px;
     font-size: 0.8em;
+    white-space: nowrap;
 }
 </style>

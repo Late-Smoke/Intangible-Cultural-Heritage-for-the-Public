@@ -56,6 +56,18 @@ export interface ActivityAddresses {
     updatedAt: Date;
 }
 
+export interface ActivityParticipate {
+    activityId:        number;
+    eventDetailList:   ParticipatePerson[];
+    participationTime: string;
+}
+
+export interface ParticipatePerson {
+    name:        string;
+    phoneNumber: string;
+    idNumber:    string;
+}
+
 export function searchActivities(params: ActivitySearch) {
     return apiClient.put<Response<Activity[]>>('/search/activities', params)
 }
@@ -70,4 +82,12 @@ export function getActicity(id) {
 
 export function addFav(id) {
     return apiClient.put(`/activities/favorite/${id}`)
+}
+
+export function removeFav(id) {
+    return apiClient.delete(`/activities/unfavorite/${id}`)
+}
+
+export function participateActivity(payload: ActivityParticipate) {
+    return apiClient.post('/activities/activityChargeEvent/', payload)
 }

@@ -2,21 +2,21 @@
     <div class="action">
         <div class="date">{{ new Date(comment.createdTime).toLocaleDateString() }}</div>
 
-        <el-button text type="info" size="small" @click="replyAction()">回复</el-button>
+        <el-button text type="info" size="small" @click="replyAction">回复</el-button>
 
         <div style="flex: 1;"></div>
 
-        <button class="thumb-btn" v-if="comment.userIsLike" @click="Comments.removeLike(comment.id)">
+        <button class="thumb-btn" v-if="comment.userIsLike" @click="Comments.removeLike(comment.id).then(reloadAction)">
             <mdiThumbUp color="red" />{{ comment.likes }}
         </button>
-        <button class="thumb-btn" v-else @click="Comments.addLike(comment.id)">
+        <button class="thumb-btn" v-else @click="Comments.addLike(comment.id).then(reloadAction)">
             <mdiThumbUpOutline />{{ comment.likes }}
         </button>
 
-        <button class="thumb-btn" v-if="comment.userIsDisLike" @click="Comments.removeDislike(comment.id)">
+        <button class="thumb-btn" v-if="comment.userIsDisLike" @click="Comments.removeDislike(comment.id).then(reloadAction)">
             <mdiThumbDown color="red" />{{ comment.disLikes }}
         </button>
-        <button class="thumb-btn" v-else @click="Comments.addDislike(comment.id)">
+        <button class="thumb-btn" v-else @click="Comments.addDislike(comment.id).then(reloadAction)">
             <mdiThumbDownOutline />{{ comment.disLikes }}
         </button>
     </div>
@@ -28,7 +28,8 @@ import { defineProps } from 'vue';
 
 defineProps<{
     comment: Comments.Comment,
-    replyAction: Function,
+    replyAction: () => any,
+    reloadAction?: () => any,
 }>()
 </script>
 

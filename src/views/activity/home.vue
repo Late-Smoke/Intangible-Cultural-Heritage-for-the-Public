@@ -1,6 +1,6 @@
 <template>
     <div class="header">
-        <el-dropdown placement="bottom-start" size="large" style="margin: 8px;">
+        <el-dropdown placement="bottom-start" size="large" trigger="click" style="margin: 8px;">
             <div class="flex-center" style="gap: 4px; font-size: 1.25em; white-space: nowrap;">
                 {{ region }}
                 <el-icon>
@@ -8,7 +8,7 @@
                 </el-icon>
             </div>
             <template #dropdown>
-                <el-dropdown-menu>
+                <el-dropdown-menu >
                     <el-dropdown-item @click="region = '全国'">全国</el-dropdown-item>
                     <el-dropdown-item @click="region = '本地'">本地</el-dropdown-item>
                 </el-dropdown-menu>

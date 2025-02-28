@@ -51,7 +51,7 @@
 
                     <div style="margin: 8px 0;">{{ item.content }}</div>
 
-                    <comment-actions :comment="item" :reply-action="() => reply.reply(item.id, item.id, item.nickName)"></comment-actions>
+                    <comment-actions :comment="item" :reply-action="() => reply.reply(item.id, item.id, item.nickName)" :reload-action="loadComments"></comment-actions>
 
                     <div v-if="item.children && item.children.length" class="reply-block" @click="router.push({ name: 'postComment', params: { postId, commentId: item.id } })">
                         <div v-for="item1 in item.children.slice(0, 3)" :key="item1.id">
@@ -69,7 +69,7 @@
             </div>
         </template>
 
-        <div style="padding: 20px 0 80px; text-align: center; color: #888;">- 已经到底啦 -</div>
+        <div style="padding: 20px 0 100px; text-align: center; color: #888;">- 已经到底啦 -</div>
 
         <div class="footer">
             <el-input class="input" placeholder="发表评论…" @focus="reply.reply()" />
@@ -78,18 +78,16 @@
                 <mdiForumOutline />{{ post.comments }}
             </button>
 
-            <button v-if="post.currentUserLike" @click="Posts.removeLike(post.id)">
-                <mdiThumbUp color="red" />{{ post.likes }}
-            </button>
-            <button v-else @click="Posts.addLike(post.id)">
-                <mdiThumbUpOutline />{{ post.likes }}
+            <button @click="setLike(!post.currentUserLike)">
+                <mdiThumbUp v-if="post.currentUserLike" color="red" />
+                <mdiThumbUpOutline v-else />
+                {{ post.likes }}
             </button>
 
-            <button v-if="post.currentUserFavorite" @click="Posts.removeFav(post.id)">
-                <mdiStar color="gold" />{{ post.favorite }}
-            </button>
-            <button v-else @click="Posts.addFav(post.id)">
-                <mdiStarOutline />{{ post.favorite }}
+            <button @click="setFav(!post.currentUserFavorite)">
+                <mdiStar v-if="post.currentUserFavorite" color="gold" />
+                <mdiStarOutline v-else />
+                {{ post.favorite }}
             </button>
         </div>
 
@@ -104,7 +102,7 @@
 
                     <div style="margin: 8px 0;">{{ commentViewing.content }}</div>
 
-                    <comment-actions :comment="commentViewing" :reply-action="() => reply.reply(commentViewing.id, commentViewing.id, commentViewing.nickName)"></comment-actions>
+                    <comment-actions :comment="commentViewing" :reply-action="() => reply.reply(commentViewing.id, commentViewing.id, commentViewing.nickName)" :reload-action="loadComments"></comment-actions>
                 </div>
             </div>
 
@@ -126,7 +124,7 @@
                             {{ item.content }}
                         </div>
 
-                        <comment-actions :comment="item" :reply-action="() => reply.reply(commentViewing.id, item.id, item.nickName)"></comment-actions>
+                        <comment-actions :comment="item" :reply-action="() => reply.reply(commentViewing.id, item.id, item.nickName)" :reload-action="loadComments"></comment-actions>
                     </div>
                 </div>
             </template>
@@ -169,16 +167,17 @@ watch(() => route.params.commentId, (newId) => {
 const post = ref<Posts.Post>()
 const comments = ref<Comments.Comment[]>()
 
-const commentViewing = computed(() => comments.value?.find(x => x.id == commentId.value))
+const error = ref('')
 
+const commentViewing = computed(() => comments.value?.find(x => x.id == commentId.value))
 
 enum Sort { hotest, latest }
 const commentsSort = ref(Sort.hotest)
 watch(commentsSort, loadComments)
 
-const error = ref('')
 
 const authorFollowed = ref(false)
+
 
 const replyInput = ref<InstanceType<typeof ElInput>>()
 const replySendBtn = ref<InstanceType<typeof ElButton>>()
@@ -223,6 +222,17 @@ const reply = reactive({
         })
     },
 })
+
+
+function setLike(value: boolean) {
+    (value ? Posts.addLike(post.value.id) : Posts.removeLike(post.value.id))
+        .then(loadPost)
+}
+
+function setFav(value: boolean) {
+    (value ? Posts.addFav(post.value.id) : Posts.removeFav(post.value.id))
+        .then(loadPost)
+}
 
 
 function loadPost() {

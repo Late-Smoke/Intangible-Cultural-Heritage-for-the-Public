@@ -48,7 +48,7 @@ export function addDislike(id) {
 }
 
 export function removeDislike(id) {
-    return apiClient.delete(`/comments/undislike/${id}`)
+    return apiClient.delete(`/comments/undisLike/${id}`)
 }
 
 export function postComment(comment: CommentPost) {
