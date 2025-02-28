@@ -1,48 +1,48 @@
 <template>
-    <template v-if="acticity">
+    <template v-if="activity">
         <div class="header">
             <el-button text circle icon="ArrowLeft" size="large" @click="router.back()"></el-button>
             活动详情
         </div>
 
         <el-carousel trigger="click" height="20vh">
-            <template v-if="acticity.acmedias">
-                <el-carousel-item v-for="item in acticity.acmedias">
+            <template v-if="activity.acmedias">
+                <el-carousel-item v-for="item in activity.acmedias">
                     <img :src="item.url">
                 </el-carousel-item>
             </template>
             <el-carousel-item v-else>
-                <div class="text">{{ acticity.title }}</div>
+                <div class="text">{{ activity.title }}</div>
             </el-carousel-item>
         </el-carousel>
 
         <div style="padding: 8px; background-color: rgba(240, 240, 240, 0.5);">
             <div style="display: flex; flex-direction: row; gap: 4px; margin: 4px 0;">
                 <div>
-                    <span class="title-type">{{ acticity.firstType }}</span>
+                    <span class="title-type">{{ activity.firstType }}</span>
                 </div>
 
                 <div style="flex: 1;">
-                    <div style="font-weight: bold;">{{ acticity.title }}</div>
-                    <div class="tags" v-if="typeof acticity.tag == 'string'">
-                        <span v-for="tag in acticity.tag.split(' ')">{{ tag }}</span>
+                    <div style="font-weight: bold;">{{ activity.title }}</div>
+                    <div class="tags" v-if="typeof activity.tag == 'string'">
+                        <span v-for="tag in activity.tag.split(' ')">{{ tag }}</span>
                     </div>
                 </div>
 
-                <div style="display: flex; flex-direction: column; align-items: center; padding: 4px;" @click="acticity.currentUserFavorite ? null : Activity.addFav(acticity.id)">
-                    <mdiStar v-if="acticity.currentUserFavorite" color="gold" style="font-size: 2em;" />
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 4px;" @click="setFav(!activity.currentUserFavorite)">
+                    <mdiStar v-if="activity.currentUserFavorite" color="gold" style="font-size: 2em;" />
                     <mdiStarOutline v-else style="font-size: 2em;" />
-                    <span style="font-size: 0.8em;">{{ acticity.favoritesNumber }}人收藏</span>
+                    <span style="font-size: 0.8em;">{{ activity.favoritesNumber }}人收藏</span>
                 </div>
             </div>
 
             <div style="margin: 12px 0;">
                 <div>活动时间:</div>
-                <div>{{ new Date(acticity.startTime).toLocaleString() }} - {{ new Date(acticity.endTime).toLocaleString() }}</div>
+                <div>{{ new Date(activity.startTime).toLocaleString() }} - {{ new Date(activity.endTime).toLocaleString() }}</div>
             </div>
 
             <div style="margin: 12px 0;">
-                <mdiMapMarker style="vertical-align: middle;" /> 地址: {{ acticity.activityAddresses.addressDetail }}
+                <mdiMapMarker style="vertical-align: middle;" /> 地址: {{ activity.activityAddresses.addressDetail }}
             </div>
 
             <div style="background-color: white; height: 25vh; overflow: hidden; border-radius: 8px;">
@@ -52,16 +52,16 @@
 
         <el-tabs stretch>
             <el-tab-pane label="活动详情">
-                <div>{{ acticity.description }}</div>
+                <div>{{ activity.description }}</div>
             </el-tab-pane>
 
             <el-tab-pane label="预约须知">
-                <div>{{ acticity.participationInstructions }}</div>
+                <div>{{ activity.participationInstructions }}</div>
             </el-tab-pane>
         </el-tabs>
 
         <div style="position: fixed; left: 0; right: 0; bottom: 0; background-color: white; border-top: 1px solid #ddd; padding: 8px; z-index: 10;">
-            <el-button type="primary" style="width: 100%;">立即预约 ￥{{ acticity.chargeAmount }}</el-button>
+            <el-button type="primary" style="width: 100%;" @click="router.push({ name: 'activityParticipate', params: { id: activity.id } })">立即预约 ￥{{ activity.chargeAmount }}</el-button>
         </div>
     </template>
 
@@ -78,19 +78,27 @@ import router from '@/router';
 const route = useRoute()
 
 const activityId = ref(route.params.id)
-const acticity = ref<Activity.Activity>()
+const activity = ref<Activity.Activity>()
 
 const error = ref('')
 
-
-
 watch(() => route.params.id, id => activityId.value = id)
 
-onMounted(() => {
+
+function setFav(value: boolean) {
+    (value ? Activity.addFav(activity.value.id) : Activity.removeFav(activity.value.id))
+        .then(loadActivity)
+}
+
+function loadActivity() {
     Activity.getActicity(activityId.value).then(r => {
-        if (r.data.success) acticity.value = r.data.data
+        if (r.data.success) activity.value = r.data.data
         else error.value = r.data.errorMsg
     })
+}
+
+onMounted(() => {
+    loadActivity()
 })
 </script>
 

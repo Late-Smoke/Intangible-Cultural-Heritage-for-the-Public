@@ -1,9 +1,9 @@
 <template>
-    <div class="overlay-card" @click="closeAction()">
+    <div class="overlay-card" @click="closeAction">
         <div class="card" @click="e => e.stopPropagation()" :style="{ height: cardHeight }">
             <div class="card-title">
                 <div>{{ title }}</div>
-                <el-button text circle icon="close" @click="closeAction()"></el-button>
+                <el-button text circle icon="close" @click="closeAction"></el-button>
             </div>
 
             <slot></slot>
@@ -17,7 +17,7 @@ import { defineProps } from 'vue';
 defineProps<{
     title?: string,
     cardHeight?: string,
-    closeAction: Function,
+    closeAction: () => any,
 }>()
 </script>
 
