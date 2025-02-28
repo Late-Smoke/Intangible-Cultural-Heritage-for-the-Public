@@ -83,7 +83,6 @@ export interface Url {
      */
     type: number;
     url: string;
-    [property: string]: any;
 }
 
 export interface Post {
@@ -156,8 +155,6 @@ export interface Post {
     views: number;
 
     createdTime: string
-
-    [property: string]: any;
 }
 
 

@@ -135,19 +135,19 @@ const router = createRouter({
           component: () => import('@/views/activity/home.vue'),
         },
         {
-          path: 'myPage',
-          name: 'myPage',
-          component: () => import('../components/mainPage/myPage.vue'),
+          path: 'self',
+          name: 'self',
+          component: () => import('@/views/user/home.vue'),
         }
       ]
     },
     {
-      path: '/posts/:postId',
+      path: '/post/:postId',
       name: 'post',
       component: () => import('@/views/posts/post.vue'),
     },
     {
-      path: '/posts/:postId/comment/:commentId',
+      path: '/post/:postId/comment/:commentId',
       name: 'postComment',
       component: () => import('@/views/posts/post.vue'),
     },
@@ -165,6 +165,11 @@ const router = createRouter({
       path: '/activity/:id/participate',
       name: 'activityParticipate',
       component: () => import('@/views/activity/participate.vue'),
+    },
+    {
+      path: '/user/:id',
+      name: 'userHome',
+      component: () => import('@/views/user/home.vue'),
     },
   ],
 })
