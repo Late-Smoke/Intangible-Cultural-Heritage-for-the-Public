@@ -67,6 +67,11 @@ const router = createRouter({
               component: () => import('../components/search/result/comprehensive.vue'),
             },
             {
+              path: 'comprehensive/:input',
+              name: 'comprehensiveSearch',
+              component: () => import('../components/search/result/comprehensive.vue'),
+            },
+            {
               path: 'activity',
               name: 'activity',
               component: () => import('../components/search/result/activity.vue'),
@@ -126,7 +131,7 @@ const router = createRouter({
         },
         {
           path: 'activity',
-          name: 'activity',
+          name: 'activityHome',
           component: () => import('@/views/activity/home.vue'),
         },
         {

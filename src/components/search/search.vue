@@ -1,6 +1,7 @@
 <script setup>
 import { ref , onMounted} from 'vue';
 import { ElMessageBox } from 'element-plus'
+import { getHotCultureApi } from '@/axios/api/search.js';
 
 const historyShow = ref(false);
 const historyDelete = ref(false);
@@ -12,8 +13,8 @@ const recordShow = ref([]);
 const historyRecords = ref(['晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦','晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦','晚餐吃什么', '怎样快速入睡', '我用来凑够八个字', '超过了八个字啦啦啦啦']);
 const historyRecordsShow = ref([...historyRecords.value]);
 let dialogVisible = ref(false); // 删除弹窗
-const hotText = ref(['李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化','李子柒复原非遗文化']);
-const hotView = ref(['750W','750W','750W','750W','750W','750W','750W','750W','750W','750W']);
+const hotText = ref([]);
+const hotView = ref([]);
 
 // 处理长文本的方法
 const handleLongText = (containerWidth) => {
@@ -31,6 +32,14 @@ const handleLongText = (containerWidth) => {
         }
     });
     recordShow.value = [...record.value];
+};
+const handleLongTitle = () => {
+    hotText.value = hotText.value.map(title => {
+        if (title.length > 16) {
+            return title.slice(0, 16) + '...'; // 截断并添加省略号
+        }
+        return title; // 如果长度小于等于16，保持原样
+    });
 };
 
 const handleDelete = (index) => { // 删除单个
@@ -56,6 +65,7 @@ const confirm = () => {
   )
     .then(() => {
      handleDeleteAll();
+     //localStorage.setItem('historyRecords', historyRecordsShow.value);
     })
     .catch(() => {
       dialogVisible.value = false;
@@ -64,14 +74,27 @@ const confirm = () => {
 const handleFinish = () => {
     historyDelete.value = false;
     historyShow.value = false;
-    //api传被删除的历史记录
+    //localStorage.setItem('historyRecords', historyRecordsShow.value);
+}
+
+const getHotCulture = async () => {
+    const res = await getHotCultureApi(); 
+    const data = res.data.data;
+    data.sort((a,b)=>b.views-a.views);
+    hotText.value = data.map(item=>item.title);
+    hotView.value = data.map(item=>item.views);
+    handleLongTitle();
 }
 
 onMounted(() => {
     const container = document.querySelector('.history-container');
     const containerWidth = container.offsetWidth;
     //获取历史记录数组
+    //historyRecords.value = localStorage.getItem('historyRecords');
     handleLongText(containerWidth - 20);
+
+    //获取最新帖子标题
+    getHotCulture();
 })
 
 </script>
@@ -141,13 +164,13 @@ onMounted(() => {
                 <span>浏览量</span>
             </div>
         </div>
-        <div v-for="(text, index) in hotText" :key="index">
+        <div v-for="(text, index) in hotText.slice(0,10)" :key="index">
             <div class="hot-box">
                 <div class="text-box">
                     <div class="hot-index">{{ index + 1}}</div>
                     <div class="hot-text">{{ text}}</div>
                 </div>
-                <div class="hot-view">{{ hotView[index] }}</div>
+                <div class="hot-view">{{ hotView[index] }} w</div>
             </div>
         </div>
         <div class="rule">

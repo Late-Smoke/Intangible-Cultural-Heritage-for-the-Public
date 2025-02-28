@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import {ref} from 'vue';
 
 export const usePositionStore = defineStore('position', {
   state: () => ({
@@ -84,6 +85,17 @@ export const useActivityStore = defineStore('activity', {
    }, 
    changeTime(time) {
     this.time = time;
+   },
+  }
+})
+
+export const useSearchStore = defineStore('search', {
+  state: () => ({
+    search: '',
+  }), 
+  actions: {
+   changeSearch(search) {
+    this.search = search;
    },
   }
 })

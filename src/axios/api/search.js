@@ -1,4 +1,9 @@
 import apiClient from '../axios';
+
+////search
+export function getHotCultureApi() {// 非遗热点
+    return apiClient.get('/postnews/hot');
+}
 ////result
 //comprehensive
 export function getBaiKeApi(input) {// 非遗百科
