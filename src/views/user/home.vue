@@ -84,11 +84,11 @@
             </el-tab-pane>
 
             <el-tab-pane label="评论" :name="tabs.comments">
-                {{ myComments }}
+                <CommentQuoteReply v-for="comment in myComments" :comment="comment"/>
             </el-tab-pane>
 
             <el-tab-pane label="收藏" :name="tabs.favorites">
-                {{ myFavorites }}
+                <PostPreview v-for="post in myFavorites" :post="post" />
             </el-tab-pane>
 
             <el-tab-pane label="活动" :name="tabs.activities">
@@ -106,8 +106,8 @@ import { useRoute } from 'vue-router';
 import TagsEditor from '@/components/slot/TagsEditor.vue';
 import { humanizeNumber } from '@/utils'
 import * as Posts from '@/axios/api/posts'
-import * as Comments from '@/axios/api/comments'
-import PostPreview from '@/components/slot/PostPreview.vue'
+import PostPreview from '@/components/posts/PostPreview.vue'
+import CommentQuoteReply from '@/components/posts/CommentQuoteReply.vue';
 
 const route = useRoute()
 const isSelf = route.name == 'self'
@@ -122,13 +122,13 @@ const currentTab = ref(tabs.posts)
 watch(currentTab, () => {
     switch (currentTab.value) {
         case tabs.posts:
-            Self.getPosts().then(r => myPosts.value = r.data.data)
+            Self.getPosts().then(r => myPosts.value = r.data.data.reverse())
             break
         case tabs.comments:
-            Self.getComments().then(r => myComments.value = r.data.data)
+            Self.getComments().then(r => myComments.value = r.data.data.reverse())
             break
         case tabs.favorites:
-            Self.getFavPosts().then(r => myFavorites.value = r.data.data)
+            Self.getFavPosts().then(r => myFavorites.value = r.data.data.reverse())
             break
     }
 }, { immediate: true })
@@ -136,7 +136,7 @@ watch(currentTab, () => {
 
 const myPosts = ref<Posts.Post[]>()
 const myFavorites = ref<Posts.Post[]>()
-const myComments = ref<Comments.Comment[]>()
+const myComments = ref<Self.Comment[]>()
 
 
 function getSelf() {
@@ -154,7 +154,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .user-info {
     padding: 12px 12px 24px;
-    background: linear-gradient(150deg, #fff1d7, #dbc46c);
+    background: linear-gradient(150deg, #fff1d7, #f1b96d);
 
     .menu {
         display: flex;
@@ -319,7 +319,7 @@ onMounted(() => {
     }
 
     .tabs {
-        --el-color-primary: #fdad00;
+        --el-color-primary: #9F7638;
 
         :deep(.el-tabs__nav) {
             margin-left: 16px;
@@ -337,6 +337,10 @@ onMounted(() => {
             background-color: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(8px);
             margin-bottom: 8px;
+        }
+
+        :deep(.el-tabs__item.is-active) {
+            font-weight: bold;
         }
     }
 }

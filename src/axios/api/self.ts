@@ -1,7 +1,6 @@
 import apiClient from "../axios";
 import { Response } from "./common";
 import * as Posts from '@/axios/api/posts'
-import * as Comments from '@/axios/api/comments'
 
 export interface Self {
     /**
@@ -32,6 +31,23 @@ export interface Self {
     [property: string]: any;
 }
 
+export interface Comment {
+    id: number;
+    postId: number;
+    replyContent: string;
+    parentId: null | number;
+    rootCommentId: null | number;
+    userId: number;
+    nickName: string;
+    avatarUrl: string;
+    content: string;
+    status: number;
+    likes: null;
+    disLikes: null;
+    createdTime: string;
+    children: null;
+}
+
 export function getSelf() {
     return apiClient.get<Response<Self>>('/personal/me')
 }
@@ -45,5 +61,5 @@ export function getFavPosts() {
 }
 
 export function getComments() {
-    return apiClient.get<Response<Comments.Comment[]>>('/personal/comments')
+    return apiClient.get<Response<Comment[]>>('/personal/comments')
 }

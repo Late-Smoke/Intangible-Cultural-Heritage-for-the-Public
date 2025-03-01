@@ -19,7 +19,7 @@
         <div class="detail-card">
             <div style="font-weight: bold;">{{ activity.title }}</div>
 
-            <div style="font-size: 0.9em; color: #444;">{{ new Date(activity.startTime).toLocaleString() }} - {{ new Date(activity.endTime).toLocaleString() }}</div>
+            <div style="font-size: 0.9em; color: #444;">{{ parseDate(activity.startTime).toLocaleString() }} - {{ parseDate(activity.endTime).toLocaleString() }}</div>
 
             <div>
                 <div style="margin: 4px 0;">选择日期</div>
@@ -67,6 +67,7 @@ import { useRoute } from 'vue-router';
 import * as Activity from '@/axios/api/activity'
 import ErrorPage from '@/components/ErrorPage.vue';
 import router from '@/router';
+import { parseDate } from '@/utils';
 
 const route = useRoute()
 
@@ -81,8 +82,8 @@ watch(() => route.params.id, id => activityId.value = id)
 const daySelections = computed(() => {
     const dates: string[] = [];
 
-    const start = new Date(activity.value.startTime);
-    const end = new Date(activity.value.endTime);
+    const start = parseDate(activity.value.startTime);
+    const end = parseDate(activity.value.endTime);
 
     start.setHours(0, 0, 0, 0)
     end.setHours(0, 0, 0, 0)

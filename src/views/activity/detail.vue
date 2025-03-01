@@ -38,7 +38,7 @@
 
             <div style="margin: 12px 0;">
                 <div>活动时间:</div>
-                <div>{{ new Date(activity.startTime).toLocaleString() }} - {{ new Date(activity.endTime).toLocaleString() }}</div>
+                <div>{{ parseDate(activity.startTime).toLocaleString() }} - {{ parseDate(activity.endTime).toLocaleString() }}</div>
             </div>
 
             <div style="margin: 12px 0;">
@@ -74,6 +74,7 @@ import { useRoute } from 'vue-router';
 import * as Activity from '@/axios/api/activity'
 import ErrorPage from '@/components/ErrorPage.vue';
 import router from '@/router';
+import { parseDate } from '@/utils';
 
 const route = useRoute()
 

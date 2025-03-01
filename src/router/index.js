@@ -145,11 +145,18 @@ const router = createRouter({
       path: '/post/:postId',
       name: 'post',
       component: () => import('@/views/posts/post.vue'),
+      props: route => ({
+        postId: route.params.postId,
+      })
     },
     {
       path: '/post/:postId/comment/:commentId',
       name: 'postComment',
       component: () => import('@/views/posts/post.vue'),
+      props: route => ({
+        postId: route.params.postId,
+        commentId: route.params.commentId
+      })
     },
     {
       path: '/activity',

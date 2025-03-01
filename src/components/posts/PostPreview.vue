@@ -1,16 +1,25 @@
 <template>
     <div class="post-preview">
         <div class="header" v-if="self">
-            <div class="time">{{ new Date(post.createdTime).toLocaleDateString() }}</div>
-            <div class="action-btn" @click="">
-                <mdiDotsVertical />
-            </div>
+            <div class="time">{{ formatDate(post.createdTime) }}</div>
+            <el-dropdown trigger="click" size="large">
+                <div class="action-btn">
+                    <mdiDotsVertical />
+                </div>
+                <template #dropdown>
+                    <el-dropdown-menu>
+                        <el-dropdown-item @click="">置顶</el-dropdown-item>
+                        <el-dropdown-item @click="">编辑</el-dropdown-item>
+                        <el-dropdown-item @click="">删除</el-dropdown-item>
+                    </el-dropdown-menu>
+                </template>
+            </el-dropdown>
         </div>
         <div class="user" v-else>
             <img :src="post.avatarUrl">
             <div>
                 <div class="name">{{ post.nickName }}</div>
-                <div class="time">{{ new Date(post.createdTime).toLocaleDateString() }}</div>
+                <div class="time">{{ formatDate(post.createdTime) }}</div>
             </div>
         </div>
 
@@ -45,6 +54,7 @@
 <script setup lang="ts">
 import * as Posts from '@/axios/api/posts'
 import router from '@/router';
+import { formatDate } from '@/utils'
 
 const props = defineProps<{
     post: Posts.Post
@@ -81,7 +91,33 @@ const props = defineProps<{
     }
 }
 
-.user {}
+.user {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+
+    >img {
+        width: 40px;
+        height: 40px;
+        border-radius: 100%;
+    }
+
+    >div {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        justify-content: center;
+
+        .name {
+            font-size: 0.9em;
+        }
+
+        .time {
+            font-size: 0.8em;
+            color: #666;
+        }
+    }
+}
 
 .content {
     .title {
@@ -97,6 +133,8 @@ const props = defineProps<{
     .img {
         display: block;
         width: 100%;
+        max-height: 30vh;
+        object-fit: cover;
         margin: 8px 0;
         box-sizing: border-box;
         border-radius: 8px;

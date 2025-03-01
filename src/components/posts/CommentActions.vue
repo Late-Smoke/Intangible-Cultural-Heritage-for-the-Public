@@ -1,6 +1,6 @@
 <template>
     <div class="action">
-        <div class="date">{{ new Date(comment.createdTime).toLocaleDateString() }}</div>
+        <div class="date">{{ formatDate(comment.createdTime) }}</div>
 
         <el-button text type="info" size="small" @click="replyAction">回复</el-button>
 
@@ -25,6 +25,7 @@
 <script setup lang="ts">
 import * as Comments from '@/axios/api/comments'
 import { defineProps } from 'vue';
+import { formatDate } from '@/utils'
 
 defineProps<{
     comment: Comments.Comment,

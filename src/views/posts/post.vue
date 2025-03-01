@@ -27,7 +27,7 @@
             <el-icon>
                 <EditPen />
             </el-icon>
-            <span class="date">发布于 {{ new Date(post.createdTime).toLocaleDateString() }}</span>
+            <span class="date">发布于 {{ formatDate(post.createdTime) }}</span>
             <el-button type="warning" round size="small">支持作者</el-button>
         </div>
 
@@ -53,7 +53,7 @@
 
                     <comment-actions :comment="item" :reply-action="() => reply.reply(item.id, item.id, item.nickName)" :reload-action="loadComments"></comment-actions>
 
-                    <div v-if="item.children && item.children.length" class="reply-block" @click="router.push({ name: 'postComment', params: { postId, commentId: item.id } })">
+                    <div v-if="item.children && item.children.length" class="reply-block" @click="router.push({ name: 'postComment', params: { postId: props.postId, commentId: item.id } })">
                         <div v-for="item1 in item.children.slice(0, 3)" :key="item1.id">
                             <span style="color: #555;">{{ item1.nickName }}<span v-if="item1.userId == post.userId" class="author-label">楼主</span>: </span>
                             <span>{{ item1.content }}</span>
@@ -142,7 +142,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
 import router from '@/router';
 import { ref, watch } from 'vue';
 import * as Posts from '@/axios/api/posts'
@@ -153,15 +152,12 @@ import { ElButton, ElInput, ElMessage } from 'element-plus';
 import commentActions from '@/components/posts/CommentActions.vue';
 import OverlayCard from '@/components/slot/OverlayCard.vue';
 import ErrorPage from '@/components/ErrorPage.vue';
+import { formatDate } from '@/utils';
 
-const route = useRoute()
-
-const postId = ref(typeof route.params.postId == 'string' ? parseInt(route.params.postId) : null)
-const commentId = ref(typeof route.params.commentId == 'string' ? parseInt(route.params.commentId) : null)
-
-watch(() => route.params.commentId, (newId) => {
-    if (typeof newId != 'object') commentId.value = parseInt(newId) || null
-})
+const props = defineProps<{
+    postId: string
+    commentId?: string
+}>()
 
 
 const post = ref<Posts.Post>()
@@ -169,7 +165,7 @@ const comments = ref<Comments.Comment[]>()
 
 const error = ref('')
 
-const commentViewing = computed(() => comments.value?.find(x => x.id == commentId.value))
+const commentViewing = computed(() => comments.value?.find(x => x.id == parseInt(props.commentId)))
 
 enum Sort { hotest, latest }
 const commentsSort = ref(Sort.hotest)
@@ -236,15 +232,15 @@ function setFav(value: boolean) {
 
 
 function loadPost() {
-    Posts.getPostById(postId.value).then(r => {
+    Posts.getPostById(props.postId).then(r => {
         if (r.data.success) post.value = r.data.data
         else error.value = r.data.errorMsg
     })
 }
 
 function loadComments() {
-    if (commentsSort.value == Sort.hotest) Comments.getHotCommentsForPost(postId.value).then(r => comments.value = r.data.data)
-    if (commentsSort.value == Sort.latest) Comments.getLatestCommentsForPost(postId.value).then(r => comments.value = r.data.data)
+    if (commentsSort.value == Sort.hotest) Comments.getHotCommentsForPost(props.postId).then(r => comments.value = r.data.data)
+    if (commentsSort.value == Sort.latest) Comments.getLatestCommentsForPost(props.postId).then(r => comments.value = r.data.data)
 }
 
 onMounted(() => {

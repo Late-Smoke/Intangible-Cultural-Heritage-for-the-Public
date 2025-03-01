@@ -8,7 +8,7 @@
                 </el-icon>
             </div>
             <template #dropdown>
-                <el-dropdown-menu >
+                <el-dropdown-menu>
                     <el-dropdown-item @click="region = '全国'">全国</el-dropdown-item>
                     <el-dropdown-item @click="region = '本地'">本地</el-dropdown-item>
                 </el-dropdown-menu>
@@ -80,7 +80,7 @@
 
                 <div class="open-time">
                     <div>开放时间:</div>
-                    {{ new Date(item.startTime).toLocaleString() }} - {{ new Date(item.endTime).toLocaleString() }}
+                    {{ parseDate(item.startTime).toLocaleString() }} - {{ parseDate(item.endTime).toLocaleString() }}
                 </div>
 
                 <div class="bottom">
@@ -100,6 +100,7 @@ import * as ExampleData from '@/axios/example-data'
 import HorizonalDateSelector from '@/components/slot/HorizonalDateSelector.vue'
 import OverlayCard from '@/components/slot/OverlayCard.vue'
 import router from '@/router'
+import { parseDate } from '@/utils'
 
 const region = ref('全国')
 
@@ -141,8 +142,8 @@ function updateSearchOptionsTimeRange() {
         if (timeRangeOption.value == timeRangeOptions.all) {
             throw undefined
         } else {
-            searchOptions.startTime = timeRange.value[0].toISOString().split('.')[0];
-            searchOptions.endTime = timeRange.value[1].toISOString().split('.')[0];
+            searchOptions.startTime = timeRange.value[0]
+            searchOptions.endTime = timeRange.value[1]
         }
     } catch {
         searchOptions.startTime = undefined
