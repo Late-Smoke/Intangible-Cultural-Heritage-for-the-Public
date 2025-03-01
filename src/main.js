@@ -1,14 +1,18 @@
-import './assets/main.css'
 
 import { createApp,h } from 'vue'
 import { createPinia } from 'pinia'
-import ElementPlus from 'element-plus';
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'; // 导入所有图标
+
 import App from './App.vue'
 import router from './router'
+
+import ElementPlus from 'element-plus';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'; // 导入所有图标
 import 'element-plus/dist/index.css';
+import '@/assets/main.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
+
 import * as mdiIcons from '@mdi/js';
+
 if (process.env.NODE_ENV === 'development') {
   window.__DEV__ = true;
 } else {

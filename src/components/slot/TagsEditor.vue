@@ -1,10 +1,10 @@
 <template>
     <div class="tags-editor">
-        <el-tag v-for="tag in dynamicTags" :key="tag" type="info" closable :disable-transitions="false" @close="handleClose(tag)">
+        <el-tag v-for="tag in dynamicTags" :key="tag" type="primary" closable :disable-transitions="false" @close="handleClose(tag)">
             {{ tag }}
         </el-tag>
         <el-input v-if="inputVisible" ref="InputRef" v-model="inputValue" size="small" @keyup.enter="handleInputConfirm" @blur="handleInputConfirm" />
-        <el-button v-else class="button-new-tag" size="small" @click="showInput">
+        <el-button v-else class="button-new-tag" size="small" type="primary" plain @click="showInput">
             + 添加 Tag
         </el-button>
     </div>

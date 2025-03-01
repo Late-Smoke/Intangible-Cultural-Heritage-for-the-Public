@@ -45,7 +45,7 @@ function gotoSource() {
         padding: 8px;
         font-size: 0.8em;
         color: #666;
-        background-color: #f6f6f6;
+        background-color: #F6DAA93D;
     }
 }
 </style>

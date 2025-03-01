@@ -30,22 +30,26 @@ defineProps<{
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.25);
     z-index: 50;
-    padding-top: 25vh;
     overflow: auto;
     animation: show-overlay 0.2s;
 
-    .card-title {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 12px;
-    }
-
     .card {
-        min-height: 100%;
+        margin-top: 25vh;
+        min-height: 75vh;
         background-color: white;
         border-radius: 16px 16px 0 0;
         animation: show-card 0.2s;
+
+        .card-title {
+            position: sticky;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 16px 16px 0 0;
+            background-color: white;
+        }
     }
 
     @keyframes show-card {

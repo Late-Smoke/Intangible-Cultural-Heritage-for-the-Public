@@ -65,7 +65,7 @@ function rangeIsDay(date: Date) {
 
 .selected {
     color: white;
-    background-color: rgb(246, 193, 78);
+    background-color: rgb(233 179 63);
 }
 
 .day {

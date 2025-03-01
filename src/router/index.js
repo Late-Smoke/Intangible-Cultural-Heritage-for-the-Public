@@ -6,7 +6,20 @@ const router = createRouter({
     {
       path: '/',
       name: 'root',
+      component: () => import('../views/mainPage/mainPageView.vue'),
       redirect: { name: 'cultureMap' },
+      children: [
+        {
+          path: 'activity',
+          name: 'activityHome',
+          component: () => import('@/views/activity/home.vue'),
+        },
+        {
+          path: 'self',
+          name: 'self',
+          component: () => import('@/views/user/home.vue'),
+        },
+      ]
     },
     {
       path: '/login',
@@ -129,16 +142,6 @@ const router = createRouter({
             },
           ]
         },
-        {
-          path: 'activity',
-          name: 'activityHome',
-          component: () => import('@/views/activity/home.vue'),
-        },
-        {
-          path: 'self',
-          name: 'self',
-          component: () => import('@/views/user/home.vue'),
-        }
       ]
     },
     {

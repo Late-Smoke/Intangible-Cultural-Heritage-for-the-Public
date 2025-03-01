@@ -1,34 +1,26 @@
 <script setup>
-import { ref, watch } from 'vue';
 import router from '@/router';
 import { useScrollStore } from '@/stores/user';
 import { useRoute } from 'vue-router';
 
-const selected = ref('');
-
-const handleClick = name => router.push(`/mainPageView/${name}`)
-
 const route = useRoute()
-watch(() => route.path, v => {
-    console.log(v)
-    selected.value = v
-}, { immediate: true })
 
 const scrollStore = useScrollStore();
 
 </script>
 
 <template>
-    <div class="router">
+    <div :class="{ 'router': true, 'full-height': route.path.startsWith('/mainPageView') }">
         <router-view v-slot="{ Component }">
             <keep-alive>
                 <component :is="Component" />
             </keep-alive>
         </router-view>
     </div>
+
     <div class="bottom">
-        <div @click="handleClick('homePage')">
-            <svg v-if="!selected.startsWith('/mainPageView/homePage')" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div @click="router.push({ name: 'mainPageView' })">
+            <svg v-if="!route.path.startsWith('/mainPageView')" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M11.25 26.25V17.691C11.25 16.9032 11.9216 16.2645 12.75 16.2645H17.25C18.0784 16.2645 18.75 16.9032 18.75 17.691V26.25M14.1307 4.01396L4.38071 10.6075C3.98502 10.8751 3.75 11.3083 3.75 11.7701V24.1103C3.75 25.292 4.75736 26.25 6 26.25H24C25.2426 26.25 26.25 25.292 26.25 24.1103V11.7701C26.25 11.3083 26.015 10.8751 25.6193 10.6075L15.8693 4.01397C15.3488 3.66201 14.6512 3.66201 14.1307 4.01396Z" stroke="black" stroke-width="2" stroke-linecap="round" />
             </svg>
             <svg v-else width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -38,8 +30,8 @@ const scrollStore = useScrollStore();
             <span v-if="!scrollStore.scrollTop" @click="scrollStore.scrollToTop">回顶部</span>
             <span v-else>首页</span>
         </div>
-        <div @click="handleClick('activity')">
-            <svg v-if="!selected.startsWith('/mainPageView/activity')" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div @click="router.push({ name: 'activityHome' })">
+            <svg v-if="route.name != 'activityHome'" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M1.34833 1.66597L1.70909 1.52461L1.8525 1.95962L2.76151 1.7214C4.60473 1.23835 6.49393 0.996295 8.38906 1.00004C10.1758 1.03643 11.932 1.83835 13.7824 2.76193C13.9071 2.82418 14.0326 2.8871 14.1585 2.95028C14.937 3.34073 15.7355 3.74125 16.5102 4.05747C17.4085 4.42418 18.3561 4.7133 19.3143 4.74325C20.3967 4.80023 21.4743 4.66408 22.5046 4.34634C22.27 5.03557 21.9436 5.83208 21.5016 6.611C20.8282 7.7974 19.9242 8.87708 18.7327 9.51592C17.2535 10.2868 15.493 10.4744 13.4728 10.6897C13.2785 10.7104 13.0819 10.7313 12.8828 10.7531C10.7081 10.9908 8.28039 11.3285 6.2425 12.8004L5.60867 13.2581L1.34833 1.66597ZM8.98623 22.4483L5.67857 13.4483L5.90388 13.9932L9.34254 22.3086L8.98623 22.4483Z" fill="white" stroke="black" stroke-width="2" />
             </svg>
             <svg v-else width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -48,8 +40,8 @@ const scrollStore = useScrollStore();
             </svg>
             活动
         </div>
-        <div @click="handleClick('self')">
-            <svg v-if="!selected.startsWith('/mainPageView/self')" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div @click="router.push({ name: 'self' })">
+            <svg v-if="route.name != 'self'" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M3 24.7857C3 20.2236 6.94286 16.5253 15 16.5253C23.0571 16.5253 27 20.2236 27 24.7857C27 25.5115 26.4522 26.0999 25.7765 26.0999H4.22353C3.54779 26.0999 3 25.5115 3 24.7857Z" stroke="black" stroke-width="2" />
                 <path d="M19.5 7.2499C19.5 9.65234 17.4853 11.5999 15 11.5999C12.5147 11.5999 10.5 9.65234 10.5 7.2499C10.5 4.84746 12.5147 2.8999 15 2.8999C17.4853 2.8999 19.5 4.84746 19.5 7.2499Z" stroke="black" stroke-width="2" />
             </svg>
@@ -69,9 +61,12 @@ const scrollStore = useScrollStore();
 
 <style scoped>
 .router {
-    overflow: auto;
+    padding-bottom: 64px;
+}
+
+.full-height {
     height: 100vh;
-    padding-bottom: 70px;
+    overflow: auto;
 }
 
 .bottom {
@@ -80,19 +75,19 @@ const scrollStore = useScrollStore();
     right: 0;
     bottom: 0;
     display: flex;
-    height: 70px;
+    height: 64px;
     justify-content: space-around;
-    align-items: center;
-    padding-top: 10px;
-    padding-bottom: 20px;
+    align-items: stretch;
     background-color: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(8px);
 }
 
 .bottom div {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     font-size: 10px;
 }
 </style>

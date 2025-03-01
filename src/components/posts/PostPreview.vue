@@ -4,7 +4,7 @@
             <div class="time">{{ formatDate(post.createdTime) }}</div>
             <el-dropdown trigger="click" size="large">
                 <div class="action-btn">
-                    <mdiDotsVertical />
+                    <mdiDotsHorizontal />
                 </div>
                 <template #dropdown>
                     <el-dropdown-menu>
@@ -67,7 +67,7 @@ const props = defineProps<{
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding: 12px 12px 4px;
+    padding: 12px 16px 4px;
     border-bottom: 1px solid #ddd;
 }
 
@@ -82,7 +82,7 @@ const props = defineProps<{
     }
 
     .action-btn {
-        font-size: 1.25em;
+        font-size: 1.5em;
         padding: 4px;
 
         svg {
@@ -135,7 +135,7 @@ const props = defineProps<{
         width: 100%;
         max-height: 30vh;
         object-fit: cover;
-        margin: 8px 0;
+        margin-top: 8px;
         box-sizing: border-box;
         border-radius: 8px;
     }
@@ -143,6 +143,7 @@ const props = defineProps<{
 
 .tags {
     font-size: 0.8em;
+    margin-top: 6px;
 
     >span {
         padding: 1px 3px;
@@ -160,7 +161,7 @@ const props = defineProps<{
     justify-content: space-around;
 
     >div {
-        padding: 8px;
+        padding: 12px;
         font-size: 0.9em;
 
         >svg {
