@@ -1,5 +1,5 @@
 <template>
-    <div class="post-preview">
+    <div class="post-list-item-self">
         <div class="header" v-if="self">
             <div class="time">{{ formatDate(post.createdTime) }}</div>
             <el-dropdown trigger="click" size="large">
@@ -67,7 +67,7 @@ const { self = true } = defineProps<{
 </script>
 
 <style scoped lang="scss">
-.post-preview {
+.post-list-item-self {
     display: flex;
     flex-direction: column;
     gap: 4px;

@@ -12,7 +12,7 @@
             <div @click="">
                 <mdiCog />
             </div>
-            <div @click="">
+            <div @click="menuOpen = true">
                 <mdiMenu />
             </div>
         </div>
@@ -101,7 +101,7 @@
 
         <el-tabs class="outline sticky" v-model="currentTab">
             <el-tab-pane label="发布" :name="tabs.posts">
-                <PostPreviewSelf v-for="post in myPosts" :post="post" :reload-action="loadTab" />
+                <PostListItemSelf v-for="post in myPosts" :post="post" :reload-action="loadTab" />
             </el-tab-pane>
 
             <el-tab-pane label="评论" :name="tabs.comments">
@@ -109,22 +109,24 @@
             </el-tab-pane>
 
             <el-tab-pane label="收藏" :name="tabs.favorites">
-                <PostPreview v-for="post in myFavorites" :post="post" />
+                <PostListItem v-for="post in myFavorites" :post="post" />
             </el-tab-pane>
 
             <el-tab-pane label="活动" :name="tabs.activities">
                 <el-tabs v-model="currentActivityTab" class="solid" style="margin-top: 4px;">
                     <el-tab-pane label="我参与的" :name="activityTabs.joined">
-                        {{ myActivities }}
+                        <ActivityListItem v-for="a in myActivities" :activity="a" bottom="detail" />
                     </el-tab-pane>
 
                     <el-tab-pane label="我收藏的" :name="activityTabs.starred">
-                        {{ myActivities }}
+                        <ActivityListItem v-for="a in myActivities" :activity="a" />
                     </el-tab-pane>
                 </el-tabs>
             </el-tab-pane>
         </el-tabs>
     </div>
+
+    <DrawerMenu v-model="menuOpen"/>
 </template>
 
 <script setup lang="ts">
@@ -135,16 +137,21 @@ import { useRoute } from 'vue-router';
 import TagsEditor from '@/components/slot/TagsEditor.vue';
 import { humanizeNumber } from '@/utils'
 import * as Posts from '@/axios/api/posts'
-import PostPreviewSelf from '@/components/posts/PostPreviewSelf.vue'
-import PostPreview from '@/components/posts/PostPreview.vue'
+import PostListItemSelf from '@/components/posts/PostListItemSelf.vue'
+import PostListItem from '@/components/posts/PostListItem.vue'
 import CommentQuoteReply from '@/components/posts/CommentQuoteReply.vue';
 import * as Activity from '@/axios/api/activity'
+import * as ExampleData from '@/axios/example-data'
+import ActivityListItem from '@/components/activity/ActivityListItem.vue';
+import DrawerMenu from '@/components/menu/DrawerMenu.vue';
 
 const route = useRoute()
 const isSelf = route.name == 'self'
 
 const user = ref<Self.Self | null>()
 const userTags = ref<string[]>([])
+
+const menuOpen = ref(false)
 
 
 enum tabs { posts, comments, favorites, activities }
@@ -161,6 +168,7 @@ const myPosts = ref<Posts.Post[]>()
 const myFavorites = ref<Posts.Post[]>()
 const myComments = ref<Self.Comment[]>()
 const myActivities = ref<Activity.Activity[]>()
+myActivities.value = ExampleData.Activities
 
 function loadTab() {
     switch (currentTab.value) {

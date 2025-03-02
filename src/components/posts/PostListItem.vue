@@ -28,7 +28,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="post-list" v-if="post">
+    <div class="post-list-item" v-if="post">
         <div class="post-item">
             <svg class="icon-right" width="33" height="32" viewBox="0 0 33 32" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
@@ -90,8 +90,8 @@ defineProps<{
 </template>
 
 <style scoped lang="scss">
-.post-list {
-    margin: 10px 0 12px;
+.post-list-item {
+    margin: 8px 12px 12px;
 }
 
 .post-item {

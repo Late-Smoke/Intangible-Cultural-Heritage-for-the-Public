@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import PostPreview from '@/components/posts/PostPreview.vue'
+import PostListItem from '@/components/posts/PostListItem.vue'
 import Exhibition from '@/components/slot/exhibition.vue';
 import Map from '@/components/slot/gaode.vue';
 import { ArrowDownBold } from '@element-plus/icons-vue';
@@ -108,7 +108,7 @@ const searchName = ref('');
   </div>
   <div class="content">
     <div class="relatedPost" v-show="selectedTab == 'relatedPost'">
-      <post-preview :post="ExampleData.Post" />
+      <post-list-item :post="ExampleData.Post" />
     </div>
     <div class="exhibition" v-show="selectedTab == 'activity'">
       <exhibition />

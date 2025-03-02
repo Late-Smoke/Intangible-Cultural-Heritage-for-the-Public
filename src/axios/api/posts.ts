@@ -195,7 +195,7 @@ export function pinPost(id) {
 }
 
 export function unpinPost(id) {
-    const r = apiClient.get<Response<any>>(`/personal/postnews/pinned/${id}`)
+    const r = apiClient.delete<Response<any>>(`/personal/postnews/pinned/${id}`)
     r.then(r => {
         try {
             ElMessage.success(r.data.success && r.data.data)

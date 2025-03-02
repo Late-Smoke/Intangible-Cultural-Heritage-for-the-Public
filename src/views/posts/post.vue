@@ -460,7 +460,7 @@ onMounted(() => {
             .reply {
                 display: flex;
                 gap: 8px;
-                margin: 4px 0;
+                margin-bottom: 8px;
 
                 >img {
                     width: 32px;

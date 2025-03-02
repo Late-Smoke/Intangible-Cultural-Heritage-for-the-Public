@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, watchEffect, watch } from 'vue'
-import PostPreview from '@/components/posts/PostPreview.vue'
+import PostListItem from '@/components/posts/PostListItem.vue'
 import { useSearchStore, useDataStore } from '@/stores/user';
 import { getBaiKeIdApi, getBaiKeApi, getNewPostApi, getHotPostApi } from '@/axios/api/search';
 import { useRoute } from 'vue-router';
@@ -98,7 +98,7 @@ function getNewPost() {
                 </template>
             </el-popover>
         </div>
-        <PostPreview v-for="post in relatedPost" :post="post" />
+        <PostListItem v-for="post in relatedPost" :post="post" />
     </div>
 </template>
 
