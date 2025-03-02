@@ -6,8 +6,12 @@ export function getHotCultureApi() {// 非遗热点
 }
 ////result
 //comprehensive
-export function getBaiKeApi(input) {// 非遗百科
+export function getBaiKeIdApi(input) {// 非遗百科id
     return apiClient.get('/search/encyclopedias', { params: { keyword: input }});
+}
+
+export function getBaiKeApi(id) {// 非遗百科
+    return apiClient.get(`/encyclopedias/${id}`);
 }
 
 export function getNewPostApi(input) {// 相关帖子-最新

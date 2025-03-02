@@ -1,13 +1,13 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import RelatedPost from '@/components/slot/relatedPost.vue'
-import { useSearchStore } from '@/stores/user';
-import { getBaiKeApi, getNewPostApi, getHotPostApi } from '@/axios/api/search';
+import { useSearchStore , useDataStore} from '@/stores/user';
+import { getBaiKeIdApi, getBaiKeApi,getNewPostApi, getHotPostApi } from '@/axios/api/search';
 import { useRoute } from 'vue-router';
 
 const route = useRoute()
 
-const searchStore = useSearchStore();
+const useData = useDataStore();
 const search = ref(route.params.input);
 const id = ref(-1);
 const sort = ref('最热');
@@ -21,21 +21,38 @@ watch(() => route.params.input, x => {
 
 function getSearchResult() {
     if (!search.value) return;
-    getBaiKeApi(search.value).then(res => {
-        console.log(res);
+    getBaiKeIdApi(search.value).then(res => {
         if (res.status == 200 && res.data.data.length > 0) {
-            id.value = res.data.data.id;
+            id.value = res.data.data[0].id;
+        }
+        getBaiKe();
+    })
+}
+function getBaiKe() {
+    if (id.value == -1) return;
+    getBaiKeApi(id.value).then(res => {
+        if (res.status == 200) {
+            //获取图片url
         }
     })
 }
-
+//相关帖子
+function getHotPost() {
+    if (!search.value) return;
+    getHotPostApi(search.value).then(res => {
+        if (res.status == 200) {
+            useData.changeRelatedPost(res.data.data);
+        }
+    })
+}
 onMounted(async () => {
-    getSearchResult()
+    getSearchResult();
+    getHotPost();
 })
 </script>
 
 <template>
-    <div class="baiKe">
+    <div v-show="id != -1" class="baiKe">
         <span class="head">非遗百科</span>
         <span class="tip">点击查看详情</span>
     </div>

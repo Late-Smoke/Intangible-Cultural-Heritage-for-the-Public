@@ -1,30 +1,34 @@
 <script setup>
 import { ref } from 'vue';
 import router from '@/router';
-import { useActivityStore, useSearchStore } from '@/stores/user';
+import { useActivityStore, useSearchStore , useDataStore , useHistoryStore } from '@/stores/user';
 
 const activityStore = useActivityStore();
 const searchStore = useSearchStore();
-const search = ref('');//输入框绑定值
+const dataStore = useDataStore();
+const historyStore = useHistoryStore(); 
+const history = ref(historyStore.historyRecords);
+const search = ref(searchStore.search);//输入框绑定值
 const handleBack = () => {
     activityStore.changeShow(false);
+    dataStore.changeRelatedPost([]);
     router.push('/mainPageView/homePage/cultureMap');
 }
 const handleClean = () => {
-    search.value = '';
+    searchStore.search.value = '';
 }
 const photoClick = () => {
     router.push('/searchView/pictureView');
 }
 const handleSearch = () => {
-    searchStore.changeSearch(search.value);
-    search.value = search.value;
-    if (search.value) {
-        console.log(search.value);
+    if (searchStore.search) {
+        if (history.value) history.value.unshift(searchStore.search);
+        historyStore.changeHistoryRecords(history.value);//更新历史记录
+        dataStore.changeRelatedPost([]);//更新相关帖子
         router.push({
             name: 'comprehensiveSearch',
             params:{
-                input: search.value
+                input: searchStore.search
             }
         });
     }
@@ -40,7 +44,7 @@ const handleSearch = () => {
                     stroke-linejoin="round" />
             </svg>
         </el-button>
-        <el-input v-model="search" style="width:257px;height:32px;font-size: 18px;color:#BBB6B6;"
+        <el-input v-model="searchStore.search" style="width:257px;height:32px;font-size: 18px;color:#BBB6B6;"
             placeholder="搜获帖子、活动或用户" class="search-input" size="default">
             <template #prefix>
                 <svg width="16.8" height="16.8" style="margin-right:5px;" viewBox="0 0 20 19" fill="none"
@@ -51,7 +55,7 @@ const handleSearch = () => {
                 </svg>
             </template>
             <template #suffix>
-                <div v-show="search != ''" class="clean">
+                <div v-show="searchStore.search != ''" class="clean">
                     <svg @click="handleClean" width="14" height="13" viewBox="0 0 14 13" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path d="M12.5 1L1.5 12M12.5 12L1.5 1" stroke="#BBB6B6" stroke-width="2"

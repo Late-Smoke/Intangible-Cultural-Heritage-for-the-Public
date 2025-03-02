@@ -12,7 +12,6 @@ const selectedTab = ref('comprehensive');
 const handleTabClick = (tab) => {
     if (tab == 'activity') activity.changeShow(true);
     else activity.changeShow(false);
-    console.log(activity.show);
     selectedTab.value = tab;
     router.push(`/searchView/result/${tab}`);
 }

@@ -26,8 +26,6 @@ const colors = [
 ];
 
 onMounted(() => {
-  // 初始化高德地图
-  console.log(longitude, latitude);
   map = new AMap.Map('container', {
     touchZoom: true,
     resizeEnable: true
@@ -236,11 +234,7 @@ onMounted(() => {
     switch2AreaNode(100000); // 加载全国地图
   });
 
-  AMapUI.loadUI(['overlay/SimpleMarker'], function (SimpleMarker) {
-    //启动页面
-    initPage(SimpleMarker);
-  });
-
+  //缩放组件
   AMapUI.loadUI(['control/BasicControl'], function (BasicControl) {
 
     map.addControl(new BasicControl.Zoom({
@@ -249,21 +243,46 @@ onMounted(() => {
     }));
   });
 
-  function initPage(SimpleMarker) {
+  //   AMapUI.loadUI(['misc/PointSimplifier'], function (PointSimplifier) {
 
-    //创建SimpleMarker实例
-    new SimpleMarker({
-      //前景文字
-      iconLabel: 'A',
-      //图标主题
-      iconTheme: 'default',
-      //背景图标样式
-      iconStyle: 'red',
-      //...其他Marker选项...，不包括content
-      map: map,
-      position: [116.405285, 39.904989]
-    });
-  }
+  //     if (!PointSimplifier.supportCanvas) {
+  //       alert('当前环境不支持 Canvas！');
+  //       return;
+  //     }
+
+  //     //启动页面
+  //     initPage(PointSimplifier);
+  //   });
+
+  //   function initPage(PointSimplifier) {
+  //     //创建组件实例
+  //     var pointSimplifierIns = new PointSimplifier({
+  //       map: map, //关联的map
+  //       compareDataItem: function (a, b, aIndex, bIndex) {
+  //         //数据源中靠后的元素优先，index大的排到前面去
+  //         return aIndex > bIndex ? -1 : 1;
+  //       },
+  //       getPosition: function (dataItem) {
+  //         //返回数据项的经纬度，AMap.LngLat实例或者经纬度数组
+  //         return dataItem;
+  //       },
+  //       getHoverTitle: function (dataItem, idx) {
+  //         //返回数据项的Title信息，鼠标hover时显示
+  //         return '序号: ' + idx;
+  //       },
+  //       renderOptions: {
+  //         //点的样式
+  //         pointStyle: {
+  //           fillStyle: 'blue' //蓝色填充
+  //         }
+  //       }
+  //     });
+
+  // // 初始化函数
+  // initPage();
+
+  //     //设置数据源，data需要是一个数组
+  //     pointSimplifierIns.setData(data);
 });
 </script>
 

@@ -2,6 +2,7 @@ import './assets/main.css'
 
 import { createApp,h } from 'vue'
 import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import ElementPlus from 'element-plus';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'; // 导入所有图标
 import App from './App.vue'
@@ -15,8 +16,9 @@ if (process.env.NODE_ENV === 'development') {
   window.__DEV__ = false;
 }
 const app = createApp(App)
-
-app.use(createPinia())
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+app.use(pinia)
 app.use(router)
 app.use(ElementPlus,{locale: zhCn});
 

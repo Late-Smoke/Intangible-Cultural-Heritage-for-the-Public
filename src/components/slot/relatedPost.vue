@@ -1,18 +1,13 @@
 <script setup>
 import { ref } from 'vue'
+import { useDataStore } from '@/stores/user';
 
-const nickName = ref('非遗进大众');
-const date = ref('2024-01-10');
-const contentTitle = ref('【今日非遗-打铁花】');
-const contentText = ref('打铁花是一种传统民间烟火表演，被誉为“民间烟火...');
-const contentSign = ref('打铁花');
-const comment = ref('15');
-const like = ref('200');
+const allData = useDataStore().relatedPost;
 </script>
 
 <template>
     <div class="post-list" >
-        <div class="post-item">            
+        <div class="post-item" v-for="(data, index) in allData" :key="index">            
             <svg class="icon-right" width="33" height="32" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6.2711 4.45982C6.90316 7.26328 10.095 9.19397 11.7663 7.84392C13.4376 6.49387 12.9677 5.08069 11.9177 3.90966C10.8676 2.73862 9.92053 3.69362 9.90429 4.22583C9.88804 4.75803 11.3475 5.51825 10.2685 5.40453C9.18943 5.29081 8.39666 3.68865 9.24109 3.00473C10.0855 2.32082 10.952 2.65326 12.4283 3.56363C13.752 4.383 13.6707 4.68932 13.6322 4.75319C13.8214 4.46798 14.0709 4.22776 14.3631 4.04946C14.6552 3.87115 14.9829 3.75911 15.3231 3.72123C17.0641 3.65706 18.8074 3.73407 20.5359 3.9515C21.0767 5.98298 21.7957 7.6563 20.6564 8.99077C19.5171 10.3252 17.0726 8.32112 18.1528 7.74362C19.233 7.16613 18.8933 8.88647 19.6844 8.44153C20.4754 7.99659 20.4341 7.00687 19.4027 5.98775C18.3712 4.96863 16.0344 4.417 15.4135 6.40774C15.2983 7.1493 15.3365 7.90661 15.5258 8.63282C15.715 9.35902 16.0513 10.0387 16.5137 10.6297C16.5137 10.6297 15.1634 12.1528 16.3245 13.5565C16.977 14.2509 17.3512 15.161 17.3758 16.1135C18.3256 16.1286 19.2373 16.4895 19.9399 17.1287C21.3716 18.2656 22.8802 16.9024 22.8802 16.9024C23.4782 17.355 24.162 17.6814 24.8899 17.8618C25.6179 18.0421 26.3749 18.0728 27.1151 17.9518C29.0947 17.3211 28.522 14.9805 27.4888 13.9596C26.4556 12.9387 25.4531 12.9182 25.0195 13.7128C24.5858 14.5074 26.2879 14.1507 25.7304 15.2306C25.173 16.3106 23.1396 13.8974 24.4532 12.7386C25.7668 11.5799 27.4452 12.2893 29.4936 12.7985C29.7185 14.5249 29.8158 16.2657 29.7848 18.0064C29.7646 18.3517 29.6638 18.6874 29.4902 18.9866C29.3167 19.2858 29.0754 19.5401 28.7857 19.729C28.8297 19.6845 29.1404 19.619 29.9897 20.9185C30.9195 22.3855 31.25 23.2568 30.5851 24.097C29.9202 24.9372 28.3156 24.1601 28.1731 23.0985C28.0306 22.037 28.8277 23.4676 29.3561 23.4485C29.8846 23.4294 30.844 22.4584 29.648 21.4315C28.4521 20.4045 27.0387 19.9428 25.7141 21.6284C24.3896 23.314 26.3621 26.4859 29.1729 27.0842C29.353 28.1994 29.7513 29.2681 30.3449 30.2292C30.9386 31.1903 31.716 32.0248 32.6326 32.685L32.4173 6.91226C32.3897 3.60962 29.6982 0.95029 26.3954 0.962434L0.62196 1.05721C1.29379 1.96777 2.13852 2.73696 3.10785 3.32081C4.07717 3.90466 5.15208 4.29171 6.2711 4.45982Z" fill="#E6DBCD"/>
             </svg>            
@@ -21,41 +16,40 @@ const like = ref('200');
             </svg>
             <div class="item-header">
                 <div class="header-left">
-                    <div class="profile"></div>
-                    <span class="nickName">{{ nickName }}</span>                        
-                    <svg width="30" height="17" viewBox="0 0 30 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="30" height="17" rx="2" fill="#90A9DC"/>
-                        <path d="M13.335 10.314V13.9556H12.5078V13.3218H6.90039V13.9448H6.0625V6.50049H12.9268V9.63721H12.0996V9.28271H6.90039V10.314H13.335ZM4.62305 4.74951H9.49463C9.2762 4.37354 9.05241 4.02262 8.82324 3.69678L9.56445 3.27783C9.80794 3.59294 10.0765 3.98682 10.3701 4.45947L9.86523 4.74951H14.3877V6.70459H13.5498V5.49072H5.46094V6.70459H4.62305V4.74951ZM12.5078 11.0337H6.90039V12.6128H12.5078V11.0337ZM12.0996 7.22021H6.90039V8.56299H12.0996V7.22021ZM15.333 5.21143H20.4893C20.1276 4.52393 19.8447 4.02262 19.6406 3.70752L20.4785 3.31006C20.679 3.618 20.9798 4.1193 21.3809 4.81396L20.5967 5.21143H25.6885V6.02783H19.1733C19.1483 6.67952 19.1214 7.23454 19.0928 7.69287H24.2812C24.1953 9.24691 24.1022 10.5968 24.002 11.7427C23.9232 13.0389 23.293 13.687 22.1113 13.687C21.5671 13.687 20.8402 13.6584 19.9307 13.6011C19.8949 13.3289 19.8411 12.9995 19.7695 12.6128C20.679 12.7345 21.4167 12.7954 21.9824 12.7954C22.6413 12.7954 23.0101 12.4051 23.0889 11.6245C23.1748 10.7723 23.25 9.73031 23.3145 8.49854H19.0337C18.8332 10.8618 17.7393 12.6951 15.752 13.9985C15.5586 13.7694 15.3402 13.5259 15.0967 13.2681C16.9873 12.022 18.0007 10.3534 18.1367 8.26221C18.1868 7.69645 18.228 6.95166 18.2603 6.02783H15.333V5.21143Z" fill="white"/>
-                    </svg>                        
+                    <div class="profile" :style="{ backgroundImage: `url(${data.avatarUrl})`}"></div>
+                    <span class="nickName">{{data.nickName}}</span>                               
+                    <div class="category">
+                        <span v-if="data.userType === 3 ">官方</span>
+                        <span v-if="data.userType === 2">非遗传承人</span>
+                        <span v-if="data.userType === 1">媒体</span>
+                    </div>             
                 </div>
-                <span class="date">{{ date }}</span>
+                <span class="date">{{ data.createdTime.split('T')[0] }}</span>
             </div>
             <div class="item-content">
-                <span class="content-title">{{ contentTitle }}</span>
-                <div class="content-text">{{ contentText }}</div>
-                <div class="content-img"></div>
+                <span class="content-title">{{ data.title }}</span>
+                <div class="content-text">{{ data.content }}</div>
+                <div class="content-img" :style="{ backgroundImage: `url(${data.urls[0].url})`}"></div>
             </div>
             <div class="item-footer">
-                <el-tag class="content-sign" effect="plain">{{ contentSign }}</el-tag>
+                <el-tag v-if="data.tag" class="content-sign" effect="plain">{{ data.tag }}</el-tag>
+                <div v-else class="none-sign"></div>
                 <div class="footer-right">
                     <span class="comment">                            
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M7.49957 12.0846V12M11.9991 12.0846V12M16.4987 12.0846V12M20.9983 12C20.9983 13.2938 20.7253 14.5238 20.2338 15.6356L21 20.9991L16.4039 19.85C15.1019 20.5823 13.5993 21 11.9991 21C7.02906 21 3 16.9706 3 12C3 7.02944 7.02906 3 11.9991 3C16.9692 3 20.9983 7.02944 20.9983 12Z" stroke="#766552" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        {{ comment }}
+                        {{ data.comments }}
                     </span>
                     <span class="like">                            
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M14 10H18.764C19.1049 10 19.4401 10.0871 19.7378 10.2531C20.0355 10.4191 20.2859 10.6584 20.4651 10.9484C20.6444 11.2383 20.7465 11.5692 20.7619 11.9098C20.7773 12.2503 20.7054 12.5891 20.553 12.894L17.053 19.894C16.8869 20.2265 16.6314 20.5061 16.3152 20.7014C15.999 20.8968 15.6347 21.0002 15.263 21H11.246C11.083 21 10.92 20.98 10.761 20.94L7 20M14 10V5C14 4.46957 13.7893 3.96086 13.4142 3.58579C13.0391 3.21071 12.5304 3 12 3H11.905C11.405 3 11 3.405 11 3.905C11 4.619 10.789 5.317 10.392 5.911L7 11V20M14 10H12M7 20H5C4.46957 20 3.96086 19.7893 3.58579 19.4142C3.21071 19.0391 3 18.5304 3 18V12C3 11.4696 3.21071 10.9609 3.58579 10.5858C3.96086 10.2107 4.46957 10 5 10H7.5" stroke="#766552" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        {{ like }}
+                        {{ data.likes }}
                     </span>
                 </div>
             </div>
         </div>
-        <p v-for="(item, index) in Array(10).fill('')" :key="index">
-        这是第 {{ index + 1 }} 行文本，用于增加页面高度以测试滚动效果。
-      </p>
     </div>
 </template>
 
@@ -92,7 +86,9 @@ const like = ref('200');
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background-color: #E6DBCD;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .header-left {
     display: flex;
@@ -103,12 +99,21 @@ const like = ref('200');
     font-size: 18px;
     color: #000000;
 }
+.category {
+    width: 30px;
+    height: 17px;
+    text-align: center;
+    font-size: 11px;
+    border-radius: 2px;
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(144, 169, 220, 1);
+}
 .date {
     font-size: 12px;
     color: #9D9393;
 }
 .content-title {
-    margin-left: 9px;
+    margin-left: 15px;
     font-size: 14px;
     color: #9F7638;
 }
@@ -117,13 +122,19 @@ const like = ref('200');
     font-family: 'Inter';
     line-height: 20px;
     padding: 5px 15px 0;
+    width: calc(100%-45px); /* 设置固定宽度 */
+    white-space: nowrap; /* 不换行 */
+    overflow: hidden; /* 隐藏超出部分 */
+    text-overflow: ellipsis; /* 添加省略号 */
 }
 .content-img {
     width: 128px;
     aspect-ratio: 16 / 9;
-    background-color: #9D9393; 
     margin: 5px 0px 0px 15px;
     border-radius: 5px;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .item-footer {
     display: flex;
@@ -138,6 +149,10 @@ const like = ref('200');
     color: #766450;
     border-radius: 4px;
     border: solid 1px #6C5944;
+}
+.none-sign {
+    width: 44px;
+    height: 17px; 
 }
 .footer-right {
     display: flex;

@@ -31,11 +31,6 @@ const router = createRouter({
       ]
     },
     {
-      path: '/home',
-      name: 'home',
-      component: () => import('../views/HomeView.vue'),
-    },
-    {
       path: '/gaode',
       name: 'gaode',
       component: () => import('../components/slot/gaode.vue'),
