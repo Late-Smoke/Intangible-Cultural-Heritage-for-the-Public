@@ -1,6 +1,6 @@
 <template>
     <div class="action">
-        <div class="date">{{ new Date(comment.createdTime).toLocaleDateString() }}</div>
+        <div class="date">{{ formatDate(comment.createdTime) }}</div>
 
         <el-button text type="info" size="small" @click="replyAction">回复</el-button>
 
@@ -10,14 +10,14 @@
             <mdiThumbUp color="red" />{{ comment.likes }}
         </button>
         <button class="thumb-btn" v-else @click="Comments.addLike(comment.id).then(reloadAction)">
-            <mdiThumbUpOutline />{{ comment.likes }}
+            <mdiThumbUpOutline color="#766552" />{{ comment.likes }}
         </button>
 
         <button class="thumb-btn" v-if="comment.userIsDisLike" @click="Comments.removeDislike(comment.id).then(reloadAction)">
             <mdiThumbDown color="red" />{{ comment.disLikes }}
         </button>
         <button class="thumb-btn" v-else @click="Comments.addDislike(comment.id).then(reloadAction)">
-            <mdiThumbDownOutline />{{ comment.disLikes }}
+            <mdiThumbDownOutline color="#766552" />{{ comment.disLikes }}
         </button>
     </div>
 </template>
@@ -25,6 +25,7 @@
 <script setup lang="ts">
 import * as Comments from '@/axios/api/comments'
 import { defineProps } from 'vue';
+import { formatDate } from '@/utils'
 
 defineProps<{
     comment: Comments.Comment,
@@ -52,6 +53,10 @@ defineProps<{
         display: flex;
         align-items: center;
         gap: 8px;
+
+        svg {
+            font-size: 1.25em;
+        }
     }
 }
 </style>

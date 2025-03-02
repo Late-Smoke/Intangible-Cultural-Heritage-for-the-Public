@@ -6,7 +6,20 @@ const router = createRouter({
     {
       path: '/',
       name: 'root',
+      component: () => import('../views/mainPage/mainPageView.vue'),
       redirect: { name: 'cultureMap' },
+      children: [
+        {
+          path: 'activity',
+          name: 'activityHome',
+          component: () => import('@/views/activity/home.vue'),
+        },
+        {
+          path: 'self',
+          name: 'self',
+          component: () => import('@/views/user/home.vue'),
+        },
+      ]
     },
     {
       path: '/login',
@@ -124,27 +137,24 @@ const router = createRouter({
             },
           ]
         },
-        {
-          path: 'activity',
-          name: 'activityHome',
-          component: () => import('@/views/activity/home.vue'),
-        },
-        {
-          path: 'myPage',
-          name: 'myPage',
-          component: () => import('../components/mainPage/myPage.vue'),
-        }
       ]
     },
     {
-      path: '/posts/:postId',
+      path: '/post/:postId',
       name: 'post',
       component: () => import('@/views/posts/post.vue'),
+      props: route => ({
+        postId: route.params.postId,
+      })
     },
     {
-      path: '/posts/:postId/comment/:commentId',
+      path: '/post/:postId/comment/:commentId',
       name: 'postComment',
       component: () => import('@/views/posts/post.vue'),
+      props: route => ({
+        postId: route.params.postId,
+        commentId: route.params.commentId
+      })
     },
     {
       path: '/activity',
@@ -160,6 +170,11 @@ const router = createRouter({
       path: '/activity/:id/participate',
       name: 'activityParticipate',
       component: () => import('@/views/activity/participate.vue'),
+    },
+    {
+      path: '/user/:id',
+      name: 'userHome',
+      component: () => import('@/views/user/home.vue'),
     },
   ],
 })

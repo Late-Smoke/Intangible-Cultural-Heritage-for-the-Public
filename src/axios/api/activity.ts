@@ -7,8 +7,8 @@ export interface ActivitySearch {
     secondType?: string
     province?: string
     city?: string
-    startTime?: string
-    endTime?: string
+    startTime?: Date
+    endTime?: Date
 }
 
 export interface Activity {
@@ -25,8 +25,8 @@ export interface Activity {
     currentUserFavorite: boolean;
     firstType: string;
     secondType: string;
-    startTime: Date;
-    endTime: Date;
+    startTime: string;
+    endTime: string;
 }
 
 export interface Acmedia {
