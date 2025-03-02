@@ -1,6 +1,7 @@
 import apiClient from "../axios";
 import { Response } from "./common";
 import * as Posts from '@/axios/api/posts'
+import * as Activity from '@/axios/api/activity'
 
 export interface Self {
     /**
@@ -62,4 +63,12 @@ export function getFavPosts() {
 
 export function getComments() {
     return apiClient.get<Response<Comment[]>>('/personal/comments')
+}
+
+export function getJoinedActivities() {
+    return apiClient.get<Response<Activity.Activity[]>>('/personal/activity/participate')
+}
+
+export function getStarredActivities() {
+    return apiClient.get<Response<Activity.Activity[]>>('/personal/favorite/activity')
 }

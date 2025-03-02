@@ -1,18 +1,8 @@
 @import './base.css';
 @import './fonts.css';
 @import './layout.css';
+@import './element-plus.scss';
 /* @import "tailwindcss"; */
-
-
-:root {
-    --el-color-primary: rgb(184, 129.6, 48);
-    --el-color-primary-light-3: rgb(237.5, 189.9, 118.5);
-    --el-color-primary-light-5: rgb(242.5, 208.5, 157.5);
-    --el-color-primary-light-7: rgb(247.5, 227.1, 196.5);
-    --el-color-primary-light-8: rgb(250, 236.4, 216);
-    --el-color-primary-light-9: rgb(252.5, 245.7, 235.5);
-    --el-color-primary-dark-2: rgb(158, 111, 39);
-}
 
 
 /*login*/

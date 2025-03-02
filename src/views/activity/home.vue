@@ -48,8 +48,8 @@
     </OverlayCard>
 
     <div v-if="timeRangeOption == timeRangeOptions.range && timeRange" style="margin: 8px;">
-        <span style="font-size: 0.8em; vertical-align: middle;">{{ timeRange.at(0)?.toLocaleString() }} - {{ timeRange.at(1)?.toLocaleString() }} </span>
-        <el-button text type="primary" size="small" @click="timeRangePicker.show = true">选择</el-button>
+        <span style="font-size: 0.8em;">{{ timeRange.at(0)?.toLocaleString() }} - {{ timeRange.at(1)?.toLocaleString() }} </span>
+        <el-button text type="primary" size="small" style=" vertical-align: baseline;" @click="timeRangePicker.show = true">选择</el-button>
     </div>
 
     <div class="type1-select flex-center">

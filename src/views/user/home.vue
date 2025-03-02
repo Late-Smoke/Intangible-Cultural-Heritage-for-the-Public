@@ -99,9 +99,9 @@
             </div>
         </div>
 
-        <el-tabs class="tabs" v-model="currentTab">
+        <el-tabs class="outline sticky" v-model="currentTab">
             <el-tab-pane label="发布" :name="tabs.posts">
-                <PostPreview v-for="post in myPosts" :post="post" self />
+                <PostPreviewSelf v-for="post in myPosts" :post="post" :reload-action="loadTab" />
             </el-tab-pane>
 
             <el-tab-pane label="评论" :name="tabs.comments">
@@ -113,7 +113,15 @@
             </el-tab-pane>
 
             <el-tab-pane label="活动" :name="tabs.activities">
-                活动
+                <el-tabs v-model="currentActivityTab" class="solid" style="margin-top: 4px;">
+                    <el-tab-pane label="我参与的" :name="activityTabs.joined">
+                        {{ myActivities }}
+                    </el-tab-pane>
+
+                    <el-tab-pane label="我收藏的" :name="activityTabs.starred">
+                        {{ myActivities }}
+                    </el-tab-pane>
+                </el-tabs>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -127,8 +135,10 @@ import { useRoute } from 'vue-router';
 import TagsEditor from '@/components/slot/TagsEditor.vue';
 import { humanizeNumber } from '@/utils'
 import * as Posts from '@/axios/api/posts'
+import PostPreviewSelf from '@/components/posts/PostPreviewSelf.vue'
 import PostPreview from '@/components/posts/PostPreview.vue'
 import CommentQuoteReply from '@/components/posts/CommentQuoteReply.vue';
+import * as Activity from '@/axios/api/activity'
 
 const route = useRoute()
 const isSelf = route.name == 'self'
@@ -140,10 +150,22 @@ const userTags = ref<string[]>([])
 enum tabs { posts, comments, favorites, activities }
 const currentTab = ref(tabs.posts)
 
-watch(currentTab, () => {
+enum activityTabs { joined, starred }
+const currentActivityTab = ref(activityTabs.joined)
+
+watch(currentTab, loadTab, { immediate: true })
+watch(currentActivityTab, loadActicityTab)
+
+
+const myPosts = ref<Posts.Post[]>()
+const myFavorites = ref<Posts.Post[]>()
+const myComments = ref<Self.Comment[]>()
+const myActivities = ref<Activity.Activity[]>()
+
+function loadTab() {
     switch (currentTab.value) {
         case tabs.posts:
-            Self.getPosts().then(r => myPosts.value = r.data.data.reverse())
+            Self.getPosts().then(r => myPosts.value = sortPosts(r.data.data))
             break
         case tabs.comments:
             Self.getComments().then(r => myComments.value = r.data.data.reverse())
@@ -151,13 +173,31 @@ watch(currentTab, () => {
         case tabs.favorites:
             Self.getFavPosts().then(r => myFavorites.value = r.data.data.reverse())
             break
+        case tabs.activities:
+            loadActicityTab()
+            break
     }
-}, { immediate: true })
+}
 
+function loadActicityTab() {
+    switch (currentActivityTab.value) {
+        case activityTabs.joined:
+            Self.getJoinedActivities().then(r => myActivities.value = r.data.data.reverse())
+            break
+        case activityTabs.starred:
+            Self.getStarredActivities().then(r => myActivities.value = r.data.data.reverse())
+            break
+    }
+}
 
-const myPosts = ref<Posts.Post[]>()
-const myFavorites = ref<Posts.Post[]>()
-const myComments = ref<Self.Comment[]>()
+function sortPosts(posts: Posts.Post[]) {
+    return posts.sort((a, b) => {
+        if (a.pinned !== b.pinned) {
+            return Number(b.pinned) - Number(a.pinned); // true (1) comes before false (0)
+        }
+        return new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime(); // Sort by createdTime desc
+    });
+}
 
 
 function getSelf() {
@@ -183,9 +223,12 @@ onMounted(() => {
         top: 0;
         right: 0;
         bottom: 0;
-        pointer-events: none;
         display: flex;
         align-items: center;
+    }
+
+    >div:not(.bg) {
+        position: relative;
     }
 
     .menu {
@@ -213,7 +256,6 @@ onMounted(() => {
         }
     }
 
-
     .user {
         padding: 0 8px;
 
@@ -225,6 +267,7 @@ onMounted(() => {
                 width: 48px;
                 height: 48px;
                 border-radius: 100%;
+                object-fit: cover;
             }
 
             .main {
@@ -355,28 +398,6 @@ onMounted(() => {
                 font-size: 0.75em;
                 color: #444;
             }
-        }
-    }
-
-    .tabs {
-        :deep(.el-tabs__nav) {
-            margin-left: 16px;
-        }
-
-        :deep(.el-tabs__nav-wrap:after) {
-            opacity: 0;
-        }
-
-        :deep(.el-tabs__header) {
-            position: sticky;
-            top: 0;
-            background-color: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(8px);
-            margin-bottom: 8px;
-        }
-
-        :deep(.el-tabs__item.is-active) {
-            font-weight: bold;
         }
     }
 }

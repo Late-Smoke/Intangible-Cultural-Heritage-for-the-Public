@@ -15,7 +15,7 @@ export const Post: Posts.Post = {
     "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
     "sex": 0,
     "userType": 3,
-    "tag": null,
+    "tag": 'null tag2',
     "views": 0,
     "likes": 0,
     "favorite": 0,

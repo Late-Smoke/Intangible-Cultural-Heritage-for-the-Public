@@ -1,9 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import RelatedPost from '@/components/slot/relatedPost.vue';
+import PostPreview from '@/components/posts/PostPreview.vue'
 import Exhibition from '@/components/slot/exhibition.vue';
 import Map from '@/components/slot/gaode.vue';
 import { ArrowDownBold } from '@element-plus/icons-vue';
+import * as ExampleData from '@/axios/example-data'
 
 const selectedTab = ref('relatedPost');
 const handleTabClick = (tab) => {
@@ -107,7 +108,7 @@ const searchName = ref('');
   </div>
   <div class="content">
     <div class="relatedPost" v-show="selectedTab == 'relatedPost'">
-      <related-post />
+      <post-preview :post="ExampleData.Post" />
     </div>
     <div class="exhibition" v-show="selectedTab == 'activity'">
       <exhibition />
@@ -183,7 +184,7 @@ const searchName = ref('');
 }
 
 /*content*/
-.relatedPost,
+/* .relatedPost, */
 .exhibition,
 .input,
 .sum {

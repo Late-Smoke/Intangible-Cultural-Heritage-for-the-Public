@@ -1,5 +1,6 @@
 import apiClient from "../axios";
 import { Response } from "./common";
+import { ElMessage } from 'element-plus';
 
 export interface HotPost {
     /**
@@ -155,6 +156,7 @@ export interface Post {
     views: number;
 
     createdTime: string
+    pinned: boolean
 }
 
 
@@ -169,12 +171,35 @@ export function getPostById(id) {
 export function addLike(id) {
     return apiClient.put(`/postnews/like/${id}`)
 }
+
 export function removeLike(id) {
     return apiClient.delete(`/postnews/unlike/${id}`)
 }
+
 export function addFav(id) {
     return apiClient.put(`/postnews/favorite/${id}`)
 }
+
 export function removeFav(id) {
     return apiClient.delete(`/postnews/unfavorite/${id}`)
+}
+
+export function pinPost(id) {
+    const r = apiClient.get<Response<any>>(`/personal/postnews/pinned/${id}`)
+    r.then(r => {
+        try {
+            ElMessage.success(r.data.success && r.data.data)
+        } catch { }
+    })
+    return r
+}
+
+export function unpinPost(id) {
+    const r = apiClient.get<Response<any>>(`/personal/postnews/pinned/${id}`)
+    r.then(r => {
+        try {
+            ElMessage.success(r.data.success && r.data.data)
+        } catch { }
+    })
+    return r
 }

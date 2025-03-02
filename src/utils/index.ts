@@ -15,8 +15,15 @@ export function formatDate(date: string | Date) {
     const d = date instanceof Date ? date : parseDate(date)
     const diff = (new Date().getTime() - d.getTime()) / 1000
 
-    if (diff < 60 * 60) return `${Math.ceil(diff / 60)}分钟前`
-    else if (diff < 60 * 60 * 24) return `${Math.ceil(diff / 60 / 60)}小时前`
-    else if (diff < 60 * 60 * 24 * 3) return `${Math.ceil(diff / 60 / 60 / 24)}天前`
+    if (diff < 60) return `${Math.floor(diff)}秒前`
+    else if (diff < 60 * 60) return `${Math.floor(diff / 60)}分钟前`
+    else if (diff < 60 * 60 * 24) return `${Math.floor(diff / 60 / 60)}小时前`
+    else if (diff < 60 * 60 * 24 * 3) return `${Math.floor(diff / 60 / 60 / 24)}天前`
     else return d.toLocaleDateString()
+}
+
+export function html2txt(html:string) {
+    const el = document.createElement('div')
+    el.innerHTML = html
+    return el.textContent
 }

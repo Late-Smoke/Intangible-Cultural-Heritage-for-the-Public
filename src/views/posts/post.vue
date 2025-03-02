@@ -37,8 +37,8 @@
             </el-carousel-item>
         </el-carousel>
 
-        <h3 style="margin: 8px;">{{ post.title }}</h3>
-        <p style="margin: 8px;">{{ post.content }}</p>
+        <h3 class="title">{{ post.title }}</h3>
+        <div class="body" v-html="post.content"></div>
 
         <div v-if="typeof post.tag == 'string'" class="tags">
             <span v-for="item in post.tag.split(' ')">{{ item }}</span>
@@ -243,7 +243,7 @@ const reply = reactive({
 
     send() {
         if (!reply.data.content) {
-            ElMessage.info('回复不能为空')
+            ElMessage.warning('回复不能为空')
             return
         }
 
@@ -323,6 +323,7 @@ onMounted(() => {
         height: 40px;
         box-sizing: content-box;
         border-radius: 100%;
+        object-fit: cover;
     }
 
     .name {
@@ -343,6 +344,22 @@ onMounted(() => {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+.title {
+    margin: 12px 8px;
+}
+
+.body {
+    margin: 8px;
+
+    :deep(*) {
+        font-size: 1em !important;
+        background: none !important;
+        margin: 0 0 0.5em 0 !important;
+        padding: 0 !important;
+        line-height: 1.5em !important;
+    }
 }
 
 .tags {
@@ -413,6 +430,7 @@ onMounted(() => {
         width: 40px;
         height: 40px;
         border-radius: 100%;
+        object-fit: cover;
     }
 
     .content {
@@ -448,6 +466,7 @@ onMounted(() => {
                     width: 32px;
                     height: 32px;
                     border-radius: 100%;
+                    object-fit: cover;
                 }
 
                 .author-label {
