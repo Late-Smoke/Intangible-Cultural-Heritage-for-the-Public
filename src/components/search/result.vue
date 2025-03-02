@@ -3,64 +3,53 @@ import { ref, onMounted } from 'vue';
 import router from '@/router';
 import { useActivityStore } from '@/stores/user';
 import { useRoute } from 'vue-router';
+import comprehensive from '@/components/search/result/comprehensive.vue';
+import activity from '@/components/search/result/activity.vue';
+import info from '@/components/slot/info.vue';
+//import map from '@/components/search/result/map.vue';
+import user from '@/components/search/result/user.vue';
 
-const route = useRoute()
-
-const activity = useActivityStore();
-
-const selectedTab = ref('comprehensive');
-const handleTabClick = (tab) => {
-    if (tab == 'activity') activity.changeShow(true);
-    else activity.changeShow(false);
-    selectedTab.value = tab;
-    router.push(`/searchView/result/${tab}`);
-}
-
-onMounted(() => {
-    if (activity.show) handleTabClick('activity');
-    else if (!route.path.startsWith('/searchView/result/comprehensive'))
-        handleTabClick(selectedTab.value);
-})
+const TabName = ref('comprehensive');
 </script>
 
 <template>
-    <div class="title">
-        <div class="tab">
-            <span @click="handleTabClick('comprehensive')">综合</span>
-            <svg v-show="selectedTab == 'comprehensive'" width="25" height="2" viewBox="0 0 25 2" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1H24" stroke="#987B5B" stroke-width="2" stroke-linecap="round" />
-            </svg>
-        </div>
-        <div class="tab">
-            <span @click="handleTabClick('activity')">活动</span>
-            <svg v-show="selectedTab == 'activity'" width="25" height="2" viewBox="0 0 25 2" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1H24" stroke="#987B5B" stroke-width="2" stroke-linecap="round" />
-            </svg>
-        </div>
-        <div class="tab">
-            <span @click="handleTabClick('info')">资讯</span>
-            <svg v-show="selectedTab == 'info'" width="25" height="2" viewBox="0 0 25 2" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1H24" stroke="#987B5B" stroke-width="2" stroke-linecap="round" />
-            </svg>
-        </div>
-        <div class="tab">
-            <span @click="handleTabClick('user')">用户</span>
-            <svg v-show="selectedTab == 'user'" width="25" height="2" viewBox="0 0 25 2" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1H24" stroke="#987B5B" stroke-width="2" stroke-linecap="round" />
-            </svg>
-        </div>
-    </div>
-    <div class="router">
-        <router-view />
-    </div>
+    <el-tabs v-model="TabName" class="tabs" @tab-click="handleClick">
+        <el-tab-pane label="综合" name="comprehensive">
+            <comprehensive />
+        </el-tab-pane>
+        <el-tab-pane label="综合" name="activity">
+            <activity />
+        </el-tab-pane>
+        <el-tab-pane label="资讯" name="info">
+            <info />
+        </el-tab-pane>
+        <el-tab-pane label="地图" name="map">地图</el-tab-pane>
+        <el-tab-pane label="用户" name="user">
+            <user />
+        </el-tab-pane>
+    </el-tabs>
 </template>
 
 
 <style scoped>
+:deep(.el-tabs__header) {
+    margin: 0;
+}
+:deep(.el-tabs__nav-scroll) {
+    margin-left: 15px;
+}
+
+:deep(.el-tabs__nav-wrap:after) {
+    background-color: #fff;
+}
+
+:deep(.el-tabs__item) {
+    font-size: 18px;
+}
+:deep(.el-tabs__active-bar) {
+    background-color: rgba(152, 123, 91, 1);
+}
+
 .title {
     display: flex;
     margin: 5px 15px;

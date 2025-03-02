@@ -91,11 +91,19 @@ export const useActivityStore = defineStore("activity", {
 export const useSearchStore = defineStore("search", {
   state: () => ({
     search: "",
+    ifSearch: false,
+    ifHistory: false,
   }),
   actions: {
     changeSearch(search) {
       this.search = search;
     },
+    changeIfSearch(ifSearch) {
+      this.ifSearch = ifSearch; 
+    },
+    changeIfHistory(ifHistory) {
+      this.ifHistory = ifHistory; 
+    }
   },
 });
 

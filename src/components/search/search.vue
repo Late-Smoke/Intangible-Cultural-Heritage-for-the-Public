@@ -45,14 +45,9 @@ const handleLongTitle = () => {
     });
 };
 const handleHistory = (index) => {
-    console.log(historyRecordsShow.value[index]);
     searchStore.changeSearch(historyRecordsShow.value[index]);//更新搜索栏
-    router.push({
-        name: 'comprehensiveSearch',
-        params: {
-            input: historyRecordsShow.value[index]
-        }
-    });
+    router.push({name: 'result',});
+    searchStore.changeIfHistory(true);
 }
 const handleDelete = (index) => { // 删除单个
     recordShow.value.splice(index, 1);

@@ -184,6 +184,9 @@ const searchName = ref('');
 }
 
 /*content*/
+.relatedPost {
+  margin: 0 15px 0;
+}
 /* .relatedPost, */
 .exhibition,
 .input,

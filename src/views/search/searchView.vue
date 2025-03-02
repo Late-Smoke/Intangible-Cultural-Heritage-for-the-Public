@@ -8,28 +8,32 @@ const searchStore = useSearchStore();
 const dataStore = useDataStore();
 const historyStore = useHistoryStore(); 
 const history = ref(historyStore.historyRecords);
-const search = ref(searchStore.search);//输入框绑定值
 const handleBack = () => {
     activityStore.changeShow(false);
     dataStore.changeRelatedPost([]);
+    searchStore.changeSearch('');
+    searchStore.changeIfSearch(false);
+    searchStore.changeIfHistory(false);
     router.push('/mainPageView/homePage/cultureMap');
 }
 const handleClean = () => {
-    searchStore.search.value = '';
+    searchStore.search = '';
+    searchStore.changeIfSearch(false);
+    searchStore.changeIfHistory(false);
 }
 const photoClick = () => {
     router.push('/searchView/pictureView');
 }
 const handleSearch = () => {
     if (searchStore.search) {
-        if (history.value) history.value.unshift(searchStore.search);
-        historyStore.changeHistoryRecords(history.value);//更新历史记录
+        if (history.value && history.value[0] != searchStore.search){//更新历史记录
+            history.value.unshift(searchStore.search);
+        }
+        historyStore.changeHistoryRecords(history.value); 
         dataStore.changeRelatedPost([]);//更新相关帖子
+        searchStore.changeIfSearch(true);
         router.push({
-            name: 'comprehensiveSearch',
-            params:{
-                input: searchStore.search
-            }
+            name: 'result'
         });
     }
 }
