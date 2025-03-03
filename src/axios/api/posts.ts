@@ -169,19 +169,19 @@ export function getPostById(id) {
 }
 
 export function addLike(id) {
-    return apiClient.put(`/postnews/like/${id}`)
+    return apiClient.put<Response<any>>(`/postnews/like/${id}`)
 }
 
 export function removeLike(id) {
-    return apiClient.delete(`/postnews/unlike/${id}`)
+    return apiClient.delete<Response<any>>(`/postnews/unlike/${id}`)
 }
 
 export function addFav(id) {
-    return apiClient.put(`/postnews/favorite/${id}`)
+    return apiClient.put<Response<any>>(`/postnews/favorite/${id}`)
 }
 
 export function removeFav(id) {
-    return apiClient.delete(`/postnews/unfavorite/${id}`)
+    return apiClient.delete<Response<any>>(`/postnews/unfavorite/${id}`)
 }
 
 export function pinPost(id) {

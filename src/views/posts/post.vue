@@ -30,9 +30,9 @@
             <el-button round icon="mdiShareOutline" style="font-size: 1.5em; color: #A0814D;"></el-button>
         </div>
 
-        <el-carousel v-if="post.urls" trigger="click" height="40vh">
-            <el-carousel-item v-for="item in post.urls">
-                <img v-if="item.type == 0" :src="item.url">
+        <el-carousel v-if="post.urls" trigger="click" height="40vh" :autoplay="false">
+            <el-carousel-item v-for="(item, index) in post.urls">
+                <el-image v-if="item.type == 0" fit="contain" :preview-teleported="true" :src="item.url" :preview-src-list="post.urls.map(x => x.url)" :initial-index="index" />
                 <video v-if="item.type == 1" :src="item.url"></video>
             </el-carousel-item>
         </el-carousel>
@@ -294,7 +294,10 @@ onMounted(() => {
 <style scoped lang="less">
 .bg {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -339,11 +342,18 @@ onMounted(() => {
     }
 }
 
-.el-carousel__item * {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+.el-carousel__item {
+
+    .el-image,
+    video {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    video {
+        object-fit: contain;
+    }
 }
 
 .title {
