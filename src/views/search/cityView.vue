@@ -5,7 +5,7 @@ import { useActivityStore } from '@/stores/user';
 
 const activityStore = useActivityStore();
 const handleBack = () => {
-    router.push('/searchView/result/activity');
+    router.push('/searchView/result');
 }
 
 const citiesByPinyin = {

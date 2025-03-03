@@ -13,6 +13,7 @@ export const usePositionStore = defineStore("position", {
       this.longitude = newLongitude;
     },
   },
+  persist: true,
 });
 
 export const useTypeStore = defineStore("type", {
@@ -74,6 +75,7 @@ export const useActivityStore = defineStore("activity", {
     show: false,
     position: "全国",
     time: "全部时间",
+    ifPage: false,
   }),
   actions: {
     changeShow(show) {
@@ -85,6 +87,9 @@ export const useActivityStore = defineStore("activity", {
     changeTime(time) {
       this.time = time;
     },
+    changeIfPage(ifPage) {
+      this.ifPage = ifPage; 
+    }
   },
 });
 

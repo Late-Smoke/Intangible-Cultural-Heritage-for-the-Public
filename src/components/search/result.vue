@@ -1,15 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import router from '@/router';
-import { useActivityStore } from '@/stores/user';
-import { useRoute } from 'vue-router';
+import { ref, watchEffect } from 'vue';
 import comprehensive from '@/components/search/result/comprehensive.vue';
 import activity from '@/components/search/result/activity.vue';
 import info from '@/components/slot/info.vue';
-//import map from '@/components/search/result/map.vue';
 import user from '@/components/search/result/user.vue';
+import { useActivityStore } from '@/stores/user';
 
 const TabName = ref('comprehensive');
+const activityStore = useActivityStore();
+
 </script>
 
 <template>
@@ -17,7 +16,7 @@ const TabName = ref('comprehensive');
         <el-tab-pane label="综合" name="comprehensive">
             <comprehensive />
         </el-tab-pane>
-        <el-tab-pane label="综合" name="activity">
+        <el-tab-pane label="活动" name="activity">
             <activity />
         </el-tab-pane>
         <el-tab-pane label="资讯" name="info">

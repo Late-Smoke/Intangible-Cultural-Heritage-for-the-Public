@@ -67,34 +67,6 @@ const router = createRouter({
           path: 'result',
           name: 'result',
           component: () => import('../components/search/result.vue'),
-          redirect: { name: 'comprehensive' },
-          children: [
-            {
-              path: 'comprehensive',
-              name: 'comprehensive',
-              component: () => import('../components/search/result/comprehensive.vue'),
-            },
-            {
-              path: 'comprehensive/:input',
-              name: 'comprehensiveSearch',
-              component: () => import('../components/search/result/comprehensive.vue'),
-            },
-            {
-              path: 'activity',
-              name: 'activity',
-              component: () => import('../components/search/result/activity.vue'),
-            },
-            {
-              path: 'info',
-              name: 'info',
-              component: () => import('../components/slot/info.vue'),
-            },
-            {
-              path: 'user',
-              name: 'user',
-              component: () => import('../components/search/result/user.vue'),
-            }
-          ]
         }
       ]
     },
