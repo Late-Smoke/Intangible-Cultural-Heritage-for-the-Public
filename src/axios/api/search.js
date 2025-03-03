@@ -21,3 +21,8 @@ export function getNewPostApi(input) {// 相关帖子-最新
 export function getHotPostApi(input) {// 相关帖子-热度
     return apiClient.get('/search/posts/hot', { params: { keyword: input }});
 }
+
+//info
+export function getInfoApi(input) {// 资讯
+    return apiClient.get('/search/news/Time', { params: { keyword: input }});
+}

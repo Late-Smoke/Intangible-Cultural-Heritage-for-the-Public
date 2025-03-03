@@ -10,8 +10,6 @@ import { usePositionStore } from '@/stores/user';
 
 // 地图对象
 const positionStore = usePositionStore();
-const latitude = positionStore.latitude;
-const longitude = positionStore.longitude;
 let map = null;
 // DistrictExplorer 实例
 let districtExplorer = null;
@@ -58,6 +56,8 @@ onMounted(() => {
             var position = result.position;
             // 获取定位城市并设置地图
             getCityFromPosition(position);
+            positionStore.changeLatitude(result.position.lat);
+            positionStore.changeLongitude(result.position.lng);
           } else {
             onError(result);
           }
@@ -70,9 +70,9 @@ onMounted(() => {
           var geolocation = new AMap.Geolocation();
           geolocation.getCityInfo(function (status, cityResult) {
             if (status === 'complete') {
-              //var cityName = cityResult.city;  // 获取城市名
+              var cityName = cityResult.city;  // 获取城市名
+              positionStore.changeCityName(cityName);
               switch2AreaNode(cityResult.adcode);
-              //map.setCity(cityName);  // 设置地图中心为该城市
             } else {
               console.error('获取城市信息失败', cityResult.info);
             }

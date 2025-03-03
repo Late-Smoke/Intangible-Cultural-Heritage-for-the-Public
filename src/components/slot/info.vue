@@ -1,25 +1,38 @@
 <script setup>
-import { ref } from 'vue';
+import { ref , watch ,watchEffect,onBeforeMount } from 'vue';
+import { getInfoApi } from '@/axios/api/search';
+import { useSearchStore } from '@/stores/user';
 const headTitle = ref('火树银花不夜天，大沥持续上演千年绝技打铁花');
 const nickname = ref('南海大沥');
 const time = ref('12小时前');
 const itemNickname = ref('确山打铁花');
 const itemTime = ref('1天前');
+
+const data = ref([]);
+const searchStore = useSearchStore();
+watchEffect(() => {
+    if (searchStore.ifHistory||(searchStore.ifSearch && searchStore.search)) {
+        getInfoApi(searchStore.search).then(res => {
+        data.value = res.data.data;
+    })
+    }
+});
 </script>
 
 <template>
-    <div class="head">
-        <div class="headTitle">{{ headTitle }}</div>
+    <div v-if="data.length">
+    <div class="head" :style="{backgroundImage:`url(${data[0]?.urls[0]?.url})`}">
+        <div class="headTitle">{{ data[0].title }}</div>
         <div class="head-bottom">
-            <span>{{ nickname }}</span>
-            <span>{{ time }}</span>
+            <span>{{ data[0].nickName }}</span>
+            <span>{{ data[0].formattedTime }}</span>
         </div>
     </div>
     <div class="content">
-        <div class="content-item">
+        <div class="content-item" v-for="(item, index) in data.slice(1)" :key="index">
             <div class="item-head">
-                <div>确山铁花即将北上南下 天津杭州两地新年绽放</div>
-                <div class="item-img"></div>
+                <div>{{ item.title }}</div>
+                <img class="item-img" :src="item.urls[0].url"/>
             </div>
             <div class="item-bottom">
                 <span>{{ itemNickname }}</span>
@@ -27,20 +40,20 @@ const itemTime = ref('1天前');
             </div>
         </div>
     </div>
+</div>
 </template>
 
 
 <style scoped>
 .head,.item-img {
     aspect-ratio: 16 / 9;
-    background-color: #ccc;
 }
 .head {
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    color: #000000A6;
+    color: #fff;
 }
 .headTitle {
     font-size: 24px;
@@ -52,18 +65,14 @@ const itemTime = ref('1天前');
     gap: 10px;
     justify-content: flex-end;
 }
-.content {
-    margin: 15px 20px;
-    padding: 10px 15px;
-    padding-right: 10px;
-    gap: 10px;
-    box-shadow: 0px 2px 10px 0px #00000026;
-    border-top: 1px solid #C7C7C7 
-}
 .content-item {
     display: flex;
     flex-direction: column;
-    gap: 10px; 
+    box-shadow: 0px 2px 10px 0px #00000026;
+    border-top: 1px solid #C7C7C7 ;
+    margin: 15px 20px;
+    padding: 10px 15px;
+    padding-right: 10px;
 }
 .item-head {
     display: flex;
@@ -76,6 +85,7 @@ const itemTime = ref('1天前');
     margin-top: 30px;
     border-radius: 5px;
     flex-shrink: 0;
+    object-fit: cover;
 }
 .item-head span {
     flex-grow: 1;

@@ -9,6 +9,10 @@
         </div>
 
         <div class="menu" v-if="isSelf">
+            <div class="messages" @click="">
+                <mdiMessageProcessingOutline />
+                <div class="badge">{{  }}</div>
+            </div>
             <div @click="">
                 <mdiCog />
             </div>
@@ -251,6 +255,16 @@ onMounted(() => {
 
             svg {
                 display: block;
+            }
+        }
+
+        .messages {
+            position: relative;
+
+            .badge {
+                position: absolute;
+                top: 0;
+                right: 0;
             }
         }
 

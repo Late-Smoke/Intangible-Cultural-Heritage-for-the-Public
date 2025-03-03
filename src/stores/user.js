@@ -4,6 +4,7 @@ export const usePositionStore = defineStore("position", {
   state: () => ({
     latitude: null,
     longitude: null,
+    cityName: '',
   }),
   actions: {
     changeLatitude(newLatitude) {
@@ -12,6 +13,9 @@ export const usePositionStore = defineStore("position", {
     changeLongitude(newLongitude) {
       this.longitude = newLongitude;
     },
+    changeCityName(newCityName) {
+      this.cityName = newCityName; 
+    }
   },
   persist: true,
 });
