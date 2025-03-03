@@ -8,26 +8,35 @@ import activity from '@/components/search/result/activity.vue';
 import info from '@/components/slot/info.vue';
 //import map from '@/components/search/result/map.vue';
 import user from '@/components/search/result/user.vue';
+import { watch } from 'vue';
+
+const route = useRoute()
+
+watch(() => route.name, () => {
+    if (route.name == 'cultureMap') TabName.value = 'comprehensive'
+})
 
 const TabName = ref('comprehensive');
 </script>
 
 <template>
-    <el-tabs v-model="TabName" class="tabs" @tab-click="handleClick">
-        <el-tab-pane label="综合" name="comprehensive">
-            <comprehensive />
-        </el-tab-pane>
-        <el-tab-pane label="综合" name="activity">
-            <activity />
-        </el-tab-pane>
-        <el-tab-pane label="资讯" name="info">
-            <info />
-        </el-tab-pane>
-        <el-tab-pane label="地图" name="map">地图</el-tab-pane>
-        <el-tab-pane label="用户" name="user">
-            <user />
-        </el-tab-pane>
-    </el-tabs>
+    <template v-if="route.name != 'cultureMap'">
+        <el-tabs v-model="TabName" class="tabs" @tab-click="handleClick">
+            <el-tab-pane label="综合" name="comprehensive">
+                <comprehensive />
+            </el-tab-pane>
+            <el-tab-pane label="综合" name="activity">
+                <activity />
+            </el-tab-pane>
+            <el-tab-pane label="资讯" name="info">
+                <info />
+            </el-tab-pane>
+            <el-tab-pane label="地图" name="map">地图</el-tab-pane>
+            <el-tab-pane label="用户" name="user">
+                <user />
+            </el-tab-pane>
+        </el-tabs>
+    </template>
 </template>
 
 
@@ -35,6 +44,7 @@ const TabName = ref('comprehensive');
 :deep(.el-tabs__header) {
     margin: 0;
 }
+
 :deep(.el-tabs__nav-scroll) {
     margin-left: 15px;
 }
@@ -46,6 +56,7 @@ const TabName = ref('comprehensive');
 :deep(.el-tabs__item) {
     font-size: 18px;
 }
+
 :deep(.el-tabs__active-bar) {
     background-color: rgba(152, 123, 91, 1);
 }
