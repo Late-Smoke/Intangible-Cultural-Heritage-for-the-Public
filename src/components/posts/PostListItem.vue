@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import * as Posts from '@/axios/api/posts'
-import router from '@/router';
-import { formatDate } from '@/utils'
+import { formatDate, gotoPost } from '@/utils'
 import { html2txt } from '@/utils'
 
 
@@ -33,7 +32,7 @@ defineProps<{
                 <span class="date">{{ formatDate(post.createdTime) }}</span>
             </div>
 
-            <div class="item-content" @click="router.push({ name: 'post', params: { postId: post.id } })">
+            <div class="item-content" @click="gotoPost(post.id)">
                 <div class="content-title">{{ post.title }}</div>
                 <div class="content-text">{{ html2txt(post.content).slice(0, 100) }}</div>
                 <el-image class="content-img" v-if="post.urls.length" :src="post.urls[0].url" :preview-src-list="[post.urls[0].url]" fit="cover" @click.stop="" />

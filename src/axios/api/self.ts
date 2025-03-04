@@ -29,7 +29,8 @@ export interface Self {
      * 用户类型, 0普通用户1媒体2非遗传承人3管理员
      */
     userType: number;
-    [property: string]: any;
+    
+    id:number
 }
 
 export interface Comment {

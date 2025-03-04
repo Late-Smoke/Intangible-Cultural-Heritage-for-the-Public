@@ -9,9 +9,9 @@
         </div>
 
         <div class="menu" v-if="isSelf">
-            <div class="messages" @click="">
-                <mdiMessageProcessingOutline />
-                <div class="badge">{{  }}</div>
+            <div class="messages" @click="router.push({ name: 'notificationsHome' })">
+                <mdiEmailOutline />
+                <div class="badge" v-if="unreadCount">{{ unreadCount > 99 ? '99+' : unreadCount }}</div>
             </div>
             <div @click="">
                 <mdiCog />
@@ -21,7 +21,7 @@
             </div>
         </div>
         <div class="menu menu-back" v-else>
-            <div @click="">
+            <div @click="router.back()">
                 <mdiChevronLeft />
             </div>
         </div>
@@ -40,7 +40,7 @@
                         </span>
                     </div>
                     <div class="other-info">
-                        <div>UID: {{ }}</div>
+                        <div>UID: {{ user.id }}</div>
                         <div>IP属地: {{ }}</div>
                     </div>
                 </div>
@@ -130,13 +130,12 @@
         </el-tabs>
     </div>
 
-    <DrawerMenu v-model="menuOpen"/>
+    <DrawerMenu v-model="menuOpen" />
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import * as Self from '@/axios/api/self'
-import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import TagsEditor from '@/components/slot/TagsEditor.vue';
 import { humanizeNumber } from '@/utils'
@@ -148,12 +147,24 @@ import * as Activity from '@/axios/api/activity'
 import * as ExampleData from '@/axios/example-data'
 import ActivityListItem from '@/components/activity/ActivityListItem.vue';
 import DrawerMenu from '@/components/menu/DrawerMenu.vue';
+import * as Notifications from '@/axios/api/notifications'
+import router from '@/router';
 
 const route = useRoute()
 const isSelf = route.name == 'self'
 
+watch(() => route.name, name => {
+    if (name == 'self') {
+        loadUser()
+        loadUnreads()
+    }
+})
+
+
 const user = ref<Self.Self | null>()
 const userTags = ref<string[]>([])
+
+const unreadCount = ref(0)
 
 const menuOpen = ref(false)
 
@@ -212,15 +223,20 @@ function sortPosts(posts: Posts.Post[]) {
 }
 
 
-function getSelf() {
+function loadUser() {
     Self.getSelf().then(r => {
         user.value = r.data.data
         userTags.value = r.data.data.tag ? [...user.value.tag.split(' ')] : []
     })
 }
 
+function loadUnreads() {
+    Notifications.getUnreadCount().then(r => unreadCount.value = r.data.data)
+}
+
 onMounted(() => {
-    getSelf()
+    loadUser()
+    loadUnreads()
 })
 </script>
 
@@ -263,8 +279,16 @@ onMounted(() => {
 
             .badge {
                 position: absolute;
-                top: 0;
-                right: 0;
+                top: -3px;
+                right: -3px;
+                border-radius: 100px;
+                background-color: red;
+                color: white;
+                font-size: 0.5em;
+                line-height: 1.5em;
+                min-width: 1.5em;
+                padding: 0 0.35em;
+                text-align: center;
             }
         }
 
@@ -273,7 +297,7 @@ onMounted(() => {
             padding-bottom: 12px;
 
             >div {
-                padding: 0;
+                padding: 2px 4px;
             }
         }
     }

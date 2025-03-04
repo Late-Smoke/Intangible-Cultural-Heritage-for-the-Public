@@ -4,7 +4,7 @@
 
 <template>
   <router-view v-slot="{ Component }">
-    <keep-alive include="mainPageView,searchView">
+    <keep-alive include="mainPageView,searchView,notificationsHome">
       <component :is="Component" />
     </keep-alive>
   </router-view>

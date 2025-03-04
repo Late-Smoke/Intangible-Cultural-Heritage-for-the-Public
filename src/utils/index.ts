@@ -1,3 +1,4 @@
+import router from "@/router"
 
 /** 数字自动转换为 `n万` */
 export function humanizeNumber(x: number) {
@@ -22,8 +23,29 @@ export function formatDate(date: string | Date) {
     else return d.toLocaleDateString()
 }
 
-export function html2txt(html:string) {
+export function html2txt(html: string) {
     const el = document.createElement('div')
     el.innerHTML = html
     return el.textContent
+}
+
+
+export function gotoUser(id) {
+    router.push({
+        name: 'userHome',
+        params: { id }
+    })
+}
+
+export function gotoPost(postId) {
+    router.push({
+        name: 'post',
+        params: { postId }
+    })
+}
+export function gotoPostComment(postId, commentId) {
+    router.push({
+        name: 'postComment',
+        params: { postId, commentId }
+    })
 }

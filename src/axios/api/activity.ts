@@ -35,7 +35,7 @@ export interface Acmedia {
     url: string;
     activityId: number;
     deletedSign: number;
-    createdTime: Date;
+    createdTime: string;
 }
 
 export interface ActivityAddresses {
@@ -52,8 +52,8 @@ export interface ActivityAddresses {
     addressId: string;
     description: string;
     gaodeMapLink: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface ActivityParticipate {

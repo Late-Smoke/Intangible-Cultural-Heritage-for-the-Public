@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import * as Self from '@/axios/api/self'
-import { formatDate } from '@/utils'
+import { formatDate, gotoPost, gotoPostComment } from '@/utils'
 import router from '@/router';
 
 const props = defineProps<{
@@ -18,13 +18,11 @@ const props = defineProps<{
 }>()
 
 function gotoSource() {
-    router.push(props.comment.rootCommentId ? {
-        name: 'postComment',
-        params: { postId: props.comment.postId, commentId: props.comment.rootCommentId }
-    } : {
-        name: 'post',
-        params: { postId: props.comment.postId }
-    })
+    if (props.comment.rootCommentId) {
+        gotoPostComment(props.comment.postId, props.comment.rootCommentId)
+    } else {
+        gotoPost(props.comment.postId)
+    }
 }
 </script>
 

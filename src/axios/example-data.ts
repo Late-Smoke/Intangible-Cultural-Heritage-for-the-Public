@@ -1,6 +1,7 @@
 import * as Posts from './api/posts'
 import * as Comments from './api/comments'
 import * as Activity from './api/activity'
+import * as NotificationsAPI from './api/notifications'
 
 // @ts-nocheck
 
@@ -290,3 +291,166 @@ export const Activities: Activity.Activity[] = [
         "endTime": "2025-02-25T17:00:00"
     }
 ]
+
+export const Notifications: NotificationsAPI.Notifications = {
+    "total_message": 5,  //总的未读数
+    "likeMessageSize": 2, //点赞消息未读数
+    "replyMessagesSize": 2, //回复消息未读数
+    "followMessagesSize": 1,//关注消息未读数
+    "systemMessagesSize": 0, //系统消息未读数
+    "likeMessage": [
+        {
+            "userVo": {   //消息发出者的信息
+                "id": 7,
+                "nickName": "非遗侦探",
+                "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+                "tag": null,
+                "signature": "这个人很懒，还未有个性签名",
+                "userType": 3,
+                "beFan": false
+            },
+            "id": 19,  //消息id
+            "acceptUserId": 23,  //接收者（即当前用户）的id
+            "sendUserId": 7, //发送者用户id
+            "messageType": "like_comment", //类型 ("like_comment" 点赞评论 "like_post"点赞帖子 "reply_comment" 回复评论 "reply_post" 回复帖子 "system" 系统消息)
+            "title": "赞了我的评论",
+            "firstContent": "这篇写得好",
+            "readStatus": false,
+            "relatedId": 23,
+            "relatedType": "comment",
+            "createdTime": "2025-03-01T07:57:09"
+        },
+        {
+            "userVo": {
+                "id": 7,
+                "nickName": "非遗侦探",
+                "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+                "tag": null,
+                "signature": "这个人很懒，还未有个性签名",
+                "userType": 3,
+                "beFan": false
+            },
+            "id": 20,
+            "acceptUserId": 23,
+            "sendUserId": 7,
+            "messageType": "like_post",
+            "title": "赞了我的帖子",
+            "firstContent": "我的非遗创作：手工竹编篮子",
+            "readStatus": false,
+            "relatedId": 29,
+            "relatedType": "post",
+            "createdTime": "2025-03-01T07:57:18"
+        }
+    ],
+    "replyMessages": [
+        {
+            "userVo": {
+                "id": 7,
+                "nickName": "非遗侦探",
+                "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+                "tag": null,
+                "signature": "这个人很懒，还未有个性签名",
+                "userType": 3,
+                "beFan": false
+            },
+            "id": 15,
+            "acceptUserId": 23,
+            "sendUserId": 7,
+            "messageType": "reply_comment",
+            "title": "回复了我的评论",
+            "firstContent": "嘻嘻",
+            "secondContent": "这篇写得好",
+            "readStatus": false,
+            "relatedId": 92,
+            "relatedType": "comment",
+            "createdTime": "2025-03-01T07:48:08"
+        },
+        {
+            "userVo": {
+                "id": 7,
+                "nickName": "非遗侦探",
+                "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+                "tag": null,
+                "signature": "这个人很懒，还未有个性签名",
+                "userType": 3,
+                "beFan": false
+            },
+            "id": 17,
+            "acceptUserId": 23,
+            "sendUserId": 7,
+            "messageType": "reply_post",
+            "title": "回复了我的帖子",
+            "firstContent": "嘻嘻",
+            "secondContent": "非遗文化节即将到来，大家有什么推荐？",
+            "readStatus": false,
+            "relatedId": 94,
+            "relatedType": "comment",
+            "createdTime": "2025-03-01T07:51:18"
+        }
+    ],
+    "followMessages": [
+        {
+            "userVo": {
+                "id": 7,
+                "nickName": "非遗侦探",
+                "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+                "tag": null,
+                "signature": "这个人很懒，还未有个性签名",
+                "userType": 3,
+                "beFan": false
+            },
+            "id": 18,
+            "acceptUserId": 23,
+            "sendUserId": 7,
+            "messageType": "follow",
+            "title": "关注了我",
+            "readStatus": false,
+            "createdTime": "2025-03-01T07:53:18"
+        }
+    ],
+    "systemMessages": [
+        {
+            "userVo": {
+                "id": 7,
+                "nickName": "非遗侦探",
+                "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+                "tag": null,
+                "signature": "这个人很懒，还未有个性签名",
+                "userType": 3,
+                "beFan": false
+            },
+            "id": 20,
+            "acceptUserId": 23,
+            "sendUserId": 7,
+            "messageType": "like_post",
+            "title": "赞了我的帖子",
+            "firstContent": "我的非遗创作：手工竹编篮子",
+            "readStatus": false,
+            "relatedId": 29,
+            "relatedType": "post",
+            "createdTime": "2025-03-01T07:57:18"
+        },
+        {
+            "userVo": {
+                "id": 7,
+                "nickName": "非遗侦探",
+                "avatarUrl": "https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/%E9%BB%98%E8%AE%A4%E5%A4%B4%E5%83%8F.jpg",
+                "tag": null,
+                "signature": "这个人很懒，还未有个性签名",
+                "userType": 3,
+                "beFan": false
+            },
+            "id": 20,
+            "acceptUserId": 23,
+            "sendUserId": 7,
+            "messageType": "like_post",
+            "title": "赞了我的帖子",
+            "firstContent": "我的非遗创作：手工竹编篮子",
+            "readStatus": false,
+            "relatedId": 29,
+            "relatedType": "post",
+            "createdTime": "2025-03-01T07:57:18"
+        }
+    ]
+}
+

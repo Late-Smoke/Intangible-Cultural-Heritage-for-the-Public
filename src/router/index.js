@@ -148,6 +148,31 @@ const router = createRouter({
       name: 'userHome',
       component: () => import('@/views/user/home.vue'),
     },
+    {
+      path: '/notifications',
+      name: 'notificationsHome',
+      component: () => import('@/views/notifications/home.vue'),
+    },
+    {
+      path: '/notifications/replies',
+      name: 'notificationsReplies',
+      component: () => import('@/views/notifications/details.vue'),
+    },
+    {
+      path: '/notifications/follows',
+      name: 'notificationsFollows',
+      component: () => import('@/views/notifications/details.vue'),
+    },
+    {
+      path: '/notifications/likes',
+      name: 'notificationsLikes',
+      component: () => import('@/views/notifications/details.vue'),
+    },
+    {
+      path: '/notifications/settings',
+      name: 'notificationsSettings',
+      component: () => import('@/views/notifications/settings.vue'),
+    },
   ],
 })
 
