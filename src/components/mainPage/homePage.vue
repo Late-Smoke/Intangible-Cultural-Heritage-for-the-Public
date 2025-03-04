@@ -15,12 +15,6 @@ const photoClick = () => {
 
 const TabName = ref('map');
 
-const selectedTab = ref('cultureMap');
-const handleTabClick = (tab) => {
-    selectedTab.value = tab;
-    router.push(`/mainPageView/homePage/${tab}`);
-}
-
 const scrollStore = useScrollStore();
 const scrollRef = ref(null);
 scrollStore.setScrollContainer(scrollRef);
@@ -39,10 +33,6 @@ const scrolling = (e) => {
         }
     }
 }
-
-onMounted(() => {
-    //    handleTabClick('cultureMap'); 
-})
 </script>
 
 <template>
@@ -75,40 +65,16 @@ onMounted(() => {
             发帖
         </div>
     </el-header>
-    <!-- <div class="title">
-        <div class="tab">
-            <span @click="handleTabClick('cultureMap')">非遗地图</span>
-            <svg v-show="selectedTab == 'cultureMap'" width="25" height="2" viewBox="0 0 25 2" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1H24" stroke="#987B5B" stroke-width="2" stroke-linecap="round" />
-            </svg>
-        </div>
-        <div class="tab">
-            <span @click="handleTabClick('advice')">推荐</span>
-            <svg v-show="selectedTab == 'advice'" width="25" height="2" viewBox="0 0 25 2" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1H24" stroke="#987B5B" stroke-width="2" stroke-linecap="round" />
-            </svg>
-        </div>
-        <div class="tab">
-            <span @click="handleTabClick('sort')">遗珍普系</span>
-            <svg v-show="selectedTab == 'sort'" width="25" height="2" viewBox="0 0 25 2" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1H24" stroke="#987B5B" stroke-width="2" stroke-linecap="round" />
-            </svg>
-        </div>
-    </div>
-    <div class="router" @scroll="scrolling" ref="scrollRef">
-        <router-view />
-    </div> -->
-    <el-tabs  v-model="TabName" class="tabs-homePage">
+    <el-tabs v-model="TabName" class="tabs-homePage">
         <el-tab-pane label="非遗地图" name="map">
             <div @scroll="scrolling" ref="scrollRef">
-            <Map /></div>
+                <Map />
+            </div>
         </el-tab-pane>
         <el-tab-pane label="推荐" name="advice">
             <div @scroll="scrolling" ref="scrollRef">
-            <Advice /></div>
+                <Advice />
+            </div>
         </el-tab-pane>
         <el-tab-pane label="非遗谱系" name="sort">
             <Sort />
@@ -150,35 +116,13 @@ onMounted(() => {
     color: #BBB6B6;
 }
 
-/* .title {
-    display: flex;
-    height: 50px;
-    padding: 10px 15px;
-    font-size: 18px;
-    gap: 40px;
-    box-shadow: 0px 2px 2px 0px #00000026;
-}
-
-.tab {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-.router {
-    overflow-y: auto;
-    height: calc(100vh - 210px);
-} */
-/* :deep(.el-tabs__header) {
-    margin: 0;
-} */
 :deep(.el-tabs__header) {
     margin: 0;
     padding-bottom: 10px;
     box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.15);
 
 }
+
 :deep(.el-tabs__nav-scroll) {
     margin-left: 15px;
 }

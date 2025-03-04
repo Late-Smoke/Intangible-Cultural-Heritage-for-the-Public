@@ -1,13 +1,33 @@
 <script setup>
-import { ref } from 'vue';
-import RelatedPost from '@/components/slot/relatedPost.vue';
-import Exhibition from '@/components/slot/exhibition.vue';
+import { ref , onMounted } from 'vue';
+import PostListItem from '@/components/posts/PostListItem.vue'
 import Info from '@/components/slot/info.vue';
+import { getFindPostApi, getFollowPostApi } from '@/axios/api/mainPage';
+import { getInfoApi } from '@/axios/api/search';
+
 
 const selectedTag = ref('find');
 const handleClickTag = (tag) => {
     selectedTag.value = tag;
 }
+const findPost = ref([]);
+const followPost = ref([]);
+const infoData = ref([]);
+onMounted(() => {
+    getFindPostApi().then(res => {
+        if (res.status == 200) {
+            findPost.value = res.data.data;
+        }
+    })
+    getFollowPostApi().then(res => {
+        if (res.status == 200) {
+            followPost.value = res.data.data;
+        } 
+    })
+    getInfoApi("").then(res => {
+        infoData.value = res.data.data;
+    })
+})
 </script>
 
 <template>
@@ -40,7 +60,7 @@ const handleClickTag = (tag) => {
     <div class="router">
         <dvi v-if="selectedTag === 'follow'">
             <div class="follow">
-                <related-post />
+                <PostListItem v-for="post in findPost" :post="post" />
             </div>
         </dvi>
         <dvi v-if="selectedTag === 'find'">
@@ -52,12 +72,12 @@ const handleClickTag = (tag) => {
                 </el-carousel>
             </div>
             <div class="find">
-                <related-post />
+                <PostListItem v-for="post in followPost" :post="post" />
             </div>
         </dvi>
         <dvi v-if="selectedTag === 'info'">
             <div class="info">
-                <info />
+                <info v-model="infoData"/>
             </div>
         </dvi>
     </div>

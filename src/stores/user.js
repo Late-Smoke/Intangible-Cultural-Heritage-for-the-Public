@@ -102,6 +102,7 @@ export const useSearchStore = defineStore("search", {
     search: "",
     ifSearch: false,
     ifHistory: false,
+    ifSearchPage: false,
   }),
   actions: {
     changeSearch(search) {
@@ -112,6 +113,9 @@ export const useSearchStore = defineStore("search", {
     },
     changeIfHistory(ifHistory) {
       this.ifHistory = ifHistory; 
+    },
+    changeIfSearchPage(ifSearchPage) {
+      this.ifSearchPage = ifSearchPage;
     }
   },
 });

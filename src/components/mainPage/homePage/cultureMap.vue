@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import PostListItem from '@/components/posts/PostListItem.vue'
 import Exhibition from '@/components/slot/exhibition.vue';
 import Map from '@/components/slot/gaode.vue';
@@ -7,7 +8,10 @@ import { ArrowDownBold } from '@element-plus/icons-vue';
 import * as ExampleData from '@/axios/example-data'
 
 const TabName = ref('related-post');
-
+const route = useRoute()
+watch(() => {route.name}, () => {
+    if (route.name != 'cultureMap') TabName.value = 'related-post'
+})
 /*select*/
 const area = ref('');
 const time = ref('');
@@ -132,56 +136,6 @@ const searchName = ref('');
       </div>
     </el-tab-pane>
   </el-tabs>
-  <div class="content">
-    <div class="relatedPost" v-show="selectedTab == 'relatedPost'">
-      <post-list-item :post="ExampleData.Post" />
-    </div>
-    <div class="exhibition" v-show="selectedTab == 'activity'">
-      <exhibition />
-    </div>
-    <div class="inheritor" v-show="selectedTab == 'inheritor'">
-      <div class="select">
-        <el-select popper-class="select-popper" class="select-popper-bigBox" v-model="area" placeholder="所属地区"
-          :show-arrow="false" :suffix-icon="ArrowDownBold">
-          <el-option v-for="item in areaOptions" :key="item.value" :label="item.label" :value="item.value"
-            :disabled="item.disabled" />
-        </el-select>
-        <el-select popper-class="select-popper" class="select-popper-bigBox" v-model="time" placeholder="公布时间"
-          :show-arrow="false" :suffix-icon="ArrowDownBold">
-          <el-option v-for="item in timeOptions" :key="item.value" :label="item.label" :value="item.value"
-            :disabled="item.disabled" />
-        </el-select>
-        <el-select popper-class="select-popper" class="select-popper-smallBox" v-model="type" placeholder="类别"
-          :show-arrow="false" :suffix-icon="ArrowDownBold">
-          <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"
-            :disabled="item.disabled" />
-        </el-select>
-        <el-select popper-class="select-popper sex-popper" class="select-popper-smallBox" v-model="gender"
-          placeholder="性别" :show-arrow="false" :suffix-icon="ArrowDownBold">
-          <el-option v-for="item in genderOptions" :key="item.value" :label="item.label" :value="item.value"
-            :disabled="item.disabled" />
-        </el-select>
-      </div>
-      <div class="input">
-        <el-input class="inheritor-input" v-model="searchName"
-          style="width:274px;height:26px;font-size: 18px;color:#00000080;" placeholder="关键词：姓名/项目名称" size="default">
-        </el-input>
-        <el-button @click="handleSearch" class="search-btn" color="#F0E4D4">搜索</el-button>
-      </div>
-      <div class="sum">
-        人数：
-        <span style="color:#D90000">{{ sum }}</span>
-      </div>
-      <el-table :data="inheritorData" height="250" :header-cell-style="{ borderColor: '#D1C4B6CC' }"
-        :cell-style="{ borderColor: '#D1C4B6CC' }" style="width: 100%">
-        <el-table-column prop="number" label="序号" width="60px" />
-        <el-table-column prop="name" label="姓名" width="50px" />
-        <el-table-column prop="nation" label="民族" width="40px" />
-        <el-table-column prop="project" label="项目编号及名称" />
-        <el-table-column prop="address" label="申报地区或单位" />
-      </el-table>
-    </div>
-  </div>
 </template>
 
 

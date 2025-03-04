@@ -41,7 +41,8 @@ const photoClick = () => {
 }
 const handleSearch = () => {
     if (searchStore.search) {
-        if (history.value && history.value[0] != searchStore.search) {//更新历史记录
+        key.value++;
+        if ((history.value && history.value[0] != searchStore.search) || !history.value) {//更新历史记录
             history.value.unshift(searchStore.search);
         }
         historyStore.changeHistoryRecords(history.value);
@@ -52,6 +53,8 @@ const handleSearch = () => {
         });
     }
 }
+
+const key = ref(0);
 </script>
 
 <template>
@@ -85,7 +88,7 @@ const handleSearch = () => {
         <el-button @click="handleSearch" class="search-btn" color="#F0E4D4">搜索</el-button>
     </el-header>
     <div class="router">
-        <router-view v-slot="{ Component }">
+        <router-view v-slot="{ Component }" :key="key">
             <keep-alive>
                 <component :is="Component" />
             </keep-alive>

@@ -1,10 +1,12 @@
 <script setup>
-import { ref, onMounted, onBeforeMount } from 'vue';
+import { ref, onMounted } from 'vue';
 import router from '@/router';
+import { useRoute } from 'vue-router';
 import { ElMessageBox } from 'element-plus'
 import { getHotCultureApi } from '@/axios/api/search.js';
 import { useHistoryStore, useSearchStore, useDataStore } from '@/stores/user';
 
+const route = useRoute();
 const historyShow = ref(false);
 const historyDelete = ref(false);
 let row = 1;// 行数
@@ -14,7 +16,7 @@ const dataStore = useDataStore();
 const searchStore = useSearchStore();
 const historyStore = useHistoryStore();
 const recordShow = ref([]);
-const historyRecordsShow = ref(historyStore.historyRecords);
+const historyRecordsShow = ref([historyStore.historyRecords]);
 let dialogVisible = ref(false); // 删除弹窗
 const hotText = ref([]);
 const hotView = ref([]);
@@ -23,13 +25,13 @@ const hotView = ref([]);
 const handleLongText = (containerWidth) => {
     if (!historyRecordsShow.value) return;
     historyRecordsShow.value.forEach((item, index) => {
-        if (item.length > 8) recordShow.value[index] = item.slice(0, 7) + '...';
+        if (item?.length > 8) recordShow.value[index] = item.slice(0, 7) + '...';
         else recordShow.value[index] = item;
         // 判断行数
-        len += item.length * 16 + 30;
+        len += item?.length * 16 + 30;
         if (len > containerWidth) {// 超过容器宽度
             row++;
-            len = item.length * 16;
+            len = item?.length * 16;
         }
         if (row <= 3) {
             overIndex++;
@@ -89,10 +91,10 @@ const getHotCulture = async () => {
     hotView.value = data.map(item => item.views);
     handleLongTitle();
 }
-
-onBeforeMount(() => {
-    getHotCulture();
-})
+if (route.name === 'search') {
+        getHotCulture();
+        historyRecordsShow.value = historyStore.historyRecords;
+    }
 onMounted(() => {
     const container = document.querySelector('.history-container');
     const containerWidth = container.offsetWidth;

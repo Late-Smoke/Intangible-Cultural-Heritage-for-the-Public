@@ -73,7 +73,7 @@ defineProps<{
 
 <style scoped lang="scss">
 .post-list-item {
-    margin: 8px 12px 12px;
+    margin-bottom: 12px;
 }
 
 .post-item {

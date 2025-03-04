@@ -1,27 +1,33 @@
 <script setup>
-import { ref, watchEffect } from 'vue';
+import { onMounted, ref ,watch } from 'vue';
 import { useRoute } from 'vue-router';
 import comprehensive from '@/components/search/result/comprehensive.vue';
 import activity from '@/components/search/result/activity.vue';
 import info from '@/components/slot/info.vue';
 import user from '@/components/search/result/user.vue';
-import { useActivityStore } from '@/stores/user';
-import { watch } from 'vue';
+import { useSearchStore } from '@/stores/user';
+import { getInfoApi } from '@/axios/api/search';
 
 const route = useRoute()
-
+const searchStore = useSearchStore();
+const infoData = ref([]);
 watch(() => route.name, () => {
     if (route.name == 'cultureMap') TabName.value = 'comprehensive'
 })
 
 const TabName = ref('comprehensive');
-const activityStore = useActivityStore();
+
+onMounted(() => {
+    getInfoApi(searchStore.search).then(res => {
+        infoData.value = res.data.data;
+    })
+})
 
 </script>
 
 <template>
     <template v-if="route.name != 'cultureMap'">
-        <el-tabs v-model="TabName" class="tabs">
+        <el-tabs v-if="infoData" v-model="TabName" class="tabs">
             <el-tab-pane label="综合" name="comprehensive">
                 <comprehensive />
             </el-tab-pane>
@@ -29,9 +35,8 @@ const activityStore = useActivityStore();
                 <activity />
             </el-tab-pane>
             <el-tab-pane label="资讯" name="info">
-                <info />
+                <info v-model="infoData" />
             </el-tab-pane>
-            <el-tab-pane label="地图" name="map">地图</el-tab-pane>
             <el-tab-pane label="用户" name="user">
                 <user />
             </el-tab-pane>
