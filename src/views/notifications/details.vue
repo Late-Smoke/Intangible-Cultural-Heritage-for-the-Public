@@ -23,6 +23,9 @@
                 <div class="tags" v-if="route.name == 'notificationsFollows' && typeof notification.userVo.tag == 'string'">
                     <span v-for="tag in notification.userVo.tag.split(' ')">{{ tag }}</span>
                 </div>
+                <div class="tags" v-if="route.name == 'notificationsFollows' && (typeof notification.userVo.tag) != 'string'">
+                    <span v-for="tag in 'tag1 tag2'.split(' ')">{{ tag }}</span>
+                </div>
 
                 <template v-if="route.name == 'notificationsLikes'">
                     <div class="date">{{ formatDate(notification.createdTime) }}</div>
@@ -37,15 +40,15 @@
             </div>
 
             <template v-if="route.name == 'notificationsFollows'">
-                <el-button class="button" type="primary" v-if="!notification.userVo.beFan" @click="User.follow(notification.userVo.id); loadNotification()">互关</el-button>
-                <el-button class="button" v-else @click="unfollowDialog.showUnfollow(notification.userVo.id, notification.userVo.nickName)">已互关</el-button>
+                <el-button class="button" type="primary" v-if="!notification.userVo.beFan" @click="User.follow(notification.userVo.id).then(r => r.data.success && (notification.userVo.beFan = true))">互关</el-button>
+                <el-button class="button" v-else @click="unfollowDialog.showUnfollow(notification.userVo)">已互关</el-button>
             </template>
         </div>
 
         <div class="no-notification" v-if="!notifications.length">没有新通知</div>
     </template>
 
-    <ConfirmDialog v-model="unfollowDialog.show" :content='`确认取消关注${unfollowDialog.username ? ` "${unfollowDialog.username}" ` : ""}?`' :action="unfollowDialog.confirmUnfollow" />
+    <ConfirmDialog v-model="unfollowDialog.show" :content='`确认取消关注 "${unfollowDialog.user?.nickName}" ?`' :action="unfollowDialog.confirmUnfollow" />
 </template>
 
 <script setup lang="ts">
@@ -57,7 +60,6 @@ import { formatDate, gotoPost, gotoUser } from '@/utils';
 import { useRoute } from 'vue-router';
 import ConfirmDialog from '@/components/slot/ConfirmDialog.vue';
 import * as User from '@/axios/api/user'
-import router from '@/router';
 
 const route = useRoute()
 
@@ -102,17 +104,17 @@ function gotoSource(notification: Notifications.Notification) {
 
 const unfollowDialog = reactive({
     show: false,
-    userId: undefined,
-    username: undefined,
-    showUnfollow(userId, username = undefined) {
-        unfollowDialog.userId = userId
-        unfollowDialog.username = username
+    user: undefined as Notifications.UserVo,
+    showUnfollow(user: Notifications.UserVo) {
+        unfollowDialog.user = user
         unfollowDialog.show = true
     },
     confirmUnfollow() {
-        User.unfollow(unfollowDialog.userId).then(() => {
-            unfollowDialog.show = false
-            loadNotification()
+        User.unfollow(unfollowDialog.user.id).then(r => {
+            if (r.data.success) {
+                unfollowDialog.user.beFan = false
+                unfollowDialog.show = false
+            }
         })
     }
 })
@@ -148,12 +150,12 @@ onMounted(() => {
 
         .tags {
             >span {
-                font-size: 0.8em;
+                font-size: 0.7em;
                 padding: 1px 3px;
-                color: #666;
-                border: 1px solid #666;
+                color: #888;
+                border: 1px solid #888;
                 border-radius: 4px;
-                padding-right: 4px;
+                margin-right: 4px;
             }
         }
 

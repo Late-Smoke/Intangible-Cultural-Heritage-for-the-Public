@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import * as Posts from '@/axios/api/posts'
-import { formatDate, gotoPost } from '@/utils'
-import { html2txt } from '@/utils'
+import { formatDate, gotoPost, gotoUser, html2txt } from '@/utils'
 
 
 defineProps<{
@@ -21,8 +20,8 @@ defineProps<{
 
             <div class="item-header">
                 <div class="header-left">
-                    <img class="profile" :src="post.avatarUrl"></img>
-                    <span class="nickName">{{ post.nickName }}</span>
+                    <img class="profile" :src="post.avatarUrl" @click="gotoUser(post.userId)"></img>
+                    <span class="nickName" @click="gotoUser(post.userId)">{{ post.nickName }}</span>
                     <div v-show="post.userType != 0" class="category">
                         <span v-if="post.userType === 3">官方</span>
                         <span v-if="post.userType === 2">非遗传承人</span>

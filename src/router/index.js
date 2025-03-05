@@ -147,6 +147,9 @@ const router = createRouter({
       path: '/user/:id',
       name: 'userHome',
       component: () => import('@/views/user/home.vue'),
+      props: route => ({
+        userId: route.params.id
+      })
     },
     {
       path: '/notifications',

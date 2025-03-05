@@ -2,53 +2,11 @@ import apiClient from "../axios";
 import { Response } from "./common";
 import * as Posts from '@/axios/api/posts'
 import * as Activity from '@/axios/api/activity'
+import * as User from './user'
 
-export interface Self {
-    /**
-     * 头像url
-     */
-    avatarUrl: string;
-    createdTime: string;
-    fans: number;
-    idols: number;
-    likes: number;
-    /**
-     * 昵称
-     */
-    nickName: string;
-    /**
-     * 性别, 0男1女
-     */
-    sex: number;
-    /**
-     * 个性签名
-     */
-    signature: string;
-    tag: null | string;
-    /**
-     * 用户类型, 0普通用户1媒体2非遗传承人3管理员
-     */
-    userType: number;
-    
-    id:number
-}
+export interface Self extends User.User { }
 
-export interface Comment {
-    id: number;
-    postId: number;
-    replyContent: string;
-    parentId: null | number;
-    rootCommentId: null | number;
-    userId: number;
-    nickName: string;
-    avatarUrl: string;
-    content: string;
-    status: number;
-    likes: null;
-    disLikes: null;
-    createdTime: string;
-    children: null;
-}
+export interface Comment extends User.Comment { }
 
 export function getSelf() {
     return apiClient.get<Response<Self>>('/personal/me')

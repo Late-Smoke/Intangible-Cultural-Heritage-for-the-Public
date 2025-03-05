@@ -81,13 +81,13 @@ export function getActicity(id) {
 }
 
 export function addFav(id) {
-    return apiClient.put(`/activities/favorite/${id}`)
+    return apiClient.put<Response<any>>(`/activities/favorite/${id}`)
 }
 
 export function removeFav(id) {
-    return apiClient.delete(`/activities/unfavorite/${id}`)
+    return apiClient.delete<Response<any>>(`/activities/unfavorite/${id}`)
 }
 
 export function participateActivity(payload: ActivityParticipate) {
-    return apiClient.post('/activities/activityChargeEvent/', payload)
+    return apiClient.post<Response<any>>('/activities/activityChargeEvent/', payload)
 }

@@ -29,6 +29,10 @@ export function html2txt(html: string) {
     return el.textContent
 }
 
+export function splitStringBySpace(s:string | null) {
+    return s ? [...s.split(' ')] : []
+}
+
 
 export function gotoUser(id) {
     router.push({

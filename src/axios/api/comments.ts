@@ -36,19 +36,19 @@ export function getLatestCommentsForPost(id) {
 }
 
 export function addLike(id) {
-    return apiClient.put(`/comments/like/${id}`)
+    return apiClient.put<Response<any>>(`/comments/like/${id}`)
 }
 
 export function removeLike(id) {
-    return apiClient.delete(`/comments/unLike/${id}`)
+    return apiClient.delete<Response<any>>(`/comments/unLike/${id}`)
 }
 
 export function addDislike(id) {
-    return apiClient.put(`/comments/disLike/${id}`)
+    return apiClient.put<Response<any>>(`/comments/disLike/${id}`)
 }
 
 export function removeDislike(id) {
-    return apiClient.delete(`/comments/undisLike/${id}`)
+    return apiClient.delete<Response<any>>(`/comments/undisLike/${id}`)
 }
 
 export function postComment(comment: CommentPost) {

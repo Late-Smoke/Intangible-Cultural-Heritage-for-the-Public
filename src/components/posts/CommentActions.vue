@@ -6,17 +6,39 @@
 
         <div style="flex: 1;"></div>
 
-        <button class="thumb-btn" v-if="comment.userIsLike" @click="Comments.removeLike(comment.id).then(reloadAction)">
+        <button class="thumb-btn" v-if="comment.userIsLike" @click="Comments.removeLike(comment.id).then(r => {
+            if (r.data.success) {
+                comment.userIsLike = false
+                comment.likes--
+            }
+        })">
             <mdiThumbUp color="red" />{{ comment.likes }}
         </button>
-        <button class="thumb-btn" v-else @click="Comments.addLike(comment.id).then(reloadAction)">
+
+        <button class="thumb-btn" v-else @click="Comments.addLike(comment.id).then(r => {
+            if (r.data.success) {
+                comment.userIsLike = true
+                comment.likes++
+            }
+        })">
             <mdiThumbUpOutline color="#766552" />{{ comment.likes }}
         </button>
 
-        <button class="thumb-btn" v-if="comment.userIsDisLike" @click="Comments.removeDislike(comment.id).then(reloadAction)">
+        <button class="thumb-btn" v-if="comment.userIsDisLike" @click="Comments.removeDislike(comment.id).then(r => {
+            if (r.data.success) {
+                comment.userIsDisLike = false
+                comment.disLikes--
+            }
+        })">
             <mdiThumbDown color="red" />{{ comment.disLikes }}
         </button>
-        <button class="thumb-btn" v-else @click="Comments.addDislike(comment.id).then(reloadAction)">
+
+        <button class="thumb-btn" v-else @click="Comments.addDislike(comment.id).then(r => {
+            if (r.data.success) {
+                comment.userIsDisLike = true
+                comment.disLikes++
+            }
+        })">
             <mdiThumbDownOutline color="#766552" />{{ comment.disLikes }}
         </button>
     </div>
@@ -30,7 +52,6 @@ import { formatDate } from '@/utils'
 defineProps<{
     comment: Comments.Comment,
     replyAction: () => any,
-    reloadAction?: () => any,
 }>()
 </script>
 

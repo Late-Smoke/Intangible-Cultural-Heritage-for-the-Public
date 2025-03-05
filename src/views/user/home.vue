@@ -105,7 +105,7 @@
 
         <el-tabs class="outline sticky" v-model="currentTab">
             <el-tab-pane label="发布" :name="tabs.posts">
-                <PostListItemSelf v-for="post in myPosts" :post="post" :reload-action="loadTab" />
+                <PostListItemSelf v-for="post in myPosts" :post="post" :reload-action="loadTab" :self="isSelf"/>
             </el-tab-pane>
 
             <el-tab-pane label="评论" :name="tabs.comments">
@@ -113,7 +113,7 @@
             </el-tab-pane>
 
             <el-tab-pane label="收藏" :name="tabs.favorites">
-                <PostListItem v-for="post in myFavorites" :post="post" />
+                <PostListItem class="post" v-for="post in myFavorites" :post="post" />
             </el-tab-pane>
 
             <el-tab-pane label="活动" :name="tabs.activities">
@@ -134,11 +134,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import * as Self from '@/axios/api/self'
 import { useRoute } from 'vue-router';
 import TagsEditor from '@/components/slot/TagsEditor.vue';
-import { humanizeNumber } from '@/utils'
+import { humanizeNumber, splitStringBySpace } from '@/utils'
 import * as Posts from '@/axios/api/posts'
 import PostListItemSelf from '@/components/posts/PostListItemSelf.vue'
 import PostListItem from '@/components/posts/PostListItem.vue'
@@ -149,9 +149,14 @@ import ActivityListItem from '@/components/activity/ActivityListItem.vue';
 import DrawerMenu from '@/components/menu/DrawerMenu.vue';
 import * as Notifications from '@/axios/api/notifications'
 import router from '@/router';
+import * as User from '@/axios/api/user'
+
+const { userId } = defineProps<{
+    userId: string
+}>()
 
 const route = useRoute()
-const isSelf = route.name == 'self'
+const isSelf = computed(() => !Boolean(userId))
 
 watch(() => route.name, name => {
     if (name == 'self') {
@@ -162,7 +167,7 @@ watch(() => route.name, name => {
 
 
 const user = ref<Self.Self | null>()
-const userTags = ref<string[]>([])
+const userTags = ref<string[]>([])  // 不能用 computed 从 user.tags 里面计算, 因为需要本地编辑
 
 const unreadCount = ref(0)
 
@@ -188,13 +193,16 @@ myActivities.value = ExampleData.Activities
 function loadTab() {
     switch (currentTab.value) {
         case tabs.posts:
-            Self.getPosts().then(r => myPosts.value = sortPosts(r.data.data))
+            (isSelf.value ? Self.getPosts() : User.getPosts(userId))
+                .then(r => myPosts.value = sortPosts(r.data.data))
             break
         case tabs.comments:
-            Self.getComments().then(r => myComments.value = r.data.data.reverse())
+            (isSelf.value ? Self.getComments() : User.getComments(userId))
+                .then(r => myComments.value = r.data.data.reverse())
             break
         case tabs.favorites:
-            Self.getFavPosts().then(r => myFavorites.value = r.data.data.reverse())
+            (isSelf.value ? Self.getFavPosts() : User.getFavPosts(userId))
+                .then(r => myFavorites.value = r.data.data.reverse())
             break
         case tabs.activities:
             loadActicityTab()
@@ -205,10 +213,12 @@ function loadTab() {
 function loadActicityTab() {
     switch (currentActivityTab.value) {
         case activityTabs.joined:
-            Self.getJoinedActivities().then(r => myActivities.value = r.data.data.reverse())
+            (isSelf.value ? Self.getJoinedActivities() : User.getJoinedActivities(userId))
+                .then(r => myActivities.value = r.data.data.reverse())
             break
         case activityTabs.starred:
-            Self.getStarredActivities().then(r => myActivities.value = r.data.data.reverse())
+            (isSelf.value ? Self.getStarredActivities() : User.getStarredActivities(userId))
+                .then(r => myActivities.value = r.data.data.reverse())
             break
     }
 }
@@ -224,14 +234,15 @@ function sortPosts(posts: Posts.Post[]) {
 
 
 function loadUser() {
-    Self.getSelf().then(r => {
-        user.value = r.data.data
-        userTags.value = r.data.data.tag ? [...user.value.tag.split(' ')] : []
-    })
+    (isSelf.value ? Self.getSelf() : User.getUser(userId))
+        .then(r => {
+            user.value = r.data.data
+            userTags.value = splitStringBySpace(r.data.data.tag)
+        })
 }
 
 function loadUnreads() {
-    Notifications.getUnreadCount().then(r => unreadCount.value = r.data.data)
+    if (isSelf.value) Notifications.getUnreadCount().then(r => unreadCount.value = r.data.data)
 }
 
 onMounted(() => {
@@ -445,6 +456,10 @@ onMounted(() => {
                 color: #444;
             }
         }
+    }
+
+    .post {
+        margin: 8px 12px 12px;
     }
 }
 </style>

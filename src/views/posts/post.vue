@@ -19,8 +19,10 @@
         <div class="header">
             <el-button text circle icon="ArrowLeft" size="large" style="font-size: 1.25em;" @click="router.back()"></el-button>
 
-            <img class="avatar" :src="post.avatarUrl">
-            <div class="name">{{ post.nickName }}</div>
+            <img class="avatar" :src="post.avatarUrl" @click="gotoUser(post.userId)">
+            <div class="name">
+                <span @click="gotoUser(post.userId)">{{ post.nickName }}</span>
+            </div>
 
             <el-button v-if="!authorFollowed" round @click="User.follow(post.userId)">
                 <span style="color: #855D12; font-size: 1.7em; margin-right: 4px;">+</span>关注
@@ -37,8 +39,10 @@
             </el-carousel-item>
         </el-carousel>
 
+
         <h3 class="title">{{ post.title }}</h3>
         <div class="body" v-html="post.content"></div>
+
 
         <div v-if="typeof post.tag == 'string'" class="tags">
             <span v-for="item in post.tag.split(' ')">{{ item }}</span>
@@ -70,18 +74,21 @@
             </div>
         </div>
 
+
+        <!-- Root comment list -->
         <template v-if="comments">
             <div v-for="item in comments" :key="item.id" class="comment">
-                <img class="avatar" :src="item.avatarUrl">
+                <img class="avatar" :src="item.avatarUrl" @click="gotoUser(item.userId)">
+
                 <div class="content">
                     <div class="root-name">
-                        <div class="author-name">{{ item.nickName }}</div>
+                        <div class="author-name" @click="gotoUser(item.userId)">{{ item.nickName }}</div>
                         <div v-if="item.userId == post.userId" class="author-label">楼主</div>
                     </div>
 
                     <div style="margin: 8px 0;">{{ item.content }}</div>
 
-                    <comment-actions :comment="item" :reply-action="() => reply.reply(item.id, item.id, item.nickName)" :reload-action="loadComments"></comment-actions>
+                    <comment-actions :comment="item" :reply-action="() => reply.reply(item.id, item.id, item.nickName)"></comment-actions>
 
                     <div v-if="item.children && item.children.length" class="reply-block" @click="gotoPostComment(props.postId, item.id)">
                         <div class="reply" v-for="item1 in item.children.slice(0, 3)" :key="item1.id">
@@ -108,6 +115,7 @@
 
         <div style="padding: 20px 0 100px; text-align: center; color: #888;">{{ comments ? '- 已经到底啦 -' : '正在加载评论…' }}</div>
 
+        <!-- Footer -->
         <div class="footer">
             <div class="input" @click="reply.reply()">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -133,29 +141,35 @@
             </button>
         </div>
 
+
+        <!-- Comment overlay -->
         <overlay-card v-if="commentViewing" title="评论详情" :closeAction="() => router.back()">
+            <!-- Root comment -->
             <div class="comment">
-                <img class="avatar" :src="commentViewing.avatarUrl">
+                <img class="avatar" :src="commentViewing.avatarUrl" @click="gotoUser(commentViewing.userId)">
+
                 <div class="content">
                     <div class="root-name">
-                        <div class="author-name">{{ commentViewing.nickName }}</div>
+                        <div class="author-name" @click="gotoUser(commentViewing.userId)">{{ commentViewing.nickName }}</div>
                         <div v-if="commentViewing.userId == post.userId" class="author-label">楼主</div>
                     </div>
 
                     <div style="margin: 8px 0;">{{ commentViewing.content }}</div>
 
-                    <comment-actions :comment="commentViewing" :reply-action="() => reply.reply(commentViewing.id, commentViewing.id, commentViewing.nickName)" :reload-action="loadComments"></comment-actions>
+                    <comment-actions :comment="commentViewing" :reply-action="() => reply.reply(commentViewing.id, commentViewing.id, commentViewing.nickName)"></comment-actions>
                 </div>
             </div>
 
             <template v-if="commentViewing.children && commentViewing.children.length">
                 <div style="padding: 12px;">全部回复</div>
 
+                <!-- Child comments -->
                 <div v-for="item in commentViewing.children" :key="item.id" class="comment">
-                    <img class="avatar" :src="item.avatarUrl">
+                    <img class="avatar" :src="item.avatarUrl" @click="gotoUser(item.userId)">
+
                     <div class="content">
                         <div class="root-name">
-                            <div class="author-name">{{ item.nickName }}</div>
+                            <div class="author-name" @click="gotoUser(item.userId)">{{ item.nickName }}</div>
                             <div v-if="item.userId == post.userId" class="author-label">楼主</div>
                         </div>
 
@@ -166,11 +180,12 @@
                             {{ item.content }}
                         </div>
 
-                        <comment-actions :comment="item" :reply-action="() => reply.reply(commentViewing.id, item.id, item.nickName)" :reload-action="loadComments"></comment-actions>
+                        <comment-actions :comment="item" :reply-action="() => reply.reply(commentViewing.id, item.id, item.nickName)"></comment-actions>
                     </div>
                 </div>
             </template>
         </overlay-card>
+
 
         <div v-show="reply.show" class="reply-overlay" @click="reply.show = false">
             <div class="reply" @click="e => e.stopPropagation()">
@@ -194,7 +209,7 @@ import { ElButton, ElInput, ElMessage } from 'element-plus';
 import commentActions from '@/components/posts/CommentActions.vue';
 import OverlayCard from '@/components/slot/OverlayCard.vue';
 import ErrorPage from '@/components/ErrorPage.vue';
-import { formatDate, gotoPostComment } from '@/utils';
+import { formatDate, gotoPostComment, gotoUser } from '@/utils';
 import SvgBackground from '@/components/slot/SvgBackground.vue';
 
 const props = defineProps<{

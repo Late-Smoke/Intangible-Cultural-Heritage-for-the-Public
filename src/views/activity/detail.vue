@@ -5,7 +5,7 @@
             活动详情
         </div>
 
-        <el-carousel trigger="click" height="20vh">
+        <el-carousel trigger="click" height="25vh">
             <template v-if="activity.acmedias">
                 <el-carousel-item v-for="item in activity.acmedias">
                     <img :src="item.url">
