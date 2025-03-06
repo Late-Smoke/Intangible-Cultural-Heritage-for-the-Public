@@ -19,12 +19,13 @@ const activityStore = useActivityStore();
 const searchStore = useSearchStore();
 const dataStore = useDataStore();
 const historyStore = useHistoryStore();
-const history = ref(historyStore.historyRecords);
 
 const searchInput = ref()
 
 const handleBack = () => {
     activityStore.changeShow(false);
+    activityStore.startTime = '';
+    activityStore.endTime = '';
     dataStore.changeRelatedPost([]);
     searchStore.changeSearch('');
     searchStore.changeIfSearch(false);
@@ -40,12 +41,13 @@ const photoClick = () => {
     router.push('/searchView/pictureView');
 }
 const handleSearch = () => {
+    activityStore.startTime = '';
+    activityStore.endTime = '';
     if (searchStore.search) {
         key.value++;
-        if ((history.value && history.value[0] != searchStore.search) || !history.value) {//更新历史记录
-            history.value.unshift(searchStore.search);
+        if (historyStore.historyRecords[0] != searchStore.search) {//更新历史记录
+            historyStore.historyRecords.unshift(searchStore.search);
         }
-        historyStore.changeHistoryRecords(history.value);
         dataStore.changeRelatedPost([]);//更新相关帖子
         searchStore.changeIfSearch(true);
         router.push({

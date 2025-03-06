@@ -78,7 +78,8 @@ export const useActivityStore = defineStore("activity", {
   state: () => ({
     show: false,
     position: "全国",
-    time: "全部时间",
+    startTime: '',
+    endTime:'',
     ifPage: false,
   }),
   actions: {
@@ -135,10 +136,5 @@ export const useHistoryStore = defineStore('history', {
   state: () => ({
     historyRecords: [], // 初始化为一个空数组
   }),
-  actions: {
-    changeHistoryRecords(historyRecords) {
-      this.historyRecords = historyRecords; // 更新 historyRecords
-    },
-  },
   persist: true,
 });

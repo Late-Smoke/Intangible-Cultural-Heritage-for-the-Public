@@ -116,7 +116,7 @@ const scrolling = (e) => {
     color: #BBB6B6;
 }
 
-:deep(.el-tabs__header) {
+:deep(>.el-tabs__header) {
     margin: 0;
     padding-bottom: 10px;
     box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.15);

@@ -4,7 +4,7 @@ import router from '@/router';
 import { useRoute } from 'vue-router';
 import { ElMessageBox } from 'element-plus'
 import { getHotCultureApi } from '@/axios/api/search.js';
-import { useHistoryStore, useSearchStore, useDataStore } from '@/stores/user';
+import { useHistoryStore, useSearchStore } from '@/stores/user';
 
 const route = useRoute();
 const historyShow = ref(false);
@@ -12,19 +12,17 @@ const historyDelete = ref(false);
 let row = 1;// 行数
 let len = 0;// 长度
 let overIndex = 0; // 第一个开始隐藏的索引
-const dataStore = useDataStore();
 const searchStore = useSearchStore();
 const historyStore = useHistoryStore();
 const recordShow = ref([]);
-const historyRecordsShow = ref([historyStore.historyRecords]);
 let dialogVisible = ref(false); // 删除弹窗
 const hotText = ref([]);
 const hotView = ref([]);
 
 // 处理长文本的方法
 const handleLongText = (containerWidth) => {
-    if (!historyRecordsShow.value) return;
-    historyRecordsShow.value.forEach((item, index) => {
+    if (!historyStore.historyRecords) return;
+    historyStore.historyRecords.forEach((item, index) => {
         if (item?.length > 8) recordShow.value[index] = item.slice(0, 7) + '...';
         else recordShow.value[index] = item;
         // 判断行数
@@ -47,13 +45,13 @@ const handleLongTitle = () => {
     });
 };
 const handleHistory = (index) => {
-    searchStore.changeSearch(historyRecordsShow.value[index]);//更新搜索栏
+    searchStore.changeSearch(historyStore.historyRecords[index]);//更新搜索栏
     router.push({name: 'result',});
     searchStore.changeIfHistory(true);
 }
 const handleDelete = (index) => { // 删除单个
     recordShow.value.splice(index, 1);
-    historyRecordsShow.value.splice(index, 1);
+    historyStore.historyRecords.splice(index, 1);
 }
 const confirm = () => {//全部删除
     ElMessageBox.confirm(
@@ -69,9 +67,8 @@ const confirm = () => {//全部删除
         .then(() => {
             dialogVisible.value = false;
             recordShow.value = [];
-            historyRecordsShow.value = [];
+            historyStore.historyRecords = [];
             historyDelete.value = false;
-            historyStore.changeHistoryRecords([]);
         })
         .catch(() => {
             dialogVisible.value = false;
@@ -80,7 +77,6 @@ const confirm = () => {//全部删除
 const handleFinish = () => {//完成删除
     historyDelete.value = false;
     historyShow.value = false;
-    historyStore.changeHistoryRecords(historyRecordsShow.value);
 }
 
 const getHotCulture = async () => {
@@ -91,14 +87,11 @@ const getHotCulture = async () => {
     hotView.value = data.map(item => item.views);
     handleLongTitle();
 }
-if (route.name === 'search') {
-        getHotCulture();
-        historyRecordsShow.value = historyStore.historyRecords;
-    }
 onMounted(() => {
     const container = document.querySelector('.history-container');
     const containerWidth = container.offsetWidth;
     handleLongText(containerWidth - 20);
+    getHotCulture();
 })
 
 </script>
