@@ -2,39 +2,26 @@
 import { onMounted, ref, watchEffect, watch } from 'vue'
 import PostListItem from '@/components/posts/PostListItem.vue'
 import { useSearchStore, useDataStore } from '@/stores/user';
-import { getBaiKeIdApi, getBaiKeApi, getNewPostApi, getHotPostApi } from '@/axios/api/search';
+import { getBaiKeApi, getNewPostApi, getHotPostApi } from '@/axios/api/search';
 import { useRoute } from 'vue-router';
 
-const route = useRoute();
 const searchStore = useSearchStore();
+const baiKe = ref([]);
 const relatedPost = ref([]);
-const id = ref(-1);
 const sort = ref('最热');
 const sortShow = ref(false);
 
 watch(() => searchStore.search, (newValue, oldValue) => {//用户修改搜索框值
     if (newValue != oldValue) searchStore.changeIfSearch(false);
 })
-watchEffect(() => {
-    if (searchStore.ifHistory || (searchStore.ifSearch && searchStore.search)) {
-        id.value = -1;
-        getBaiKeIdApi(searchStore.search).then(res => {
-            if (res.status == 200 && res.data.data.length > 0) {
-                id.value = res.data.data[0].id;
-            }
-            getBaiKe();
-        })
-        getHotPost();
-    }
-});
-function getBaiKe() {
-    if (id.value == -1) return;
-    getBaiKeApi(id.value).then(res => {
-        if (res.status == 200) {
-            //获取图片url
-        }
+onMounted(() => {
+    if (!searchStore.search) return;
+    getBaiKeApi(searchStore.search).then(res => {
+        baiKe.value = res.data.data;
     })
-}
+    getHotPost();
+    getNewPost();
+});
 //相关帖子
 function getHotPost() {
     getHotPostApi(searchStore.search).then(res => {
@@ -53,7 +40,7 @@ function getNewPost() {
 </script>
 
 <template>
-    <div v-show="id != -1" class="baiKe">
+    <div v-show="baiKe.length" class="baiKe" :style="{ backgroundImage: `url(${baiKe.at(0)?.topMediaUrl})` }">
         <span class="head">非遗百科</span>
         <span class="tip">点击查看详情</span>
     </div>
@@ -110,6 +97,7 @@ function getNewPost() {
     width: 100%;
     padding-top: 56.25%;
     position: relative;
+    background-size: cover;
 }
 
 .baiKe span {

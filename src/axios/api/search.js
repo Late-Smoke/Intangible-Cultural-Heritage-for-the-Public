@@ -7,14 +7,9 @@ export function getHotCultureApi() {
 }
 ////result
 //comprehensive
-export function getBaiKeIdApi(input) {
+export function getBaiKeApi(input) {
   // 非遗百科id
   return apiClient.get("/search/encyclopedias", { params: { keyword: input } });
-}
-
-export function getBaiKeApi(id) {
-  // 非遗百科
-  return apiClient.get(`/encyclopedias/${id}`);
 }
 
 export function getNewPostApi(input) {
@@ -36,4 +31,9 @@ export function getInfoApi(input) {
 //user
 export function getUserApi(keyword, userType) {
   return apiClient.put("/search/user", { keyword, userType });
+}
+
+//activity
+export function getActivitiesApi(params) {
+  return apiClient.put("/search/activities", params);
 }

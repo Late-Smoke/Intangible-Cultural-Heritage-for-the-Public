@@ -5,17 +5,23 @@ import comprehensive from '@/components/search/result/comprehensive.vue';
 import activity from '@/components/search/result/activity.vue';
 import info from '@/components/slot/info.vue';
 import user from '@/components/search/result/user.vue';
-import { useSearchStore } from '@/stores/user';
+import { useSearchStore,useActivityStore } from '@/stores/user';
 import { getInfoApi } from '@/axios/api/search';
 
 const route = useRoute()
 const searchStore = useSearchStore();
+const activityStore = useActivityStore();
 const infoData = ref([]);
 watch(() => route.name, () => {
     if (route.name == 'cultureMap') TabName.value = 'comprehensive'
 })
 
 const TabName = ref('comprehensive');
+watch(TabName, () => {
+    if(TabName.value == 'activity') {
+        activityStore.show = true;
+    } else activityStore.show = false;
+})
 
 onMounted(() => {
     getInfoApi(searchStore.search).then(res => {

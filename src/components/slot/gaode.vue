@@ -1,6 +1,29 @@
 <template>
   <div id="outer-box">
-    <div id="container" tabindex="0"></div>
+    <div id="container" tabindex="0">
+    </div>
+    <div class="btn-position">
+      <button class="btn">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M35.6786 16.4732H30.7687C30.0737 10.5911 25.4089 5.92634 19.5268 5.23125V0.321429C19.5268 0.144643 19.3821 0 19.2054 0H16.7946C16.6179 0 16.4732 0.144643 16.4732 0.321429V5.23125C10.5911 5.92634 5.92634 10.5911 5.23125 16.4732H0.321429C0.144643 16.4732 0 16.6179 0 16.7946V19.2054C0 19.3821 0.144643 19.5268 0.321429 19.5268H5.23125C5.92634 25.4089 10.5911 30.0737 16.4732 30.7687V35.6786C16.4732 35.8554 16.6179 36 16.7946 36H19.2054C19.3821 36 19.5268 35.8554 19.5268 35.6786V30.7687C25.4089 30.0737 30.0737 25.4089 30.7687 19.5268H35.6786C35.8554 19.5268 36 19.3821 36 19.2054V16.7946C36 16.6179 35.8554 16.4732 35.6786 16.4732ZM18 27.8036C12.5839 27.8036 8.19643 23.4161 8.19643 18C8.19643 12.5839 12.5839 8.19643 18 8.19643C23.4161 8.19643 27.8036 12.5839 27.8036 18C27.8036 23.4161 23.4161 27.8036 18 27.8036Z"
+            fill="#8C7831" />
+          <path
+            d="M18.0006 13.1835C16.7109 13.1835 15.5055 13.6817 14.5935 14.5978C13.6814 15.5098 13.1792 16.7152 13.1792 18.0049C13.1792 19.2947 13.6814 20.5 14.5935 21.4121C15.5055 22.3201 16.7149 22.8264 18.0006 22.8264C19.2863 22.8264 20.4957 22.3241 21.4078 21.4121C22.3158 20.5 22.822 19.2906 22.822 18.0049C22.822 16.7192 22.3198 15.5098 21.4078 14.5978C20.9624 14.1474 20.4317 13.7903 19.8466 13.5475C19.2616 13.3046 18.634 13.1809 18.0006 13.1835Z"
+            fill="#8C7831" />
+        </svg></button>
+      <div>定位至当前位置</div>
+    </div>
+    <div class="select">
+      <svg width="37" height="43" viewBox="0 0 37 43" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M35.5252 0H1.4728C0.339575 0 -0.368115 1.60349 0.200812 2.88268L10.9595 26.6288V41.0782C10.9595 42.1412 11.6164 43 12.4304 43H24.5675C25.3816 43 26.0384 42.1412 26.0384 41.0782V26.6288L36.8018 2.88268C37.3661 1.60349 36.6584 0 35.5252 0ZM22.7266 38.676H14.2714V29.3073H22.7313V38.676H22.7266ZM23.1707 24.4668L22.7313 25.4637H14.2667L13.8273 24.4668L4.6551 4.32402H32.3429L23.1707 24.4668Z"
+          fill="#8C7831" />
+        <path d="M22.9655 39.1409H14.0345V28.6665H22.9655V39.1409Z" fill="#FFF1E3" stroke="#8C7831" />
+        <path d="M22.9655 25.9102H14.0345L3.82758 3.85889H33.1724L22.9655 25.9102Z" fill="#FFF1E3" stroke="#8C7831" />
+      </svg>
+      <span>筛选标点</span>
+    </div>
   </div>
 </template>
 
@@ -40,21 +63,22 @@ onMounted(() => {
       var geolocation = new AMap.Geolocation({
         enableHighAccuracy: true,  // 是否使用高精度定位，默认:true
         timeout: 10000,            // 超过10秒后停止定位，默认：5s
-        buttonPosition: 'LB',      // 定位按钮的停靠位置
-        buttonOffset: new AMap.Pixel(10, 20), // 定位按钮与设置的停靠位置的偏移量
+        //buttonPosition: 'LB',      // 定位按钮的停靠位置
+        //buttonOffset: new AMap.Pixel(10, 20), // 定位按钮与设置的停靠位置的偏移量
         zoomToAccuracy: true,      // 定位成功后是否自动调整地图视野到定位点
-        showCircle: false          // 定位成功后用圆圈表示定位精度范围
+        showCircle: false,          // 定位成功后用圆圈表示定位精度范围
+        buttonDom: document.getElementsByClassName('btn-position')[0],
       });
 
       map.addControl(geolocation);
 
       const clickLocation = () => {
-
+        console.log('clickLocation');
         geolocation.getCurrentPosition(function (status, result) {
           if (status == 'complete') {
             // 定位成功，获取经纬度
             var position = result.position;
-            // 获取定位城市并设置地图
+            // 获取定位城市
             getCityFromPosition(position);
             positionStore.changeLatitude(result.position.lat);
             positionStore.changeLongitude(result.position.lng);
@@ -65,12 +89,12 @@ onMounted(() => {
       }
       clickLocation();
       // 通过经纬度获取城市信息并设置地图
-      function getCityFromPosition(_position) {
+      function getCityFromPosition() {
         AMap.plugin('AMap.Geolocation', function () {
           var geolocation = new AMap.Geolocation();
           geolocation.getCityInfo(function (status, cityResult) {
             if (status === 'complete') {
-              var cityName = cityResult.city;  // 获取城市名
+              var cityName = cityResult.city.replace(/市$/, "");  // 获取城市名
               positionStore.changeCityName(cityName);
               switch2AreaNode(cityResult.adcode);
             } else {
@@ -235,13 +259,13 @@ onMounted(() => {
   });
 
   //缩放组件
-  AMapUI.loadUI(['control/BasicControl'], function (BasicControl) {
+  // AMapUI.loadUI(['control/BasicControl'], function (BasicControl) {
 
-    map.addControl(new BasicControl.Zoom({
-      position: 'lt', //left top，左上角
-      showZoomNum: false //显示zoom值
-    }));
-  });
+  //   map.addControl(new BasicControl.Zoom({
+  //     position: 'lt', //left top，左上角
+  //     showZoomNum: false //显示zoom值
+  //   }));
+  // });
 
   //   AMapUI.loadUI(['misc/PointSimplifier'], function (PointSimplifier) {
 
@@ -290,5 +314,53 @@ onMounted(() => {
 #container {
   width: 100%;
   aspect-ratio: 1 / 1;
+}
+
+.btn-position {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  bottom: -15px;
+  opacity: 0.8;
+}
+
+.btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+}
+
+.btn-position div {
+  color: rgba(0, 0, 0, 1);
+  font-size: 14px;
+  width: 98px;
+}
+
+.select {
+  width: 113px;
+  height: 40px;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 1);
+  border-radius: 20px;
+  opacity: 0.8;
+  background-color: rgba(255, 226, 184);
+  box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.15);
+}
+
+.select svg {
+  position: absolute;
+  top:-10px;
+  left: 0;
+}
+
+.select span {
+  position: absolute;
+  top: 10px;
+  left: 35px; 
 }
 </style>

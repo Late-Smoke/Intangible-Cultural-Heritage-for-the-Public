@@ -81,6 +81,7 @@ const routerDiv = ref<HTMLDivElement>()
     align-items: stretch;
     background-color: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(8px);
+    z-index: 10;
 }
 
 .bottom div {

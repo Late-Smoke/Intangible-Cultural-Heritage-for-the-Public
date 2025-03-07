@@ -2,7 +2,7 @@
 import { ref , onMounted } from 'vue';
 import PostListItem from '@/components/posts/PostListItem.vue'
 import Info from '@/components/slot/info.vue';
-import { getFindPostApi, getFollowPostApi } from '@/axios/api/mainPage';
+import { getFindPostApi, getFollowPostApi,getPictureApi } from '@/axios/api/mainPage';
 import { getInfoApi } from '@/axios/api/search';
 
 
@@ -13,6 +13,7 @@ const handleClickTag = (tag) => {
 const findPost = ref([]);
 const followPost = ref([]);
 const infoData = ref([]);
+const picture = ref([]);
 onMounted(() => {
     getFindPostApi().then(res => {
         if (res.status == 200) {
@@ -27,6 +28,9 @@ onMounted(() => {
     getInfoApi("").then(res => {
         infoData.value = res.data.data;
     })
+    // getPictureApi().then(res => {
+    //     picture.value = res.data.data;
+    // })
 })
 </script>
 
@@ -64,10 +68,10 @@ onMounted(() => {
             </div>
         </dvi>
         <dvi v-if="selectedTag === 'find'">
-            <div class="carousel">
+            <div class="carousel" v-if="picture.length">
                 <el-carousel height="150px">
-                    <el-carousel-item v-for="item in 3" :key="item">
-                        <h3 class="small justify-center" text="2xl">{{ item }}</h3>
+                    <el-carousel-item v-for="(item,index) in picture" :key="index">
+                        <img :src="item.urls[0].url" fit="cover">
                     </el-carousel-item>
                 </el-carousel>
             </div>
@@ -129,7 +133,7 @@ onMounted(() => {
 }
 /*find*/
 .carousel {
-    background-color: aquamarine;
+    /* background-color: aquamarine; */
     border-radius: 5px;
 }
 :deep(.el-carousel__container) {
