@@ -1,12 +1,15 @@
 <template>
     <div class="tags-editor">
-        <el-tag v-for="tag in dynamicTags" :key="tag" type="primary" closable :disable-transitions="false" @close="handleClose(tag)">
+        <el-tag v-for="tag in dynamicTags" :key="tag" type="primary" closable :disable-transitions="true" @close="handleClose(tag)">
             {{ tag }}
         </el-tag>
-        <el-input v-if="inputVisible" ref="InputRef" v-model="inputValue" size="small" @keyup.enter="handleInputConfirm" @blur="handleInputConfirm" />
-        <el-button v-else class="button-new-tag" size="small" type="primary" plain @click="showInput">
-            + 添加 Tag
-        </el-button>
+
+        <template v-if="editable">
+            <el-input v-if="inputVisible" ref="InputRef" v-model="inputValue" size="small" @keyup.enter="handleInputConfirm" @blur="handleInputConfirm" />
+            <el-button v-else class="button-new-tag" size="small" type="primary" plain @click="showInput">
+                + 添加 Tag
+            </el-button>
+        </template>
     </div>
 </template>
 
@@ -14,6 +17,10 @@
 import { nextTick, ref } from 'vue'
 import { ElInput } from 'element-plus'
 import type { InputInstance } from 'element-plus'
+
+const { editable = true } = defineProps<{
+    editable?: boolean
+}>()
 
 const dynamicTags = defineModel<string[]>({ required: true })
 

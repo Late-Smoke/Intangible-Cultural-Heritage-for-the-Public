@@ -28,4 +28,15 @@ apiClient.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
+
+export function setToken(token) {
+    localStorage.setItem('token', token)
+    apiClient.defaults.headers.common['Authorization'] = token
+}
+
+export function removeToken() {
+    localStorage.removeItem('token')
+    apiClient.defaults.headers.common['Authorization'] = undefined
+}
+
 export default apiClient;

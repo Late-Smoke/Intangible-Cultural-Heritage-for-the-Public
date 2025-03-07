@@ -49,14 +49,17 @@
         }
     }
 
+    &.solid,
+    &.border {
+        --radius: 8px;
+    }
+
     &.solid>.el-tabs__header {
         .el-tabs__active-bar {
             opacity: 0;
         }
 
         .el-tabs__item {
-            --radius: 8px;
-
             height: 32px;
             background-color: var(--el-color-primary-light-8);
             border-radius: var(--radius) var(--radius) 0 0;
@@ -104,5 +107,13 @@
                 }
             }
         }
+
+
+    }
+
+    &.border>.el-tabs__content {
+        border: 2px solid var(--el-color-primary-dark-2);
+        border-bottom: none;
+        border-radius: var(--radius) var(--radius) 0 0;
     }
 }

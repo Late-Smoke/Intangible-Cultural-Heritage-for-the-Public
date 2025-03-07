@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        },
+        "types": [
+            "element-plus/global"
+        ],
+        "allowJs": true,
+        "checkJs": false,
+        "strict": true,
+        "noImplicitReturns": false, // Allows TypeScript to infer return types
+        "noImplicitAny": false, // Avoid forcing explicit types everywhere
+        "strictNullChecks": false,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
