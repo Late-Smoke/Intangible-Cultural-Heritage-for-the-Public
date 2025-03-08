@@ -3,17 +3,20 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // home
     {
       path: '/',
       name: 'root',
       component: () => import('../views/mainPage/mainPageView.vue'),
       redirect: { name: 'cultureMap' },
       children: [
+        // activity
         {
           path: 'activity',
           name: 'activityHome',
           component: () => import('@/views/activity/home.vue'),
         },
+        // self
         {
           path: 'self',
           name: 'self',
@@ -21,6 +24,26 @@ const router = createRouter({
         },
       ]
     },
+
+    // follow list
+    {
+      path: '/self/following',
+      name: 'selfFollowing',
+      component: () => import('@/views/user/UserList.vue'),
+      props: {
+        listType: '我的关注'
+      }
+    },
+    {
+      path: '/self/followers',
+      name: 'selfFollowers',
+      component: () => import('@/views/user/UserList.vue'),
+      props: {
+        listType: '我的粉丝'
+      }
+    },
+
+    // login
     {
       path: '/login',
       name: 'loginView',
@@ -43,6 +66,8 @@ const router = createRouter({
         }
       ]
     },
+
+
     {
       path: '/gaode',
       name: 'gaode',
@@ -53,6 +78,8 @@ const router = createRouter({
       name: 'baiduMap',
       component: () => import('../components/slot/baiduMap.vue'),
     },
+
+    // search
     {
       path: '/searchView',
       name: 'searchView',
@@ -80,6 +107,8 @@ const router = createRouter({
       name: 'activityView',
       component: () => import('../views/search/cityView.vue'),
     },
+
+    // culture map
     {
       path: '/mainPageView',
       name: 'mainPageView',
@@ -111,6 +140,8 @@ const router = createRouter({
         },
       ]
     },
+
+    // post
     {
       path: '/post/:postId',
       name: 'post',
@@ -128,6 +159,8 @@ const router = createRouter({
         commentId: route.params.commentId
       })
     },
+
+    // activity
     {
       path: '/activity',
       name: 'activityRoot',
@@ -143,6 +176,8 @@ const router = createRouter({
       name: 'activityParticipate',
       component: () => import('@/views/activity/participate.vue'),
     },
+
+    // user
     {
       path: '/user/:id',
       name: 'userHome',
@@ -151,6 +186,16 @@ const router = createRouter({
         userId: route.params.id
       })
     },
+    {
+      path: '/user/:id/following',
+      name: 'userFollowing',
+      component: () => import('@/views/user/UserList.vue'),
+      props: route => ({
+        userId: route.params.id
+      })
+    },
+
+    // notifications
     {
       path: '/notifications',
       name: 'notificationsHome',
@@ -176,6 +221,8 @@ const router = createRouter({
       name: 'notificationsSettings',
       component: () => import('@/views/notifications/settings.vue'),
     },
+
+    // settings
     {
       path: '/settings',
       name: 'settings',
@@ -185,6 +232,13 @@ const router = createRouter({
       path: '/settings/privacy',
       name: 'privacySettings',
       component: () => import('@/views/settings/privacy.vue'),
+    },
+
+    // 404
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'notFound',
+      component: () => import('@/views/error/ErrorPage.vue')
     },
   ],
 })

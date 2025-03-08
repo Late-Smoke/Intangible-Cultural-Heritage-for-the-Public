@@ -3,7 +3,7 @@
         <template v-if="response.success && (typeof response.data != 'string')">
             <div v-if="Array.isArray(response.data) && response.data.length == 0" class="error">
                 <div class="icon">
-                    <mdiHumanGreetingVariant  />
+                    <mdiHumanGreetingVariant />
                 </div>
                 <div class="text">这里什么都没有~</div>
             </div>
@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { Response } from "@/axios/api/common";
 
-const response = defineModel<Response<any>>()
+const response = defineModel<Response<any>>({ required: true })
 </script>
 
 <style scoped lang="scss">

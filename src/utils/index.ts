@@ -35,7 +35,12 @@ export function splitStringBySpace(s: string | null) {
     return s ? [...s.split(' ')] : []
 }
 
+export function setClipboard(txt: string) {
+    return navigator.clipboard.writeText(txt)
+}
 
+
+// quick navigation
 export function gotoUser(id) {
     router.push({
         name: 'userHome',
@@ -58,6 +63,7 @@ export function gotoPostComment(postId, commentId) {
 }
 
 
+// API success
 export function promiseSuccess<T>(axiosPromise: Promise<AxiosResponse<Response<T>, any>>): Promise<AxiosResponse<Response<T>, any>> {
     return new Promise((resolve, reject) => {
         axiosPromise.then(r => {

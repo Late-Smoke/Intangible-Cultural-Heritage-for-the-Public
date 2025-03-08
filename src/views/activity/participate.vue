@@ -71,7 +71,7 @@
 import { ref, watch, onMounted, computed, reactive } from 'vue';
 import { useRoute } from 'vue-router';
 import * as Activity from '@/axios/api/activity'
-import ErrorPage from '@/components/ErrorPage.vue';
+import ErrorPage from '@/views/error/ErrorPage.vue';
 import router from '@/router';
 import { parseDate } from '@/utils';
 

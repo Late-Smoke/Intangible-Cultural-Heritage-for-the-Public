@@ -2,7 +2,7 @@
     <SvgBackgroundLion />
     <page-header-sticky-with-back title="隐私设置" />
 
-    <div class="setting" v-for="setting in Self.PrivacySettings.settings">
+    <div class="setting" v-for="setting in Self.PrivacySettingsController.settings">
         {{ setting.name }}
         <el-switch size="large" :loading="setting.loading" v-model="setting.value" :before-change="() => setting.action()" />
     </div>
@@ -15,7 +15,7 @@ import * as Self from '@/axios/api/self'
 import { onMounted } from 'vue';
 
 onMounted(() => {
-    Self.PrivacySettings.load()
+    Self.PrivacySettingsController.load()
 })
 </script>
 

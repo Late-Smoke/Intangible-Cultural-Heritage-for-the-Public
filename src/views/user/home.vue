@@ -30,7 +30,7 @@
                 <div class="main">
                     <div class="name">
                         {{ user.nickName }}
-                        <span @click="">
+                        <span v-if="isSelf" @click="">
                             <el-icon>
                                 <EditPen />
                             </el-icon>
@@ -43,7 +43,9 @@
                 </div>
 
                 <div class="action" v-if="!isSelf">
-                    <el-button type="warning" plain>关注</el-button>
+                    <el-button type="primary" v-if="!Self.FollowController.isFollowing(user.id).value" @click="setFollowing(true)">关注</el-button>
+                    <el-button type="primary" plain v-else-if="!Self.FollowController.isFollower(user.id).value" @click="setFollowing(false)">已关注</el-button>
+                    <el-button type="primary" plain v-else @click="setFollowing(false)">已互粉</el-button>
                 </div>
             </div>
 
@@ -59,11 +61,11 @@
                 </div>
 
                 <div class="social-status">
-                    <div @click="">
+                    <div @click="isSelf && router.push({ name: 'selfFollowers' })">
                         <div class="number">{{ humanizeNumber(user.fans) }}</div>
                         <div>粉丝</div>
                     </div>
-                    <div @click="">
+                    <div @click="router.push({ name: isSelf ? 'selfFollowing' : 'userFollowing' })">
                         <div class="number">{{ humanizeNumber(user.idols) }}</div>
                         <div>关注</div>
                     </div>
@@ -102,20 +104,20 @@
 
         <el-tabs class="tabs outline sticky" v-model="tabs.current">
             <el-tab-pane v-for="tab in tabs.tabs" :label="tab.name" :name="tab.name">
-                <TabContentListContainer v-if="tab.data" v-model="tab.data.response">
+                <ContentListContainer v-if="tab.data" v-model="tab.data.response">
 
-                    <PostListItemSelf v-if="tab.name == tabNames.posts" v-for="post in tab.data.response.data" :post="post" :reload-action="tabs.loadTab" :self="isSelf" />
+                    <PostListItemSelf v-if="tab.name == tabNames.posts" v-for="post in tab.data.response.data" :post="post" :reload-action="() => tabs.loadTab()" :self="isSelf" />
                     <CommentQuoteReply v-if="tab.name == tabNames.comments" v-for="comment in tab.data.response.data" :comment="comment" />
                     <PostListItem class="post" v-if="tab.name == tabNames.favorites" v-for="post in tab.data.response.data" :post="post" />
 
-                </TabContentListContainer>
+                </ContentListContainer>
 
                 <el-tabs v-else v-model="activityTabs.current" class="solid border" style="margin-top: 4px;">
                     <el-tab-pane v-for="activityTab in activityTabs.tabs" :label="activityTab.name" :name="activityTab.name">
-                        <TabContentListContainer v-model="activityTab.data.response">
+                        <ContentListContainer v-model="activityTab.data.response">
 
                             <ActivityListItem v-for="a in activityTab.data.response.data" :activity="a" :bottom="activityTab.name == activityTabNames.joined ? 'detail' : undefined" />
-                        </TabContentListContainer>
+                        </ContentListContainer>
                     </el-tab-pane>
                 </el-tabs>
             </el-tab-pane>
@@ -130,7 +132,7 @@ import { ref, watch, onMounted, computed, reactive } from 'vue'
 import * as Self from '@/axios/api/self'
 import { useRoute } from 'vue-router';
 import TagsEditor from '@/components/slot/TagsEditor.vue';
-import { humanizeNumber, splitStringBySpace } from '@/utils'
+import { humanizeNumber, promiseSuccess, splitStringBySpace } from '@/utils'
 import * as Posts from '@/axios/api/posts'
 import PostListItemSelf from '@/components/posts/PostListItemSelf.vue'
 import PostListItem from '@/components/posts/PostListItem.vue'
@@ -143,7 +145,7 @@ import * as Notifications from '@/axios/api/notifications'
 import router from '@/router';
 import * as User from '@/axios/api/user'
 import { Response } from '@/axios/api/common';
-import TabContentListContainer from '@/components/posts/TabContentListContainer.vue';
+import ContentListContainer from '@/components/slot/ContentListContainer.vue';
 import { AxiosResponse } from 'axios';
 
 const { userId } = defineProps<{
@@ -174,6 +176,9 @@ const unreadCount = ref(0)
 const menuOpen = ref(false)
 
 
+//
+// Tab controls
+//
 interface ITabController<T> {
     name?: any
     data?: {
@@ -284,19 +289,25 @@ const activityTabs = createTabController({
 function reverseArray(a: any[] | unknown) {
     return Array.isArray(a) ? a.reverse() : a
 }
+//
+// End tab controls
+//
 
 
 function loadUser() {
-    const promise = (isSelf.value ? Self.getSelf() : User.getUser(userId))
-    promise.then(r => {
+    return (isSelf.value ? Self.getSelf() : User.getUser(userId)).then(r => {
         user.value = r.data.data
         userTags.value = splitStringBySpace(r.data.data.tag)
     })
-    return promise
 }
 
 function loadUnreads() {
     if (isSelf.value) Notifications.getUnreadCount().then(r => unreadCount.value = r.data.data)
+}
+
+function setFollowing(value: boolean) {
+    promiseSuccess(value ? User.follow(user.value.id) : User.unfollow(user.value.id))
+        .then(() => Self.FollowController.loadBoth())
 }
 
 onMounted(() => {

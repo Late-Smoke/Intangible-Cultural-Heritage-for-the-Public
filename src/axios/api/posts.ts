@@ -157,6 +157,9 @@ export interface Post {
 
     createdTime: string
     pinned: boolean
+
+    /** 是否关注了用户 */
+    beFan: boolean
 }
 
 

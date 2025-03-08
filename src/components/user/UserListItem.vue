@@ -1,29 +1,107 @@
 <template>
-    <div class="user-item">
-        <div class="item-left">
-            <div class="item-img"></div>
-            <div class="item-info">
-                <div class="head">
-                    <span>{{ nickname }}</span>
-                    <svg width="30" height="17" viewBox="0 0 30 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="30" height="17" rx="2" fill="#90A9DC" />
-                        <path d="M14.9785 12.6235C14.778 12.9315 14.6025 13.2036 14.4521 13.4399C13.1416 12.7059 12.1963 11.7606 11.6162 10.604H11.584V13.9448H10.8105V10.604H10.7837C10.1213 11.7856 9.12044 12.7954 7.78125 13.6333C7.61654 13.4328 7.42318 13.2179 7.20117 12.9888C8.4043 12.3407 9.3335 11.5457 9.98877 10.604H7.65234V9.89502H10.8105V8.77783H9.53223V9.12158H8.7373V5.37256H7.65234V4.66357H8.7373V3.42822H9.53223V4.66357H12.8623V3.44971H13.6572V4.66357H14.7637V5.37256H13.6572V9.12158H12.8623V8.77783H11.584V9.89502H14.8389V10.604H12.3145C12.9339 11.4813 13.8219 12.1545 14.9785 12.6235ZM7.9209 11.7642L7.28711 12.4409C7.00065 12.1473 6.71061 11.8573 6.41699 11.5708C5.92285 12.38 5.28906 13.1105 4.51562 13.7622C4.36523 13.5402 4.2041 13.311 4.03223 13.0747C4.7806 12.4982 5.38395 11.8125 5.84229 11.0176C5.37679 10.5771 4.90234 10.1457 4.41895 9.72314C4.6875 8.75993 4.9292 7.65706 5.14404 6.41455H4.18262V5.64111H5.27295C5.38395 4.93929 5.486 4.1945 5.5791 3.40674L6.42773 3.5249C6.30957 4.29118 6.19499 4.99658 6.08398 5.64111H7.79199V6.31787C7.64518 8.26579 7.32471 9.76432 6.83057 10.8135C7.18506 11.1178 7.5485 11.4347 7.9209 11.7642ZM6.97559 6.41455H5.94434C5.70443 7.73226 5.47884 8.75277 5.26758 9.47607C5.57194 9.73031 5.88704 9.99707 6.21289 10.2764C6.63184 9.28809 6.88607 8.00081 6.97559 6.41455ZM9.53223 8.09033H12.8623V7.06982H9.53223V8.09033ZM9.53223 6.38232H12.8623V5.37256H9.53223V6.38232ZM25.9141 11.1626C25.6706 11.4562 25.4593 11.7212 25.2803 11.9575C23.848 10.8547 22.7952 8.9891 22.1221 6.36084V10.894H23.7012V11.6675H22.1221V13.9126H21.3271V11.6675H19.748V10.894H21.3271V6.36084H21.3003C20.6343 8.83512 19.5368 10.758 18.0078 12.1294C17.8431 11.9217 17.6533 11.6961 17.4385 11.4526C18.8206 10.1886 19.8555 8.49137 20.543 6.36084H18.0186V5.5874H21.3271V3.396H22.1221V5.5874H25.5488V6.36084H22.8149C23.4989 8.58805 24.5319 10.1886 25.9141 11.1626ZM15.0967 8.55225C16.1351 7.03402 16.9085 5.30452 17.417 3.36377L18.2334 3.6001C17.9541 4.51318 17.639 5.37077 17.2881 6.17285V13.9019H16.4932V7.78955C16.1709 8.37321 15.8271 8.92106 15.4619 9.43311C15.3545 9.13949 15.2327 8.84587 15.0967 8.55225Z" fill="white" />
-                    </svg>
-                </div>
-                <div class="item-tag">
-                    <el-tag class="tag" effect="plain">{{ tag }}</el-tag>
-                </div>
+    <div class="user-list-item">
+        <img :src="user.avatarUrl" @click="gotoUser(user.id)">
+
+        <div class="main">
+            <div class="name" @click="gotoUser(user.id)">
+                <span>{{ user.nickName }}</span>
+                <span class="user-type" v-if="user.userType"> {{ ['', '媒体', '非遗传承人', '管理员'][user.userType] }}</span>
+            </div>
+
+            <div class="tags" v-if="typeof user.tag == 'string'">
+                <span v-for="tag in splitStringBySpace(user.tag)">{{ tag }}</span>
             </div>
         </div>
-        <div class="item-right">
-            <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M16 10.5H10M10 10.5H4M10 10.5V16.5M10 10.5L10 4.5" stroke="#987B5B" stroke-width="1.5" stroke-linecap="round" />
-            </svg>
-            <span>关注</span>
+
+        <div class="action">
+            <div class="outline" v-if="!isFollowing" @click="setFollowing(true)">关注</div>
+            <div class="gray" v-else-if="!Self.FollowController.isFollower(user.id).value" @click="setFollowing(false)">已关注</div>
+            <div class="gray" v-else @click="setFollowing(false)">已互粉</div>
         </div>
     </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import * as Self from '@/axios/api/self';
+import * as User from '@/axios/api/user';
+import { gotoUser, promiseSuccess, splitStringBySpace } from '@/utils';
+import { ref } from 'vue';
 
-<style scoped lang="scss"></style>
+const { user } = defineProps<{
+    user: Self.FollowUser
+}>()
+
+const isFollowing = ref(Self.FollowController.isFollowing(user.id).value)
+
+function setFollowing(value: boolean) {
+    promiseSuccess(value ? User.follow(user.id) : User.unfollow(user.id))
+        .then(() => isFollowing.value = value)
+}
+</script>
+
+<style scoped lang="scss">
+.user-list-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+
+    >img {
+        width: 44px;
+        height: 44px;
+        border-radius: 100%;
+        object-fit: cover;
+    }
+
+    .main {
+        flex: 1;
+
+        .name {
+            .user-type {
+                font-size: 0.75em;
+                color: white;
+                padding: 1px 3px;
+                background-color: #90A9DC;
+                border-radius: 4px;
+                margin-left: 4px;
+            }
+        }
+
+        .tags {
+            >span {
+                color: #766450;
+                border: 1px solid #766450;
+                padding: 0 3px;
+                font-size: 0.75em;
+                border-radius: 4px;
+                margin-right: 4px;
+            }
+        }
+    }
+
+    .action {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        >div {
+            text-align: center;
+            width: 64px;
+            font-size: 0.8em;
+            padding: 4px 0;
+            border-radius: 4px;
+
+            &.outline {
+                color: #987B5B;
+                border: 1px solid #987B5B;
+            }
+
+            &.gray {
+                background-color: #ddd;
+                color: #444;
+                border: 1px solid #bbb;
+            }
+        }
+    }
+}
+</style>

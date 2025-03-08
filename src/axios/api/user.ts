@@ -2,6 +2,7 @@ import apiClient from "../axios";
 import { Response } from "./common";
 import * as Posts from '@/axios/api/posts'
 import * as Activity from '@/axios/api/activity'
+import * as Self from '@/axios/api/self'
 
 export interface User {
     /**
@@ -50,15 +51,6 @@ export interface Comment {
     children: null;
 }
 
-export function follow(userId) {
-    return apiClient.put<Response<string>>(`/follows/follow/${userId}`)
-}
-
-export function unfollow(userId) {
-    return apiClient.delete<Response<string>>(`/follows/unfollow/${userId}`)
-}
-
-
 export function getUser(id) {
     return apiClient.get<Response<User>>('/other/me', { params: { id } })
 }
@@ -81,4 +73,19 @@ export function getJoinedActivities(id) {
 
 export function getStarredActivities(id) {
     return apiClient.get<Response<Activity.Activity[]>>('/other/favorite/activity', { params: { id } })
+}
+
+
+export interface FollowUser extends Self.FollowUser { }
+
+export function getFollowing(id) {
+    return apiClient.get<Response<FollowUser[]>>('/follows/otherstars', { params: { id } })
+}
+
+export function follow(userId) {
+    return apiClient.put<Response<string>>(`/follows/follow/${userId}`)
+}
+
+export function unfollow(userId) {
+    return apiClient.delete<Response<string>>(`/follows/unfollow/${userId}`)
 }
