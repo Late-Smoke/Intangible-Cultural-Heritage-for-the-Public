@@ -33,14 +33,18 @@
                 <mdiClockOutline />
                 <div>
                     <div>开放时间:</div>
-                    <div>{{ parseDate(activity.startTime).toLocaleString() }} - {{ parseDate(activity.endTime).toLocaleString() }}</div>
+                    <div class="time">{{ parseDate(activity.startTime).toLocaleString() }} - {{ parseDate(activity.endTime).toLocaleString() }}</div>
                 </div>
             </div>
 
             <div class="bottom">
                 <template v-if="bottom == 'price'">
                     <div class="price">￥ {{ activity.chargeAmount }}</div>
-                    <div class="favs">{{ activity.favoritesNumber }}人收藏</div>
+                    <div class="favs" @click.stop="setFav(!activity.currentUserFavorite)">
+                        <mdiStar v-if="activity.currentUserFavorite" color="gold" />
+                        <mdiStarOutline v-else />
+                        {{ activity.favoritesNumber }}
+                    </div>
                 </template>
 
                 <template v-if="bottom == 'address' && activity.activityAddresses">
@@ -61,12 +65,21 @@
 <script setup lang="ts">
 import router from '@/router'
 import * as Activity from '@/axios/api/activity'
-import { parseDate } from '@/utils';
+import { parseDate, promiseSuccess } from '@/utils';
 
-const { bottom = 'price' } = defineProps<{
+const { bottom = 'price', activity } = defineProps<{
     activity: Activity.Activity
     bottom?: 'price' | 'address' | 'detail'
 }>()
+
+
+function setFav(value: boolean) {
+    promiseSuccess(value ? Activity.addFav(activity.id) : Activity.removeFav(activity.id)).then(() => {
+        activity.currentUserFavorite = value
+        activity.favoritesNumber += value ? 1 : -1
+    })
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -136,7 +149,7 @@ const { bottom = 'price' } = defineProps<{
         .open-time {
             flex: 1;
             font-size: 0.9em;
-            color: #333;
+            color: #666;
             display: flex;
             gap: 2px;
 
@@ -144,6 +157,10 @@ const { bottom = 'price' } = defineProps<{
                 font-size: 1.75em;
                 vertical-align: bottom;
                 margin-right: 2px;
+            }
+
+            .time {
+                color: #333;
             }
         }
 
@@ -158,8 +175,15 @@ const { bottom = 'price' } = defineProps<{
             }
 
             .favs {
+                display: flex;
+                align-items: center;
+                gap: 4px;
                 font-size: 0.8em;
                 color: #444;
+
+                >svg {
+                    font-size: 1.5em;
+                }
             }
 
             .address {

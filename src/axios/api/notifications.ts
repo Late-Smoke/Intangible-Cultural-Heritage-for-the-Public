@@ -20,6 +20,7 @@ export interface UserVo {
     tag: null | string
     signature: string
     userType: number
+    /** 是否关注了用户 */
     beFan: boolean
 }
 

@@ -35,7 +35,7 @@
 
     <HorizonalDateSelector v-if="timeRangeOption == timeRangeOptions.day" v-model="timeRange"></HorizonalDateSelector>
 
-    <OverlayCard v-show="timeRangePicker.show" title="选择时间范围" card-height="100vh" :close-action="() => timeRangePicker.show = false">
+    <OverlayCard v-show="timeRangePicker.show" title="选择时间范围" height="100vh" :close-action="() => timeRangePicker.show = false">
         <div style="display: flex; flex-direction: column; gap: 8px; padding: 8px;">
             <div>开始时间: <el-date-picker type="datetime" v-model="timeRangePicker.start" /></div>
             <div>结束时间: <el-date-picker type="datetime" v-model="timeRangePicker.end" /></div>

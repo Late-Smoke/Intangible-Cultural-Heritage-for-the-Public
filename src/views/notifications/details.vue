@@ -97,7 +97,7 @@ function gotoSource(notification: Notifications.Notification) {
         case 'user':
             gotoUser(notification.relatedId)
             break;
-        case 'post':
+        case 'comment':
             break;
     }
 }

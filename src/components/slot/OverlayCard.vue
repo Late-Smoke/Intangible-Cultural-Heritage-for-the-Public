@@ -1,6 +1,6 @@
 <template>
-    <div class="overlay-card" @click="closeAction">
-        <div class="card" @click="e => e.stopPropagation()" :style="{ height: cardHeight }">
+    <div :class="{ 'overlay-card': true, 'bottom': bottom }" @click="closeAction">
+        <div class="card" :style="{ height: height }" @click.stop="">
             <div class="card-title">
                 <div>{{ title }}</div>
                 <el-button text circle icon="close" @click="closeAction"></el-button>
@@ -15,13 +15,14 @@
 import { defineProps } from 'vue';
 
 defineProps<{
-    title?: string,
-    cardHeight?: string,
-    closeAction: () => any,
+    title?: string
+    height?: string
+    bottom?: boolean
+    closeAction: () => any
 }>()
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .overlay-card {
     position: fixed;
     top: 0;
@@ -49,6 +50,17 @@ defineProps<{
             padding: 8px 12px;
             border-radius: 16px 16px 0 0;
             background-color: white;
+        }
+    }
+
+    &.bottom {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+
+        .card {
+            margin: 0;
+            min-height: initial;
         }
     }
 

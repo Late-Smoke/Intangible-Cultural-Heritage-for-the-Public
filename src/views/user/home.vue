@@ -13,9 +13,6 @@
                 <mdiEmailOutline />
                 <div class="badge" v-if="unreadCount">{{ unreadCount > 99 ? '99+' : unreadCount }}</div>
             </div>
-            <div @click="">
-                <mdiCog />
-            </div>
             <div @click="menuOpen = true">
                 <mdiMenu />
             </div>
@@ -33,7 +30,7 @@
                 <div class="main">
                     <div class="name">
                         {{ user.nickName }}
-                        <span @click="">
+                        <span v-if="isSelf" @click="">
                             <el-icon>
                                 <EditPen />
                             </el-icon>
@@ -46,7 +43,9 @@
                 </div>
 
                 <div class="action" v-if="!isSelf">
-                    <el-button type="warning" plain>关注</el-button>
+                    <el-button type="primary" v-if="!Self.FollowController.isFollowing(user.id).value" @click="setFollowing(true)">关注</el-button>
+                    <el-button type="primary" plain v-else-if="!Self.FollowController.isFollower(user.id).value" @click="setFollowing(false)">已关注</el-button>
+                    <el-button type="primary" plain v-else @click="setFollowing(false)">已互粉</el-button>
                 </div>
             </div>
 
@@ -54,7 +53,7 @@
 
             <div class="bottom">
                 <div>
-                    <TagsEditor v-model="userTags"></TagsEditor>
+                    <TagsEditor v-model="userTags" :editable="isSelf"></TagsEditor>
 
                     <div class="user-type">
                         <span :class="['gray', 'purple', 'gold', 'green'].at(user.userType)">{{ user.userType ? '身份认证: ' : '' }}{{ ['普通用户', '媒体', '非遗传承人', '管理员'].at(user.userType) }}</span>
@@ -62,11 +61,11 @@
                 </div>
 
                 <div class="social-status">
-                    <div @click="">
+                    <div @click="isSelf && router.push({ name: 'selfFollowers' })">
                         <div class="number">{{ humanizeNumber(user.fans) }}</div>
                         <div>粉丝</div>
                     </div>
-                    <div @click="">
+                    <div @click="router.push({ name: isSelf ? 'selfFollowing' : 'userFollowing' })">
                         <div class="number">{{ humanizeNumber(user.idols) }}</div>
                         <div>关注</div>
                     </div>
@@ -103,27 +102,22 @@
             </div>
         </div>
 
-        <el-tabs class="outline sticky" v-model="currentTab">
-            <el-tab-pane label="发布" :name="tabs.posts">
-                <PostListItemSelf v-for="post in myPosts" :post="post" :reload-action="loadTab" :self="isSelf"/>
-            </el-tab-pane>
+        <el-tabs class="tabs outline sticky" v-model="tabs.current">
+            <el-tab-pane v-for="tab in tabs.tabs" :label="tab.name" :name="tab.name">
+                <ContentListContainer v-if="tab.data" v-model="tab.data.response">
 
-            <el-tab-pane label="评论" :name="tabs.comments">
-                <CommentQuoteReply v-for="comment in myComments" :comment="comment" />
-            </el-tab-pane>
+                    <PostListItemSelf v-if="tab.name == tabNames.posts" v-for="post in tab.data.response.data" :post="post" :reload-action="() => tabs.loadTab()" :self="isSelf" />
+                    <CommentQuoteReply v-if="tab.name == tabNames.comments" v-for="comment in tab.data.response.data" :comment="comment" />
+                    <PostListItem class="post" v-if="tab.name == tabNames.favorites" v-for="post in tab.data.response.data" :post="post" />
 
-            <el-tab-pane label="收藏" :name="tabs.favorites">
-                <PostListItem class="post" v-for="post in myFavorites" :post="post" />
-            </el-tab-pane>
+                </ContentListContainer>
 
-            <el-tab-pane label="活动" :name="tabs.activities">
-                <el-tabs v-model="currentActivityTab" class="solid" style="margin-top: 4px;">
-                    <el-tab-pane label="我参与的" :name="activityTabs.joined">
-                        <ActivityListItem v-for="a in myActivities" :activity="a" bottom="detail" />
-                    </el-tab-pane>
+                <el-tabs v-else v-model="activityTabs.current" class="solid border" style="margin-top: 4px;">
+                    <el-tab-pane v-for="activityTab in activityTabs.tabs" :label="activityTab.name" :name="activityTab.name">
+                        <ContentListContainer v-model="activityTab.data.response">
 
-                    <el-tab-pane label="我收藏的" :name="activityTabs.starred">
-                        <ActivityListItem v-for="a in myActivities" :activity="a" />
+                            <ActivityListItem v-for="a in activityTab.data.response.data" :activity="a" :bottom="activityTab.name == activityTabNames.joined ? 'detail' : undefined" />
+                        </ContentListContainer>
                     </el-tab-pane>
                 </el-tabs>
             </el-tab-pane>
@@ -134,11 +128,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, computed, reactive } from 'vue'
 import * as Self from '@/axios/api/self'
 import { useRoute } from 'vue-router';
 import TagsEditor from '@/components/slot/TagsEditor.vue';
-import { humanizeNumber, splitStringBySpace } from '@/utils'
+import { humanizeNumber, promiseSuccess, splitStringBySpace } from '@/utils'
 import * as Posts from '@/axios/api/posts'
 import PostListItemSelf from '@/components/posts/PostListItemSelf.vue'
 import PostListItem from '@/components/posts/PostListItem.vue'
@@ -150,13 +144,15 @@ import DrawerMenu from '@/components/menu/DrawerMenu.vue';
 import * as Notifications from '@/axios/api/notifications'
 import router from '@/router';
 import * as User from '@/axios/api/user'
+import { Response } from '@/axios/api/common';
+import ContentListContainer from '@/components/slot/ContentListContainer.vue';
+import { AxiosResponse } from 'axios';
 
 const { userId } = defineProps<{
     userId: string
 }>()
 
 const route = useRoute()
-const isSelf = computed(() => !Boolean(userId))
 
 watch(() => route.name, name => {
     if (name == 'self') {
@@ -169,85 +165,156 @@ watch(() => route.name, name => {
 const user = ref<Self.Self | null>()
 const userTags = ref<string[]>([])  // 不能用 computed 从 user.tags 里面计算, 因为需要本地编辑
 
+const isSelf = computed(() => {
+    if (!userId) return true
+    // if (`${user.value?.id}`) return true
+    else return false
+})
+
 const unreadCount = ref(0)
 
 const menuOpen = ref(false)
 
 
-enum tabs { posts, comments, favorites, activities }
-const currentTab = ref(tabs.posts)
-
-enum activityTabs { joined, starred }
-const currentActivityTab = ref(activityTabs.joined)
-
-watch(currentTab, loadTab, { immediate: true })
-watch(currentActivityTab, loadActicityTab)
-
-
-const myPosts = ref<Posts.Post[]>()
-const myFavorites = ref<Posts.Post[]>()
-const myComments = ref<Self.Comment[]>()
-const myActivities = ref<Activity.Activity[]>()
-myActivities.value = ExampleData.Activities
-
-function loadTab() {
-    switch (currentTab.value) {
-        case tabs.posts:
-            (isSelf.value ? Self.getPosts() : User.getPosts(userId))
-                .then(r => myPosts.value = sortPosts(r.data.data))
-            break
-        case tabs.comments:
-            (isSelf.value ? Self.getComments() : User.getComments(userId))
-                .then(r => myComments.value = r.data.data.reverse())
-            break
-        case tabs.favorites:
-            (isSelf.value ? Self.getFavPosts() : User.getFavPosts(userId))
-                .then(r => myFavorites.value = r.data.data.reverse())
-            break
-        case tabs.activities:
-            loadActicityTab()
-            break
+//
+// Tab controls
+//
+interface ITabController<T> {
+    name?: any
+    data?: {
+        getSelf: () => Promise<AxiosResponse<Response<T>, any>>
+        getUser: (id) => Promise<AxiosResponse<Response<T>, any>>
+        dataProcessor?: (r: T) => T
+        response?: Response<T>
     }
+    action?: () => void
 }
 
-function loadActicityTab() {
-    switch (currentActivityTab.value) {
-        case activityTabs.joined:
-            (isSelf.value ? Self.getJoinedActivities() : User.getJoinedActivities(userId))
-                .then(r => myActivities.value = r.data.data.reverse())
-            break
-        case activityTabs.starred:
-            (isSelf.value ? Self.getStarredActivities() : User.getStarredActivities(userId))
-                .then(r => myActivities.value = r.data.data.reverse())
-            break
+function createTabController(tabs: Record<any, ITabController<any>>, defaultTab?= Object.keys(tabs)[0]) {
+    for (const [name, tab] of Object.entries(tabs)) {
+        tab.name = name
     }
+    const controller = reactive({
+        current: defaultTab,
+        tabs,
+        loadTab() {
+            const tab = this.tabs[this.current];
+            if (tab.data) {
+                (isSelf.value ? tab.data.getSelf() : tab.data.getUser(userId)).then(r => {
+                    if (tab.data.dataProcessor) {
+                        r.data.data = tab.data.dataProcessor(r.data.data)
+                        tab.data.response = r.data
+                    }
+                })
+            } else {
+                tab.action()
+            }
+        },
+        getTabName(tab: ITabController<any>) {
+            return Object.entries(this.tabs).find(x => x[1] == tab)?.at(0) as string
+        },
+    })
+    watch(() => controller.current, () => controller.loadTab()/*, { immediate: true }*/)
+    return controller
 }
 
-function sortPosts(posts: Posts.Post[]) {
-    return posts.sort((a, b) => {
-        if (a.pinned !== b.pinned) {
-            return Number(b.pinned) - Number(a.pinned); // true (1) comes before false (0)
+
+enum tabNames {
+    posts = '发布',
+    comments = '评论',
+    favorites = '收藏',
+    activities = '活动',
+}
+
+const tabs = createTabController({
+    [tabNames.posts]: {
+        data: {
+            getSelf: Self.getPosts,
+            getUser: User.getPosts,
+            dataProcessor: d => {
+                return Array.isArray(d) ? d.sort((a, b) => {
+                    if (a.pinned !== b.pinned) {
+                        return Number(b.pinned) - Number(a.pinned); // true (1) comes before false (0)
+                    }
+                    return new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime(); // Sort by createdTime desc
+                }) : d;
+            },
+        },
+    } as ITabController<Posts.Post[] | string>,
+
+    [tabNames.comments]: {
+        data: {
+            getSelf: Self.getComments,
+            getUser: User.getComments,
+            dataProcessor: reverseArray,
         }
-        return new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime(); // Sort by createdTime desc
-    });
+    } as ITabController<Self.Comment[] | string>,
+
+    [tabNames.favorites]: {
+        data: {
+            getSelf: Self.getFavPosts,
+            getUser: User.getFavPosts,
+            dataProcessor: reverseArray,
+        }
+    } as ITabController<Posts.Post[] | string>,
+
+    [tabNames.activities]: {
+        action: () => activityTabs.loadTab()
+    } as ITabController<any>,
+})
+
+
+enum activityTabNames {
+    joined = '我参与的',
+    starred = '我收藏的',
 }
+
+const activityTabs = createTabController({
+    [activityTabNames.joined]: {
+        data: {
+            getSelf: Self.getJoinedActivities,
+            getUser: User.getJoinedActivities,
+            dataProcessor: reverseArray,
+        }
+    },
+    [activityTabNames.starred]: {
+        data: {
+            getSelf: Self.getStarredActivities,
+            getUser: User.getStarredActivities,
+            dataProcessor: reverseArray,
+        }
+    },
+})
+
+function reverseArray(a: any[] | unknown) {
+    return Array.isArray(a) ? a.reverse() : a
+}
+//
+// End tab controls
+//
 
 
 function loadUser() {
-    (isSelf.value ? Self.getSelf() : User.getUser(userId))
-        .then(r => {
-            user.value = r.data.data
-            userTags.value = splitStringBySpace(r.data.data.tag)
-        })
+    return (isSelf.value ? Self.getSelf() : User.getUser(userId)).then(r => {
+        user.value = r.data.data
+        userTags.value = splitStringBySpace(r.data.data.tag)
+    })
 }
 
 function loadUnreads() {
     if (isSelf.value) Notifications.getUnreadCount().then(r => unreadCount.value = r.data.data)
 }
 
+function setFollowing(value: boolean) {
+    promiseSuccess(value ? User.follow(user.value.id) : User.unfollow(user.value.id))
+        .then(() => Self.FollowController.loadBoth())
+}
+
 onMounted(() => {
-    loadUser()
-    loadUnreads()
+    loadUser().then(() => {
+        if (isSelf) loadUnreads()
+        tabs.loadTab()
+    })
 })
 </script>
 
@@ -439,9 +506,9 @@ onMounted(() => {
             margin: 4px 0;
             border-radius: 10px;
             text-align: center;
+            font-size: 0.925em;
 
             .text-main {
-                font-size: 1.1em;
 
                 >svg {
                     font-size: 1.3em;
@@ -458,8 +525,14 @@ onMounted(() => {
         }
     }
 
-    .post {
-        margin: 8px 12px 12px;
+    .tabs {
+        :deep(>.el-tabs__header .el-tabs__item) {
+            font-size: 1em;
+        }
+
+        .post {
+            margin: 8px 12px 12px;
+        }
     }
 }
 </style>

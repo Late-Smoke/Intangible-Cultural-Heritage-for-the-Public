@@ -1,5 +1,5 @@
 export interface Response<Type> {
     data: Type;
-    errorMsg: null;
+    errorMsg: string | null;
     success: boolean;
 }

@@ -16,6 +16,8 @@
             </svg>
         </SvgBackground>
 
+
+        <!-- Header -->
         <div class="header">
             <el-button text circle icon="ArrowLeft" size="large" style="font-size: 1.25em;" @click="router.back()"></el-button>
 
@@ -24,14 +26,16 @@
                 <span @click="gotoUser(post.userId)">{{ post.nickName }}</span>
             </div>
 
-            <el-button v-if="!authorFollowed" round @click="User.follow(post.userId)">
+            <el-button v-if="!post.beFan" round @click="setFollow(true)">
                 <span style="color: #855D12; font-size: 1.7em; margin-right: 4px;">+</span>关注
             </el-button>
-            <el-button v-else round>已关注</el-button>
+            <el-button v-else round @click="setFollow(false)">已关注</el-button>
 
-            <el-button round icon="mdiShareOutline" style="font-size: 1.5em; color: #A0814D;"></el-button>
+            <el-button round icon="mdiShareOutline" style="font-size: 1.5em; color: #A0814D;" @click="showShare = true"></el-button>
         </div>
 
+
+        <!-- Images -->
         <el-carousel v-if="post.urls" trigger="click" height="40vh" :autoplay="false">
             <el-carousel-item v-for="(item, index) in post.urls">
                 <el-image v-if="item.type == 0" fit="contain" :preview-teleported="true" :src="item.url" :preview-src-list="post.urls.map(x => x.url)" :initial-index="index" />
@@ -40,6 +44,7 @@
         </el-carousel>
 
 
+        <!-- Main content -->
         <h3 class="title">{{ post.title }}</h3>
         <div class="body" v-html="post.content"></div>
 
@@ -187,6 +192,20 @@
         </overlay-card>
 
 
+        <!-- Share menu -->
+        <overlay-card v-if="showShare" :close-action="() => showShare = false" title="分享" bottom>
+            <div class="share">
+                <div>
+                    <mdiShareOutline />转发
+                </div>
+                <div @click="copyLink()">
+                    <mdiLink />复制链接
+                </div>
+            </div>
+        </overlay-card>
+
+
+        <!-- Comment input -->
         <div v-show="reply.show" class="reply-overlay" @click="reply.show = false">
             <div class="reply" @click="e => e.stopPropagation()">
                 <el-input ref="replyInput" v-model="reply.data.content" :placeholder="reply.data.rootCommentId ? `回复 ${reply.replyUsername}…` : '发表评论…'"></el-input>
@@ -208,9 +227,10 @@ import { onMounted, nextTick, reactive, computed } from 'vue';
 import { ElButton, ElInput, ElMessage } from 'element-plus';
 import commentActions from '@/components/posts/CommentActions.vue';
 import OverlayCard from '@/components/slot/OverlayCard.vue';
-import ErrorPage from '@/components/ErrorPage.vue';
-import { formatDate, gotoPostComment, gotoUser } from '@/utils';
+import ErrorPage from '@/views/error/ErrorPage.vue';
+import { formatDate, gotoPostComment, gotoUser, setClipboard } from '@/utils';
 import SvgBackground from '@/components/slot/SvgBackground.vue';
+import * as Self from '@/axios/api/self'
 
 const props = defineProps<{
     postId: string
@@ -230,8 +250,7 @@ const commentsSort = ref(Sort.hotest)
 watch(commentsSort, loadComments)
 
 
-const authorFollowed = ref(false)
-
+const showShare = ref(false)
 
 const replyInput = ref<InstanceType<typeof ElInput>>()
 const replySendBtn = ref<InstanceType<typeof ElButton>>()
@@ -278,6 +297,11 @@ const reply = reactive({
 })
 
 
+function setFollow(value: boolean) {
+    (value ? User.follow(post.value.userId) : User.unfollow(post.value.userId))
+        .then(loadPost)
+}
+
 function setLike(value: boolean) {
     (value ? Posts.addLike(post.value.id) : Posts.removeLike(post.value.id))
         .then(loadPost)
@@ -286,6 +310,14 @@ function setLike(value: boolean) {
 function setFav(value: boolean) {
     (value ? Posts.addFav(post.value.id) : Posts.removeFav(post.value.id))
         .then(loadPost)
+}
+
+
+function copyLink() {
+    setClipboard(`${post.value.title} - ${post.value.nickName}\n${location.href}`).then(() => {
+        ElMessage.success('复制成功')
+        showShare.value = false
+    })
 }
 
 
@@ -307,7 +339,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .header {
     position: sticky;
     top: 0;
@@ -554,6 +586,31 @@ onMounted(() => {
         align-items: center;
         padding: 8px;
         gap: 8px;
+    }
+}
+
+.share {
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+
+    >div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #555;
+        padding: 4px 12px 16px;
+        font-size: 0.9em;
+        gap: 4px;
+
+        >svg {
+            font-size: 3em;
+            background-color: #eee;
+            border-radius: 100%;
+            padding: 6px;
+            color: var(--el-color-primary-dark-2)
+        }
     }
 }
 </style>

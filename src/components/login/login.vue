@@ -4,7 +4,7 @@ import router from '@/router';
 import { useTypeStore,usePositionStore } from '@/stores/user';
 import { ElMessage } from 'element-plus';
 import { getCodeApi, codeLoginApi, passwordLoginApi } from '@/axios/api/login';
-import apiClient from '@/axios/axios';
+import { setToken } from '@/axios/axios';
 
 // 创建表单引用
 const type = useTypeStore();// 真为验证码登录，假为密码登录
@@ -127,9 +127,8 @@ const submitForm = (formEl) => {
 
 
 function OnLoginSuccess(token) {
-    localStorage.setItem('token', token)
-    apiClient.defaults.headers.common['Authorization'] = token
-    router.push({ name: 'mainPageView' });
+    setToken(token)
+    router.push({ name: 'mainPageView' }).then(() => router.go(0))
 }
 
 

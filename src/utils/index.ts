@@ -1,4 +1,6 @@
+import { Response } from "@/axios/api/common"
 import router from "@/router"
+import { AxiosResponse } from "axios"
 
 /** 数字自动转换为 `n万` */
 export function humanizeNumber(x: number) {
@@ -29,11 +31,16 @@ export function html2txt(html: string) {
     return el.textContent
 }
 
-export function splitStringBySpace(s:string | null) {
+export function splitStringBySpace(s: string | null) {
     return s ? [...s.split(' ')] : []
 }
 
+export function setClipboard(txt: string) {
+    return navigator.clipboard.writeText(txt)
+}
 
+
+// quick navigation
 export function gotoUser(id) {
     router.push({
         name: 'userHome',
@@ -47,9 +54,21 @@ export function gotoPost(postId) {
         params: { postId }
     })
 }
+
 export function gotoPostComment(postId, commentId) {
     router.push({
         name: 'postComment',
         params: { postId, commentId }
+    })
+}
+
+
+// API success
+export function promiseSuccess<T>(axiosPromise: Promise<AxiosResponse<Response<T>, any>>): Promise<AxiosResponse<Response<T>, any>> {
+    return new Promise((resolve, reject) => {
+        axiosPromise.then(r => {
+            if (r.data.success) resolve(r)
+            else reject(r)
+        }).catch(e => reject(e))
     })
 }
