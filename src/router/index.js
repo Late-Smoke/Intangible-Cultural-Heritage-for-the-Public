@@ -141,6 +141,13 @@ const router = createRouter({
       ]
     },
 
+    // test
+    {
+      path: '/test',
+      name: 'test',
+      component: () => import('@/views/test/test.vue'),
+    },
+
     // post
     {
       path: '/post/:postId',

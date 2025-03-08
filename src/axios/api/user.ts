@@ -4,7 +4,15 @@ import * as Posts from '@/axios/api/posts'
 import * as Activity from '@/axios/api/activity'
 import * as Self from '@/axios/api/self'
 
-export interface User {
+export interface BaseUser {
+    id: number
+    avatarUrl: string;
+    nickName: string;
+    userType: number;
+    tag: null | string;
+}
+
+export interface User extends BaseUser {
     /**
      * 头像url
      */

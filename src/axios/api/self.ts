@@ -4,8 +4,9 @@ import * as Posts from '@/axios/api/posts'
 import * as Activity from '@/axios/api/activity'
 import * as User from './user'
 import { createElementPlusSettingSwitch } from "@/settings";
-import { computed, reactive } from "vue";
+import { reactive } from "vue";
 import { promiseSuccess } from "@/utils";
+import { AxiosResponse } from "axios";
 
 
 // self
@@ -76,7 +77,7 @@ export const PrivacySettingsController = {
 
 
 // follows
-export interface FollowUser {
+export interface FollowUser extends User.BaseUser {
     id: number
     nickName: string
     avatarUrl: string
@@ -95,34 +96,38 @@ export function getFollowers() {
     return apiClient.get<Response<FollowUser[]>>('/follows/myfans')
 }
 
+export interface IFollowController {
+    users?: FollowUser[],
+    loadPromise?: Promise<void>
+    load: () => Promise<void>
+    includes: (id: number | string) => boolean
+}
+
+function createFollowController(getMethod: () => Promise<AxiosResponse<Response<FollowUser[]>, any>>): IFollowController {
+    return {
+        load() {
+            if (this.loadPromise) return this.loadPromise
+            const promise = promiseSuccess(getMethod()).then(r => {
+                this.users = r.data.data
+                this.loadPromise = undefined
+            })
+            this.loadPromise = promise
+            return promise
+        },
+        includes(id) {
+            if (!this.users) {
+                this.load()
+                return false
+            } else return Boolean(this.users.find(x => x.id == id))
+        }
+    }
+}
+
 export const FollowController = reactive({
-    followingList: undefined as FollowUser[],
-    followersList: undefined as FollowUser[],
+    following: createFollowController(getFollowing),
+    followers: createFollowController(getFollowers),
 
-    loadFollowing() {
-        return promiseSuccess(getFollowing()).then(r => this.followingList = r.data.data)
-    },
-    loadFollowers() {
-        return promiseSuccess(getFollowers()).then(r => this.followersList = r.data.data)
-    },
     loadBoth() {
-        return Promise.all([this.loadFollowing(), this.loadFollowers()])
-    },
-
-    isFollowing(id: number | string) {
-        return computed(() => {
-            if (!this.followingList) {
-                this.loadFollowing()
-                return false
-            } else return Boolean(this.followingList.find(x => x.id == id))
-        })
-    },
-    isFollower(id: number | string) {
-        return computed(() => {
-            if (!this.followersList) {
-                this.loadFollowers()
-                return false
-            } else return Boolean(this.followersList.find(x => x.id == id))
-        })
+        return Promise.all([this.following.load(), this.followers.load()])
     },
 })
