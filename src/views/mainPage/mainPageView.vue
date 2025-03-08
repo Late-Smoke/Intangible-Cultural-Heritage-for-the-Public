@@ -5,7 +5,7 @@ import { ref } from 'vue';
 
 const route = useRoute()
 
-const isTop = ref(false)
+const isTop = ref(true)
 const routerDiv = ref<HTMLDivElement>()
 
 </script>

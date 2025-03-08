@@ -2,6 +2,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { useSearchStore } from '@/stores/user';
 import { getUserApi } from '@/axios/api/search';
+import { splitStringBySpace } from '@/utils';
 
 const popoverShow = ref(false);
 const title = ref('全部用户');
@@ -123,8 +124,9 @@ watch(() => title.value, () => {
                                 <span v-if="item.userType === 1">媒体</span>
                             </div>
                         </div>
-                        <div class="item-tag">
-                            <el-tag v-if="item.tag" class="tag" effect="plain">{{ item.tag }}</el-tag>
+                        <div class="item-tag" v-if="typeof item.tag == 'string'">
+                            <el-tag v-for="tag in splitStringBySpace(item.tag)" class="tag" effect="plain">{{ tag
+                            }}</el-tag>
                         </div>
                     </div>
                 </div>
@@ -226,6 +228,7 @@ watch(() => title.value, () => {
 
 .item-tag {
     display: flex;
+    gap: 5px;
     padding: 0 10px;
     padding-left: 0;
     justify-content: flex-start;

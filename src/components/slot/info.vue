@@ -44,6 +44,8 @@ const info = defineModel();
 .headTitle {
     font-size: 24px;
     padding: 0 10px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .head-bottom {
@@ -51,6 +53,7 @@ const info = defineModel();
     padding: 5px 30px;
     gap: 10px;
     justify-content: flex-end;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .content-item {

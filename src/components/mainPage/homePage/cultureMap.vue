@@ -1,17 +1,24 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { getLocationActivityApi,getLocationPostApi } from '@/axios/api/mainPage';
 import PostListItem from '@/components/posts/PostListItem.vue'
-import Exhibition from '@/components/slot/exhibition.vue';
+import ActivityListItem from '@/components/activity/ActivityListItem.vue';
 import Map from '@/components/slot/gaode.vue';
 import { ArrowDownBold } from '@element-plus/icons-vue';
-import * as ExampleData from '@/axios/example-data'
 
 const TabName = ref('related-post');
 const route = useRoute()
 watch(() => {route.name}, () => {
     if (route.name != 'cultureMap') TabName.value = 'related-post'
 })
+
+/*post*/
+const postData = ref([]);
+
+/*activity*/
+const activityData = ref([]);
+
 /*select*/
 const area = ref('');
 const time = ref('');
@@ -50,11 +57,11 @@ const typeOptions = [
 const genderOptions = [
   {
     value: 'Option1',
-    label: 'Option1',
+    label: '女',
   },
   {
     value: 'Option2',
-    label: 'Option2',
+    label: '男',
   }
 ];
 
@@ -78,6 +85,14 @@ const inheritorData = [
 
 const searchName = ref('');
 
+onMounted(() => {
+  getLocationPostApi().then(res => {
+    postData.value = res.data.data;
+  });
+  getLocationActivityApi().then(res => {
+    activityData.value = res.data.data; 
+  })
+})
 </script>
 
 <template>
@@ -86,10 +101,10 @@ const searchName = ref('');
   </div>
   <el-tabs v-model="TabName" class="tabs">
     <el-tab-pane label="相关帖子" name="related-post" class="relatedPost">
-      <post-list-item :post="ExampleData.Post" />
+      <PostListItem v-for="post in postData" :post="post" />
     </el-tab-pane>
     <el-tab-pane label="展览/活动" name="exhibition" class="exhibition">
-      <exhibition />
+      <ActivityListItem class="activity-item" v-for="a in activityData" :activity="a" bottom="address" />
     </el-tab-pane>
     <el-tab-pane label="非遗传承人" name="inheritor">
       <div class="inheritor">

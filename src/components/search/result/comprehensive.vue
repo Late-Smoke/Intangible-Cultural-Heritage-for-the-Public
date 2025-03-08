@@ -14,6 +14,15 @@ const sortShow = ref(false);
 watch(() => searchStore.search, (newValue, oldValue) => {//用户修改搜索框值
     if (newValue != oldValue) searchStore.changeIfSearch(false);
 })
+watch(()=>searchStore.ifHistory, (newValue) => {
+    if (newValue) {
+        getBaiKeApi(searchStore.search).then(res => {
+            baiKe.value = res.data.data;
+        })
+        getHotPost();
+        getNewPost();
+    }
+})
 onMounted(() => {
     if (!searchStore.search) return;
     getBaiKeApi(searchStore.search).then(res => {

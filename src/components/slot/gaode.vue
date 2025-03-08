@@ -11,7 +11,8 @@
           <path
             d="M18.0006 13.1835C16.7109 13.1835 15.5055 13.6817 14.5935 14.5978C13.6814 15.5098 13.1792 16.7152 13.1792 18.0049C13.1792 19.2947 13.6814 20.5 14.5935 21.4121C15.5055 22.3201 16.7149 22.8264 18.0006 22.8264C19.2863 22.8264 20.4957 22.3241 21.4078 21.4121C22.3158 20.5 22.822 19.2906 22.822 18.0049C22.822 16.7192 22.3198 15.5098 21.4078 14.5978C20.9624 14.1474 20.4317 13.7903 19.8466 13.5475C19.2616 13.3046 18.634 13.1809 18.0006 13.1835Z"
             fill="#8C7831" />
-        </svg></button>
+        </svg>
+      </button>
       <div>定位至当前位置</div>
     </div>
     <div class="select">
@@ -28,8 +29,11 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
 import { usePositionStore } from '@/stores/user';
+import heritageData from '@/components/mainPage/homePage/heritage.json';
+import { getFromAdcodeApi } from '@/axios/api/mainPage';
 
 // 地图对象
 const positionStore = usePositionStore();
@@ -46,105 +50,110 @@ const colors = [
   "#651067", "#329262", "#5574a6", "#3b3eac"
 ];
 
+const allData = ref([]);
+allData.value = heritageData;
 onMounted(() => {
+  const button = document.getElementsByClassName('btn-position')[0];
   map = new AMap.Map('container', {
     touchZoom: true,
     resizeEnable: true
   });
 
+  AMapUI.loadUI(['misc/PointSimplifier'], function (PointSimplifier) { //点标记
 
-  AMapUI.load(['ui/geo/DistrictExplorer', 'lib/$'], (DistrictExplorer, $) => {
+    if (!PointSimplifier.supportCanvas) {
+      alert('当前环境不支持 Canvas!');
+      return;
+    }
+    initPage(PointSimplifier);
+  });
+
+  function initPage(PointSimplifier) {
+    //创建组件实例
+    var pointSimplifierIns = new PointSimplifier({
+      map: map, //关联的map
+      compareDataItem: function (a, b, aIndex, bIndex) {
+        //数据源中靠后的元素优先，index大的排到前面去
+        return aIndex > bIndex ? -1 : 1;
+      },
+      getPosition: function (dataItem) {
+        //返回数据项的经纬度，AMap.LngLat实例或者经纬度数组
+        return [dataItem.lng, dataItem.lat];
+      },
+      getHoverTitle: function (dataItem, idx) {
+        //返回数据项的Title信息，鼠标hover时显示
+        return '序号: ' + idx;
+      },
+      renderOptions: {
+        //点的样式
+        pointStyle: {
+          width:6,
+          height:6,
+          content: 'circle',
+          fillStyle: 'rgba(159, 125, 90, 0.5)', // 填充色为半透明
+          strokeStyle: 'rgba(159, 125, 90, 1)', // 边框色为不透明
+          strokeWeight: 1,// 边框宽度
+        },
+
+        pointHardcoreStyle: {
+          width: 10,
+          height: 10,
+          content: 'circle',
+          strokeStyle: '#FF8D00', // 边框色为不透明
+        }
+      }
+    });
+    pointSimplifierIns.setData(allData.value);
+    //movePosition();
+
+
+    //监听事件
+    pointSimplifierIns.on('pointClick pointMouseover pointMouseout', function (e, record) {
+      console.log(e.type, record);
+    });
+  }
+
+  AMapUI.load(['ui/geo/DistrictExplorer', 'lib/$'], (DistrictExplorer, $) => {// 地图下钻
     districtExplorer = new DistrictExplorer({
       eventSupport: true, // 开启事件支持
       map: map
     });
 
-    AMap.plugin('AMap.Geolocation', function () {
+    AMap.plugin('AMap.Geolocation', function () { //定位
       var geolocation = new AMap.Geolocation({
-        enableHighAccuracy: true,  // 是否使用高精度定位，默认:true
-        timeout: 10000,            // 超过10秒后停止定位，默认：5s
-        //buttonPosition: 'LB',      // 定位按钮的停靠位置
-        //buttonOffset: new AMap.Pixel(10, 20), // 定位按钮与设置的停靠位置的偏移量
-        zoomToAccuracy: true,      // 定位成功后是否自动调整地图视野到定位点
-        showCircle: false,          // 定位成功后用圆圈表示定位精度范围
-        buttonDom: document.getElementsByClassName('btn-position')[0],
+        enableHighAccuracy: true,
+        timeout: 10000,
+        showCircle: false,
+        buttonDom: button,
       });
 
       map.addControl(geolocation);
 
-      const clickLocation = () => {
+      function movePosition() {
         console.log('clickLocation');
         geolocation.getCurrentPosition(function (status, result) {
           if (status == 'complete') {
-            // 定位成功，获取经纬度
-            var position = result.position;
             // 获取定位城市
-            getCityFromPosition(position);
+            geolocation.getCityInfo(function (status, cityResult) {
+              if (status === 'complete') {
+                var cityName = cityResult.city.replace(/市$/, "");  // 获取城市名
+                positionStore.changeCityName(cityName);
+                switch2AreaNode(cityResult.adcode);
+              } else {
+                console.error('获取城市信息失败', cityResult.info);
+              }
+            });
             positionStore.changeLatitude(result.position.lat);
             positionStore.changeLongitude(result.position.lng);
           } else {
-            onError(result);
+            ElMessage.error('定位失败');
           }
         });
       }
-      clickLocation();
-      // 通过经纬度获取城市信息并设置地图
-      function getCityFromPosition() {
-        AMap.plugin('AMap.Geolocation', function () {
-          var geolocation = new AMap.Geolocation();
-          geolocation.getCityInfo(function (status, cityResult) {
-            if (status === 'complete') {
-              var cityName = cityResult.city.replace(/市$/, "");  // 获取城市名
-              positionStore.changeCityName(cityName);
-              switch2AreaNode(cityResult.adcode);
-            } else {
-              console.error('获取城市信息失败', cityResult.info);
-            }
-          });
-        });
-      }
 
-      // 定义定位失败的回调函数
-      function onError(data) {
-        console.error('定位失败', data);
-      }
-    });
+      movePosition();
 
-    // 鼠标hover提示
-    const $tipMarkerContent = $('<div class="tipMarker top"></div>');
-    const tipMarker = new AMap.Marker({
-      content: $tipMarkerContent.get(0),
-      offset: new AMap.Pixel(0, 0),
-      bubble: true
-    });
-
-    // 鼠标hover事件
-    function toggleHoverFeature(feature, isHover, position) {
-      tipMarker.setMap(isHover ? map : null);
-      if (!feature) return;
-
-      const props = feature.properties;
-      if (isHover) {
-        $tipMarkerContent.html(props.adcode + ': ' + props.name);
-        tipMarker.setPosition(position || props.center);
-      }
-
-      $('#area-tree').find('h2[data-adcode="' + props.adcode + '"]').toggleClass('hover', isHover);
-      const polys = districtExplorer.findFeaturePolygonsByAdcode(props.adcode);
-      polys.forEach(poly => {
-        poly.setOptions({
-          fillOpacity: isHover ? 0.5 : 0.2
-        });
-      });
-    }
-
-    // 监听鼠标事件
-    districtExplorer.on('featureMouseout featureMouseover', (e, feature) => {
-      toggleHoverFeature(feature, e.type === 'featureMouseover', e.originalEvent ? e.originalEvent.lnglat : null);
-    });
-
-    districtExplorer.on('featureMousemove', (e, feature) => {
-      tipMarker.setPosition(e.originalEvent.lnglat);
+      button.onclick = movePosition;
     });
 
     districtExplorer.on('featureClick', (e, feature) => {
@@ -179,7 +188,7 @@ onMounted(() => {
       districtExplorer.loadAreaNode(adcode, (error, areaNode) => {
         if (error) return;
 
-        renderAreaPanel(areaNode);
+        //renderAreaPanel(areaNode);
         if (callback) callback(null, areaNode);
       });
     }
@@ -211,102 +220,13 @@ onMounted(() => {
       });
     }
 
-    function renderAreaPanelNode(ele, props, color) {
-      const $box = $('<li/>').addClass('lv_' + props.level);
-      const $h2 = $('<h2/>').addClass('lv_' + props.level).attr({
-        'data-adcode': props.adcode,
-        'data-level': props.level,
-        'data-children-num': props.childrenNum || void 0,
-        'data-center': props.center.join(','),
-      }).html(props.name).appendTo($box);
-
-      if (color) {
-        $h2.css('borderColor', color);
-      }
-
-      if (props.childrenNum > 0) {
-        $('<div class="showHideBtn"></div>').appendTo($box);
-        $('<ul/>').addClass('sublist lv_' + props.level).appendTo($box);
-        $('<div class="clear"></div>').appendTo($box);
-
-        if (props.level !== 'country') {
-          $box.addClass('hide-sub');
-        }
-      }
-
-      $box.appendTo(ele);
-    }
-
-    function renderAreaPanel(areaNode) {
-      const props = areaNode.getProps();
-      let $subBox = $('#area-tree').find('h2[data-adcode="' + props.adcode + '"]').siblings('ul.sublist');
-
-      if (!$subBox.length && props.childrenNum) {
-        renderAreaPanelNode($('#area-tree'), props);
-        $subBox = $('#area-tree').find('ul.sublist');
-      }
-
-      if ($subBox.attr('data-loaded') === 'rendered') return;
-      $subBox.attr('data-loaded', 'rendered');
-
-      const subFeatures = areaNode.getSubFeatures();
-      subFeatures.forEach((subFeature, i) => {
-        renderAreaPanelNode($subBox, areaNode.getPropsOfFeature(subFeature), colors[i % colors.length]);
-      });
-    }
-
     switch2AreaNode(100000); // 加载全国地图
+
+    function loadData() {
+      allData.value = heritageData;
+    }
   });
 
-  //缩放组件
-  // AMapUI.loadUI(['control/BasicControl'], function (BasicControl) {
-
-  //   map.addControl(new BasicControl.Zoom({
-  //     position: 'lt', //left top，左上角
-  //     showZoomNum: false //显示zoom值
-  //   }));
-  // });
-
-  //   AMapUI.loadUI(['misc/PointSimplifier'], function (PointSimplifier) {
-
-  //     if (!PointSimplifier.supportCanvas) {
-  //       alert('当前环境不支持 Canvas！');
-  //       return;
-  //     }
-
-  //     //启动页面
-  //     initPage(PointSimplifier);
-  //   });
-
-  //   function initPage(PointSimplifier) {
-  //     //创建组件实例
-  //     var pointSimplifierIns = new PointSimplifier({
-  //       map: map, //关联的map
-  //       compareDataItem: function (a, b, aIndex, bIndex) {
-  //         //数据源中靠后的元素优先，index大的排到前面去
-  //         return aIndex > bIndex ? -1 : 1;
-  //       },
-  //       getPosition: function (dataItem) {
-  //         //返回数据项的经纬度，AMap.LngLat实例或者经纬度数组
-  //         return dataItem;
-  //       },
-  //       getHoverTitle: function (dataItem, idx) {
-  //         //返回数据项的Title信息，鼠标hover时显示
-  //         return '序号: ' + idx;
-  //       },
-  //       renderOptions: {
-  //         //点的样式
-  //         pointStyle: {
-  //           fillStyle: 'blue' //蓝色填充
-  //         }
-  //       }
-  //     });
-
-  // // 初始化函数
-  // initPage();
-
-  //     //设置数据源，data需要是一个数组
-  //     pointSimplifierIns.setData(data);
 });
 </script>
 
@@ -354,13 +274,13 @@ onMounted(() => {
 
 .select svg {
   position: absolute;
-  top:-10px;
+  top: -10px;
   left: 0;
 }
 
 .select span {
   position: absolute;
   top: 10px;
-  left: 35px; 
+  left: 35px;
 }
 </style>

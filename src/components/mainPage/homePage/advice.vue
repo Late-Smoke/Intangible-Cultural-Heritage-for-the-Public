@@ -1,9 +1,9 @@
 <script setup>
-import { ref , onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import PostListItem from '@/components/posts/PostListItem.vue'
 import Info from '@/components/slot/info.vue';
-import { getFindPostApi, getFollowPostApi,getPictureApi } from '@/axios/api/mainPage';
-import { getInfoApi } from '@/axios/api/search';
+import { getFollowPostApi, getPictureApi } from '@/axios/api/mainPage';
+import { getInfoApi,getHotPostApi } from '@/axios/api/search';
 
 
 const selectedTag = ref('find');
@@ -15,7 +15,7 @@ const followPost = ref([]);
 const infoData = ref([]);
 const picture = ref([]);
 onMounted(() => {
-    getFindPostApi().then(res => {
+    getHotPostApi("").then(res => {
         if (res.status == 200) {
             findPost.value = res.data.data;
         }
@@ -23,42 +23,30 @@ onMounted(() => {
     getFollowPostApi().then(res => {
         if (res.status == 200) {
             followPost.value = res.data.data;
-        } 
+        }
     })
     getInfoApi("").then(res => {
         infoData.value = res.data.data;
     })
-    // getPictureApi().then(res => {
-    //     picture.value = res.data.data;
-    // })
+    getPictureApi().then(res => {
+        picture.value = res.data.data;
+    })
 })
 </script>
 
 <template>
     <div class="tag">
-        <el-button
-        class="btn-left"
-        type="text"
-        :class="selectedTag === 'follow' ? 'clickTag' : 'unclickTag'"
-        @click="handleClickTag('follow')"
-        >
-        关注
+        <el-button class="btn-left" type="text" :class="selectedTag === 'follow' ? 'clickTag' : 'unclickTag'"
+            @click="handleClickTag('follow')">
+            关注
         </el-button>
-        <el-button
-        class="btn"
-        type="text"
-        :class="selectedTag === 'find' ? 'clickTag' : 'unclickTag'"
-        @click="handleClickTag('find')"
-        >
-        发现
+        <el-button class="btn" type="text" :class="selectedTag === 'find' ? 'clickTag' : 'unclickTag'"
+            @click="handleClickTag('find')">
+            发现
         </el-button>
-        <el-button
-        class="btn-right"
-        type="text"
-        :class="selectedTag === 'info' ? 'clickTag' : 'unclickTag'"
-        @click="handleClickTag('info')"
-        >
-        资讯
+        <el-button class="btn-right" type="text" :class="selectedTag === 'info' ? 'clickTag' : 'unclickTag'"
+            @click="handleClickTag('info')">
+            资讯
         </el-button>
     </div>
     <div class="router">
@@ -70,8 +58,8 @@ onMounted(() => {
         <dvi v-if="selectedTag === 'find'">
             <div class="carousel" v-if="picture.length">
                 <el-carousel height="150px">
-                    <el-carousel-item v-for="(item,index) in picture" :key="index">
-                        <img :src="item.urls[0].url" fit="cover">
+                    <el-carousel-item v-for="(item, index) in picture" :key="index">
+                        <img :src="item.urls[0].url" style="width: 100%; height: 100%;object-fit: cover;">
                     </el-carousel-item>
                 </el-carousel>
             </div>
@@ -81,19 +69,20 @@ onMounted(() => {
         </dvi>
         <dvi v-if="selectedTag === 'info'">
             <div class="info">
-                <info v-model="infoData"/>
+                <info v-model="infoData" />
             </div>
         </dvi>
     </div>
 </template>
 
 
-<style  scoped>
+<style scoped>
 /*tag*/
 .tag {
     margin: 10px 0 0;
-    text-align: center;    
+    text-align: center;
 }
+
 .tag .el-button {
     width: 75px;
     height: 25px;
@@ -104,46 +93,56 @@ onMounted(() => {
     transition: 0.3;
     position: relative;
 }
+
 .btn-left {
     left: 30px;
 }
+
 .btn-right {
-    right: 30px; 
+    right: 30px;
 }
+
 .unclickTag {
     color: #000;
     background-image: url('/icon/unClick.png');
     z-index: 1;
 }
+
 .unclickTag:hover {
     color: #987B5B;
 }
+
 .clickTag {
     color: #FFF;
-    background-image: url('/icon/click.png'); 
+    background-image: url('/icon/click.png');
     z-index: 2;
 }
+
 .clickTag:hover {
-    color: #FFF; 
+    color: #FFF;
 }
 
 /*router*/
 .router {
     padding: 0 15px;
 }
+
 /*find*/
 .carousel {
     /* background-color: aquamarine; */
     border-radius: 5px;
 }
+
 :deep(.el-carousel__container) {
     height: 175px !important;
 }
+
 :deep(.el-carousel__indicators) {
     right: 1px;
     left: auto;
     justify-content: flex-end;
 }
+
 :deep(.el-carousel__indicator button) {
     width: 10px;
     height: 10px;
@@ -151,9 +150,15 @@ onMounted(() => {
     background-color: #FFF;
     border: solid 1px #00000080;
 }
+
 :deep(.el-carousel__indicator.is-active button) {
-  background-color: #987B5B;
+    background-color: #987B5B;
 }
+
+:deep(.el-carousel__arrow) {
+    background-color: #987b5b99;
+}
+
 .find {
     margin-top: 10px;
 }

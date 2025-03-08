@@ -28,8 +28,8 @@ const handleBack = () => {
     activityStore.endTime = '';
     dataStore.changeRelatedPost([]);
     searchStore.changeSearch('');
-    searchStore.changeIfSearch(false);
-    searchStore.changeIfHistory(false);
+    searchStore.ifSearch = false;
+    searchStore.ifHistory = false;
     router.push('/mainPageView/homePage/cultureMap');
 }
 const handleClean = () => {

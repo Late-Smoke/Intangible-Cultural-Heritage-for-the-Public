@@ -1,13 +1,14 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import router from '@/router';
-import { useTypeStore } from '@/stores/user';
+import { useTypeStore,usePositionStore } from '@/stores/user';
 import { ElMessage } from 'element-plus';
 import { getCodeApi, codeLoginApi, passwordLoginApi } from '@/axios/api/login';
 import apiClient from '@/axios/axios';
 
 // 创建表单引用
 const type = useTypeStore();// 真为验证码登录，假为密码登录
+const positionStore = usePositionStore();
 const changeType = (formEl) => {
     formEl.resetFields();
     type.changeType(!type.type);
@@ -96,7 +97,7 @@ const submitForm = (formEl) => {
     formEl.validate(async (valid) => {
         if (valid && agreed.value) {
             if (type.type) {// 验证码登录
-                const response = await codeLoginApi(form.phone, form.code);
+                const response = await codeLoginApi(form.phone, form.code,positionStore.latitude,positionStore.longitude);
                 console.log('验证码登录：', response.data);
                 if (response.data.success === true) {
                     OnLoginSuccess(response.data.data)
@@ -106,7 +107,7 @@ const submitForm = (formEl) => {
             }
             else {
                 //密码登录
-                const response = await passwordLoginApi(form.phone, form.password);
+                const response = await passwordLoginApi(form.phone, form.password,positionStore.latitude,positionStore.longitude);
                 console.log('密码登录：', response.data);
                 if (response.data.success === true) {
                     OnLoginSuccess(response.data.data)

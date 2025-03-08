@@ -17,7 +17,6 @@ export const usePositionStore = defineStore("position", {
       this.cityName = newCityName; 
     }
   },
-  persist: true,
 });
 
 export const useTypeStore = defineStore("type", {
