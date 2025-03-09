@@ -1,0 +1,3 @@
+
+enum historyType { post, activity }
+

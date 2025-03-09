@@ -66,7 +66,7 @@
 import PageHeader from '@/components/slot/PageHeader.vue';
 import router from '@/router';
 import * as Notifications from '@/axios/api/notifications'
-import { ref, onMounted } from 'vue'
+import { ref, onActivated } from 'vue'
 import { formatDate } from '@/utils';
 import * as ExampleData from '@/axios/example-data'
 import ConfirmDialog from '@/components/slot/ConfirmDialog.vue';
@@ -79,7 +79,7 @@ function loadNotification() {
 
 const showConfirmMarkAllAsRead = ref(false)
 
-onMounted(() => {
+onActivated(() => {
     loadNotification()
 })
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="userExists">
+    <template v-if="userExists">
         <div class="user-info">
             <div class="bg">
                 <svg width="169" height="168" viewBox="0 0 169 168" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -129,13 +129,13 @@
         </div>
 
         <DrawerMenu v-model="menuOpen" />
-    </div>
+    </template>
 
     <ErrorPage v-else message="用户不存在" />
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed, reactive } from 'vue'
+import { ref, watch, onActivated, computed, reactive } from 'vue'
 import * as Self from '@/axios/api/self'
 import { useRoute } from 'vue-router';
 import TagsEditor from '@/components/slot/TagsEditor.vue';
@@ -160,15 +160,6 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 const { userId } = defineProps<{
     userId: string
 }>()
-
-const route = useRoute()
-
-watch(() => route.name, name => {
-    if (name == 'self') {
-        loadUser()
-        loadUnreads()
-    }
-})
 
 
 const user = ref<Self.Self | null>()
@@ -338,13 +329,21 @@ function changeName() {
     }).catch(() => { })
 }
 
-onMounted(() => {
-    loadUser().then(() => {
-        if (!userExists.value) return
-        if (isSelf.value) loadUnreads()
-        else Self.FollowController.loadBoth()
-        tabs.loadTab()
-    })
+onActivated(() => {
+    if (!user.value) {
+        loadUser().then(() => {
+            if (!userExists.value) return
+            if (isSelf.value) loadUnreads()
+            else Self.FollowController.loadBoth()
+            tabs.loadTab()
+        })
+    } else if (isSelf.value) {
+        loadUser()
+        loadUnreads()
+    } else {
+        Self.FollowController.loadBoth()
+        if (!history.state.forward) scrollTo({ top: 0 })
+    }
 })
 </script>
 
