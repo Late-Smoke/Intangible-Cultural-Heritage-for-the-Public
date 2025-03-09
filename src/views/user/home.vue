@@ -342,7 +342,6 @@ onActivated(() => {
         loadUnreads()
     } else {
         Self.FollowController.loadBoth()
-        if (!history.state.forward) scrollTo({ top: 0 })
     }
 })
 </script>

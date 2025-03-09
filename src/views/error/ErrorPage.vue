@@ -34,7 +34,7 @@ defineProps<{
     }
 
     .btn-back {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         padding: 12px;
