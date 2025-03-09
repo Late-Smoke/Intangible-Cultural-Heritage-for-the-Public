@@ -317,7 +317,7 @@ function copyLink() {
     setClipboard(`${post.value.title} - ${post.value.nickName}\n${location.href}`).then(() => {
         ElMessage.success('复制成功')
         showShare.value = false
-    })
+    }).catch(() => { })
 }
 
 

@@ -83,6 +83,10 @@ export function getStarredActivities(id) {
     return apiClient.get<Response<Activity.Activity[]>>('/other/favorite/activity', { params: { id } })
 }
 
+export function isSelf(id) {
+    return id == Self.getId()
+}
+
 
 export interface FollowUser extends Self.FollowUser { }
 

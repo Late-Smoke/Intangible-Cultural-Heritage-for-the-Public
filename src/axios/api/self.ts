@@ -4,8 +4,8 @@ import * as Posts from '@/axios/api/posts'
 import * as Activity from '@/axios/api/activity'
 import * as User from './user'
 import { createElementPlusSettingSwitch } from "@/settings";
-import { reactive } from "vue";
-import { promiseSuccess } from "@/utils";
+import { reactive, ref } from "vue";
+import { debouncePromise, promiseSuccess } from "@/utils";
 import { AxiosResponse } from "axios";
 
 
@@ -14,8 +14,27 @@ export interface Self extends User.User { }
 
 export interface Comment extends User.Comment { }
 
+export interface ProfileUpdateDTO {
+    nickName?: string
+    avatarUrl?: string
+    signature?: string
+    sex?: number
+}
+
+const id = ref<number>()
+const getSelfFunction = () => {
+    const promise = apiClient.get<Response<Self>>('/personal/me')
+    promiseSuccess(promise).then(r => id.value = r.data.data.id)
+    return promise
+}
+
+export function getId(): number | undefined {
+    if (!id.value) debouncePromise(getSelfFunction)
+    return id.value
+}
+
 export function getSelf() {
-    return apiClient.get<Response<Self>>('/personal/me')
+    return debouncePromise(getSelfFunction)
 }
 
 export function getPosts() {
@@ -36,6 +55,10 @@ export function getJoinedActivities() {
 
 export function getStarredActivities() {
     return apiClient.get<Response<Activity.Activity[]>>('/personal/favorite/activity')
+}
+
+export function updateProfile(data: ProfileUpdateDTO) {
+    return apiClient.put('/update/userMessage', data)
 }
 
 
@@ -98,21 +121,15 @@ export function getFollowers() {
 
 export interface IFollowController {
     users?: FollowUser[],
-    loadPromise?: Promise<void>
-    load: () => Promise<void>
+    load: () => Promise<any>
     includes: (id: number | string) => boolean
 }
 
 function createFollowController(getMethod: () => Promise<AxiosResponse<Response<FollowUser[]>, any>>): IFollowController {
+    const loadFunction = () => promiseSuccess(getMethod())
     return {
         load() {
-            if (this.loadPromise) return this.loadPromise
-            const promise = promiseSuccess(getMethod()).then(r => {
-                this.users = r.data.data
-                this.loadPromise = undefined
-            })
-            this.loadPromise = promise
-            return promise
+            return debouncePromise(loadFunction).then(r => this.users = r.data.data)
         },
         includes(id) {
             if (!this.users) {

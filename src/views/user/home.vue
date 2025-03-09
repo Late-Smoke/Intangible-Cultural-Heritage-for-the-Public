@@ -31,7 +31,7 @@
                     <div class="main">
                         <div class="name">
                             {{ user.nickName }}
-                            <span v-if="isSelf" @click="">
+                            <span v-if="isSelf" @click="changeName()">
                                 <el-icon>
                                     <EditPen />
                                 </el-icon>
@@ -44,9 +44,12 @@
                     </div>
 
                     <div class="action" v-if="!isSelf">
-                        <el-button type="primary" v-if="!Self.FollowController.following.includes(user.id)" @click="setFollowing(true)">关注</el-button>
-                        <el-button type="primary" plain v-else-if="!Self.FollowController.followers.includes(user.id)" @click="setFollowing(false)">已关注</el-button>
-                        <el-button type="primary" plain v-else @click="setFollowing(false)">已互粉</el-button>
+                        <template v-if="!User.isSelf(user.id)">
+                            <el-button type="primary" v-if="!Self.FollowController.following.includes(user.id)" @click="setFollowing(true)">关注</el-button>
+                            <el-button type="primary" plain v-else-if="!Self.FollowController.followers.includes(user.id)" @click="setFollowing(false)">已关注</el-button>
+                            <el-button type="primary" plain v-else @click="setFollowing(false)">已互粉</el-button>
+                        </template>
+                        <el-button v-else type="primary" plain @click="router.push({ name: 'self' })">查看个人视角</el-button>
                     </div>
                 </div>
 
@@ -152,6 +155,7 @@ import { Response } from '@/axios/api/common';
 import ContentListContainer from '@/components/slot/ContentListContainer.vue';
 import { AxiosResponse } from 'axios';
 import ErrorPage from '../error/ErrorPage.vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 const { userId } = defineProps<{
     userId: string
@@ -174,9 +178,8 @@ const userExists = computed(() => !(user.value && user.value.id == null))
 
 const isSelf = computed(() => {
     if (!userId) return true
-    // Todo: 判断用户 id 是否为自己
-    // if (`${user.value?.id}`) return true
-    return false
+    // else if (user.value && User.isSelf(user.value.id)) return true
+    else return false
 })
 
 const unreadCount = ref(0)
@@ -310,7 +313,7 @@ function loadUser() {
 }
 
 function loadUnreads() {
-    if (isSelf.value) Notifications.getUnreadCount().then(r => unreadCount.value = r.data.data)
+    Notifications.getUnreadCount().then(r => unreadCount.value = r.data.data)
 }
 
 function setFollowing(value: boolean) {
@@ -318,11 +321,28 @@ function setFollowing(value: boolean) {
         .then(() => Self.FollowController.loadBoth())
 }
 
+function changeName() {
+    ElMessageBox.prompt('输入新昵称', '修改昵称', {
+        // confirmButtonText: 'OK',
+        // cancelButtonText: 'Cancel',
+        inputValue: user.value.nickName,
+        inputPattern: /.+/,
+        inputErrorMessage: '昵称不能为空',
+    }).then(({ value }) => {
+        promiseSuccess(Self.updateProfile({ nickName: value })).then(() => {
+            ElMessage.success('修改成功')
+            loadUser()
+        }).catch((r: AxiosResponse<Response<any>>) => {
+            ElMessage.error(r?.data?.errorMsg || r as unknown)
+        })
+    }).catch(() => { })
+}
+
 onMounted(() => {
     loadUser().then(() => {
         if (!userExists.value) return
-        if (isSelf) loadUnreads()
-        Self.FollowController.loadBoth()
+        if (isSelf.value) loadUnreads()
+        else Self.FollowController.loadBoth()
         tabs.loadTab()
     })
 })

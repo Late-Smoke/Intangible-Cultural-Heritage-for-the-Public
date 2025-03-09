@@ -1,6 +1,7 @@
 import { Response } from "@/axios/api/common"
 import router from "@/router"
 import { AxiosResponse } from "axios"
+import { ElMessage } from "element-plus"
 
 /** 数字自动转换为 `n万` */
 export function humanizeNumber(x: number) {
@@ -36,7 +37,14 @@ export function splitStringBySpace(s: string | null) {
 }
 
 export function setClipboard(txt: string) {
-    return navigator.clipboard.writeText(txt)
+    return new Promise((resolve, reject) => {
+        try {
+            resolve(navigator.clipboard.writeText(txt))
+        } catch (e) {
+            ElMessage.error('复制失败! 请检查浏览器剪贴板权限或是否已启用HTTPS')
+            reject(e)
+        }
+    })
 }
 
 
@@ -63,7 +71,7 @@ export function gotoPostComment(postId, commentId) {
 }
 
 
-// API success
+// API
 export function promiseSuccess<T>(axiosPromise: Promise<AxiosResponse<Response<T>, any>>): Promise<AxiosResponse<Response<T>, any>> {
     return new Promise((resolve, reject) => {
         axiosPromise.then(r => {
@@ -71,4 +79,14 @@ export function promiseSuccess<T>(axiosPromise: Promise<AxiosResponse<Response<T
             else reject(r)
         }).catch(e => reject(e))
     })
+}
+
+const debounceMap = new Map<() => Promise<any>, Promise<any>>()
+
+export function debouncePromise<T>(loadFunction: () => Promise<T>): Promise<T> {
+    if (debounceMap.has(loadFunction)) return debounceMap.get(loadFunction)
+    const promise = loadFunction()
+    promise.finally(() => debounceMap.delete(loadFunction))
+    debounceMap.set(loadFunction, promise)
+    return promise
 }
