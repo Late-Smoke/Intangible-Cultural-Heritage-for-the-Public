@@ -21,7 +21,7 @@
                 <div class="menu-items">
                     <div class="top">
                         <!-- 浏览历史 -->
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="139.325 161.85 277.001 65.2669" width="277.001px" height="65.2669px">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="139.325 161.85 277.001 65.2669" width="277.001px" height="65.2669px" @click="router.push({ name: 'history' }); menuOpen = false">
                             <defs>
                                 <clipPath id="clip0_1116_3237">
                                     <rect width="35" height="35" fill="white" transform="translate(70.7487 49.498) rotate(-135)" />
