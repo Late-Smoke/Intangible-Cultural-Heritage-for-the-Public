@@ -20,8 +20,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        // target: 'http://182.43.22.191:31789', // 服务器地址
-        target:'http://182.43.22.191:30111',
+         target: 'http://8.134.250.189:8085', // 服务器地址
+        //target:'http://182.43.22.191:30111',
         changeOrigin: true, // 允许代理修改请求来源，解决跨域问题
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

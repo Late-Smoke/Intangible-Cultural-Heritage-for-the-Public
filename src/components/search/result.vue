@@ -24,11 +24,20 @@ watch(TabName, () => {
 })
 
 onMounted(() => {
-    getInfoApi(searchStore.search).then(res => {
-        infoData.value = res.data.data;
-    })
+    getInfoData();
 })
 
+watch(() => searchStore.ifHistory, () => {
+    if (searchStore.ifHistory) {
+        getInfoData();
+    } 
+})
+
+function getInfoData() {
+    getInfoApi(searchStore.search).then(res => {
+        infoData.value = res.data.data;
+    }) 
+}
 </script>
 
 <template>

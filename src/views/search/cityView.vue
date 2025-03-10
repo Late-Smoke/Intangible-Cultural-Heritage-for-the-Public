@@ -206,11 +206,12 @@ const selectCity = (city) => {
       <div class="section" id="location">
         <div class="title">定位城市</div>
         <div>
-          <el-button type="default" @click="selectCity(locationCity)">
+          <el-button type="default" @click="selectCity(locationCity)" :disabled="locationCity === ''">
             <el-icon size="20" color="rgba(152, 123, 91, 1)">
               <Location />
             </el-icon>
-            {{ locationCity }}市
+            <span v-if="locationCity === ''">定位失败</span>
+            <span v-else>{{ locationCity }}市</span>
           </el-button>
         </div>
       </div>

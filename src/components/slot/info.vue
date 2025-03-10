@@ -42,7 +42,7 @@ const info = defineModel();
 }
 
 .headTitle {
-    font-size: 24px;
+    font-size: 21px;
     padding: 0 10px;
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -53,6 +53,7 @@ const info = defineModel();
     padding: 5px 30px;
     gap: 10px;
     justify-content: flex-end;
+    font-size: 14px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
@@ -69,13 +70,13 @@ const info = defineModel();
 .item-head {
     display: flex;
     gap: 5px;
-    font-size: 22px;
+    font-size: 18px;
     font-family: 'Inter';
 }
 
 .item-img {
     width: 137px;
-    margin-top: 30px;
+    margin: 10px 0;
     border-radius: 5px;
     flex-shrink: 0;
     object-fit: cover;
@@ -88,5 +89,6 @@ const info = defineModel();
 .item-bottom {
     display: flex;
     gap: 10px;
+    font-size: 14px;
 }
 </style>

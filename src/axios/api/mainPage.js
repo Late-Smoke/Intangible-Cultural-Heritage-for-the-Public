@@ -1,4 +1,5 @@
 import apiClient from "../axios";
+import axios from "axios";
 
 export function getPictureApi() {
   // 发现-轮播图
@@ -11,9 +12,9 @@ export function getLocationPostApi() {
 }
 
 export function getLocationActivityApi() {
-    // 附近的活动
-    return apiClient.get("/activities/LocationBased");
-  }
+  // 附近的活动
+  return apiClient.get("/activities/LocationBased");
+}
 
 export function getFollowPostApi() {
   // 关注-帖子
@@ -22,7 +23,7 @@ export function getFollowPostApi() {
 
 export function postHeritageApi(type, secondType) {
   //获取非遗分类
-  return apiClient.post("/culturalHeritage", { type, secondType });
+  return apiClient.post("/culturalHeritage",null, { params: { type, secondType } });
 }
 
 export function getFromAdcodeApi(adcode) {
@@ -30,7 +31,8 @@ export function getFromAdcodeApi(adcode) {
   return apiClient.get(`/culturalHeritage/${adcode}`);
 }
 
-export function getArtistApi(param) {
+export function getArtistApi(adcode,rx_time,category,gender) {
   // 非遗传承人
-  return apiClient.get("/artist", { params: { param } });
+  return apiClient.get("/artist", { params: { adcode,rx_time,category,gender } });
 }
+

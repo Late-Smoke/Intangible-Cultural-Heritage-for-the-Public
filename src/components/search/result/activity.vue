@@ -14,12 +14,12 @@ const handleCity = () => {
 const isOnline = ref(true);
 
 const params = ref({
-    keyword: searchStore.search,
+    keyword: computed(() => searchStore.search),
     firstType: computed(() => (isOnline.value) ? '线上' : '线下'),
     secondType: '非遗活动',
     city: computed(() => (activityStore.position == '全国') ? '' : activityStore.position + '市'),
-    startTime: computed(()=>activityStore.startTime),
-    endTime: computed(()=>activityStore.endTime),
+    startTime: computed(() => activityStore.startTime),
+    endTime: computed(() => activityStore.endTime),
 })
 
 const data = ref([]);
@@ -28,12 +28,9 @@ function getActivities() {
     if (!searchStore.search) return;
     getActivitiesApi(params.value).then(res => {
         data.value = res.data.data;
-        console.log(params.value.startTime,params.value.endTime);
+        console.log(params.value.startTime, params.value.endTime);
     })
 }
-onMounted(() => {
-    getActivities();
-})
 
 watch(isOnline, () => {
     if (isOnline.value) params.value.secondType = '非遗活动';
@@ -41,7 +38,15 @@ watch(isOnline, () => {
 })
 
 watch(params.value, () => {
+    if(searchStore.ifSearch)
     getActivities();
+}, { immediate: true });
+
+watch(() => searchStore.ifHistory, (newValue) => {
+    if (newValue) {
+        console.log('activity-search');
+        getActivities();
+    }
 })
 </script>
 <template>

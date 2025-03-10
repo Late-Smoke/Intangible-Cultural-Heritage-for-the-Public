@@ -1,92 +1,113 @@
-@import './base.css';
-@import './fonts.css';
-@import './layout.css';
-@import './element-plus.scss';
+@import "./base.css";
+@import "./fonts.css";
+@import "./layout.css";
+@import "./element-plus.scss";
 /* @import "tailwindcss"; */
-
 
 /*login*/
 .custom-message {
-    width: 80% !important;
-    height: 100px !important;
-    border-radius: 15px !important;
+  width: 80% !important;
+  height: 100px !important;
+  border-radius: 15px !important;
 }
 
 .custom-message .el-message__icon {
-    font-size: 40px;
-    /* 设置图标大小 */
+  font-size: 40px;
+  /* 设置图标大小 */
 }
 
 /*search*/
 .confirm-delete-history {
-    border-radius: 13px !important;
-    border: solid 2px #A89E93 !important;
-    width: 318px !important;
-    height: 172px !important;
+  border-radius: 13px !important;
+  border: solid 2px #a89e93 !important;
+  width: 318px !important;
+  height: 172px !important;
 }
 
 .confirm-delete-history .el-message-box__message {
-    margin: 20px 0;
-    font-size: 24px;
-    color: #000000;
+  margin: 20px 0;
+  font-size: 24px;
+  color: #000000;
 }
 
 .confirm-delete-history .el-message-box__btns {
-    gap: 40px;
+  gap: 40px;
 }
 
 .confirm-delete-history .el-message-box__btns .el-button {
-    font-size: 20px;
-    color: #987B5B;
-    border-radius: 10px;
-    border: solid 2px #A89E93;
-    width: 77px;
-    height: 48px;
+  font-size: 20px;
+  color: #987b5b;
+  border-radius: 10px;
+  border: solid 2px #a89e93;
+  width: 77px;
+  height: 48px;
 }
 
 .confirm-delete-history .el-message-box__btns .el-button--primary {
-    background-color: #F0E4D4;
-    border: none;
-    color: #000000;
+  background-color: #f0e4d4;
+  border: none;
+  color: #000000;
 }
 
 .sort-popover {
-    background-color: #F8F0E6 !important;
-    border: solid 1px #E6DBCD !important;
-    border-radius: 14px !important;
-    box-shadow: none !important;
+  background-color: #f8f0e6 !important;
+  border: solid 1px #e6dbcd !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
 }
 
 .user-popover {
-    border: solid 1px #987B5B !important;
-    border-radius: 10px !important;
-    box-shadow: none !important;
-    margin-left: 10px !important;
+  border: solid 1px #987b5b !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  margin-left: 10px !important;
 }
 
 /*cultureMap*/
 .select-popper {
-    background-color: #F0E4D4 !important;
-    border-radius: 5px !important;
+  background-color: #f0e4d4 !important;
+  border-radius: 5px !important;
 }
 
 .sex-popper {
-    position: absolute;
-    left: -30px;
+  position: absolute;
+  left: -40px;
 }
 
 /*calendar*/
 .calendar-popover {
-    padding: 12px 0 !important;
-    position: absolute !important;
-    top: 175px !important;
-    left: 15px !important;
-    width: calc(100vw - 30px) !important;
-    border-radius: 8px !important;
-    border: 1px solid #AA8C4C !important;
-    box-shadow: none !important;
+  padding: 12px 0 !important;
+  position: absolute !important;
+  top: 175px !important;
+  left: 15px !important;
+  width: calc(100vw - 30px) !important;
+  border-radius: 8px !important;
+  border: 1px solid #aa8c4c !important;
+  box-shadow: none !important;
 }
 
 .select-month .el-select__caret {
-    color: #000000;
+  color: #000000;
+}
+
+/*cultureMap-cascader*/
+.el-cascader-menu {
+  width: calc((100vw - 15px) / 3);
+  min-width: 0;
+  padding-bottom: 10px;
+}
+
+.el-cascader-node__label {
+  overflow-x: auto;
+  text-overflow: unset;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.el-cascader-node__label::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+.el-popper__arrow {
+  display: none; 
 }

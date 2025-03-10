@@ -59,59 +59,59 @@ onMounted(() => {
     resizeEnable: true
   });
 
-  AMapUI.loadUI(['misc/PointSimplifier'], function (PointSimplifier) { //点标记
+  // AMapUI.loadUI(['misc/PointSimplifier'], function (PointSimplifier) { //点标记
 
-    if (!PointSimplifier.supportCanvas) {
-      alert('当前环境不支持 Canvas!');
-      return;
-    }
-    initPage(PointSimplifier);
-  });
+  //   if (!PointSimplifier.supportCanvas) {
+  //     alert('当前环境不支持 Canvas!');
+  //     return;
+  //   }
+  //   initPage(PointSimplifier);
+  // });
 
-  function initPage(PointSimplifier) {
-    //创建组件实例
-    var pointSimplifierIns = new PointSimplifier({
-      map: map, //关联的map
-      compareDataItem: function (a, b, aIndex, bIndex) {
-        //数据源中靠后的元素优先，index大的排到前面去
-        return aIndex > bIndex ? -1 : 1;
-      },
-      getPosition: function (dataItem) {
-        //返回数据项的经纬度，AMap.LngLat实例或者经纬度数组
-        return [dataItem.lng, dataItem.lat];
-      },
-      getHoverTitle: function (dataItem, idx) {
-        //返回数据项的Title信息，鼠标hover时显示
-        return '序号: ' + idx;
-      },
-      renderOptions: {
-        //点的样式
-        pointStyle: {
-          width:6,
-          height:6,
-          content: 'circle',
-          fillStyle: 'rgba(159, 125, 90, 0.5)', // 填充色为半透明
-          strokeStyle: 'rgba(159, 125, 90, 1)', // 边框色为不透明
-          strokeWeight: 1,// 边框宽度
-        },
+  // function initPage(PointSimplifier) {
+  //   //创建组件实例
+  //   var pointSimplifierIns = new PointSimplifier({
+  //     map: map, //关联的map
+  //     compareDataItem: function (a, b, aIndex, bIndex) {
+  //       //数据源中靠后的元素优先，index大的排到前面去
+  //       return aIndex > bIndex ? -1 : 1;
+  //     },
+  //     getPosition: function (dataItem) {
+  //       //返回数据项的经纬度，AMap.LngLat实例或者经纬度数组
+  //       return [dataItem.lng, dataItem.lat];
+  //     },
+  //     getHoverTitle: function (dataItem, idx) {
+  //       //返回数据项的Title信息，鼠标hover时显示
+  //       return '序号: ' + idx;
+  //     },
+  //     renderOptions: {
+  //       //点的样式
+  //       pointStyle: {
+  //         width:6,
+  //         height:6,
+  //         content: 'circle',
+  //         fillStyle: 'rgba(159, 125, 90, 0.5)', // 填充色为半透明
+  //         strokeStyle: 'rgba(159, 125, 90, 1)', // 边框色为不透明
+  //         strokeWeight: 1,// 边框宽度
+  //       },
 
-        pointHardcoreStyle: {
-          width: 10,
-          height: 10,
-          content: 'circle',
-          strokeStyle: '#FF8D00', // 边框色为不透明
-        }
-      }
-    });
-    pointSimplifierIns.setData(allData.value);
-    //movePosition();
+  //       pointHardcoreStyle: {
+  //         width: 10,
+  //         height: 10,
+  //         content: 'circle',
+  //         strokeStyle: '#FF8D00', // 边框色为不透明
+  //       }
+  //     }
+  //   });
+  //   pointSimplifierIns.setData(allData.value);
+  //   //movePosition();
 
 
-    //监听事件
-    pointSimplifierIns.on('pointClick pointMouseover pointMouseout', function (e, record) {
-      console.log(e.type, record);
-    });
-  }
+  //   //监听事件
+  //   pointSimplifierIns.on('pointClick pointMouseover pointMouseout', function (e, record) {
+  //     console.log(e.type, record);
+  //   });
+  // }
 
   AMapUI.load(['ui/geo/DistrictExplorer', 'lib/$'], (DistrictExplorer, $) => {// 地图下钻
     districtExplorer = new DistrictExplorer({
@@ -137,8 +137,8 @@ onMounted(() => {
             geolocation.getCityInfo(function (status, cityResult) {
               if (status === 'complete') {
                 var cityName = cityResult.city.replace(/市$/, "");  // 获取城市名
-                positionStore.changeCityName(cityName);
                 switch2AreaNode(cityResult.adcode);
+                positionStore.changeCityName(cityName); // 获取当前adcode
               } else {
                 console.error('获取城市信息失败', cityResult.info);
               }
@@ -147,6 +147,7 @@ onMounted(() => {
             positionStore.changeLongitude(result.position.lng);
           } else {
             ElMessage.error('定位失败');
+            switch2AreaNode('110000');
           }
         });
       }
@@ -158,6 +159,7 @@ onMounted(() => {
 
     districtExplorer.on('featureClick', (e, feature) => {
       const props = feature.properties;
+      //console.log(props);
       switch2AreaNode(props.adcode);
     });
 
@@ -177,7 +179,8 @@ onMounted(() => {
 
       loadAreaNode(adcode, (error, areaNode) => {
         if (error) return;
-
+        positionStore.currentCode = adcode;
+        console.log(adcode);
         currentAreaNode = areaNode;
         districtExplorer.setAreaNodesForLocating([currentAreaNode]);
         renderAreaPolygons(areaNode);

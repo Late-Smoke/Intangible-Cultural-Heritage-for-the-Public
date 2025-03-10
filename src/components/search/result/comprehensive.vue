@@ -16,20 +16,12 @@ watch(() => searchStore.search, (newValue, oldValue) => {//用户修改搜索框
 })
 watch(()=>searchStore.ifHistory, (newValue) => {
     if (newValue) {
-        getBaiKeApi(searchStore.search).then(res => {
-            baiKe.value = res.data.data;
-        })
-        getHotPost();
-        getNewPost();
+        init();
     }
 })
 onMounted(() => {
     if (!searchStore.search) return;
-    getBaiKeApi(searchStore.search).then(res => {
-        baiKe.value = res.data.data;
-    })
-    getHotPost();
-    getNewPost();
+    init();
 });
 //相关帖子
 function getHotPost() {
@@ -45,6 +37,13 @@ function getNewPost() {
             relatedPost.value = res.data.data;
         }
     })
+}
+function init() {// 初始化
+    getBaiKeApi(searchStore.search).then(res => {
+        baiKe.value = res.data.data;
+    })
+    getHotPost();
+    getNewPost();
 }
 </script>
 
