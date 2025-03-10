@@ -41,7 +41,7 @@
                 <mdiClockOutline />
                 <div>
                     <div style="margin-bottom: 4px;">活动时间:</div>
-                    <div>{{ parseDate(activity.startTime).toLocaleString() }} - {{ parseDate(activity.endTime).toLocaleString() }}</div>
+                    <div>{{ timeRange2txt(activity.startTime, activity.endTime) }}</div>
                 </div>
             </div>
 
@@ -92,8 +92,9 @@ import { useRoute } from 'vue-router';
 import * as Activity from '@/axios/api/activity'
 import ErrorPage from '@/views/error/ErrorPage.vue';
 import router from '@/router';
-import { parseDate } from '@/utils';
+import { timeRange2txt } from '@/utils';
 import { computed } from 'vue';
+import { HistoryController, historyType } from '@/controllers/history';
 
 const route = useRoute()
 
@@ -113,7 +114,17 @@ function setFav(value: boolean) {
 
 function loadActivity() {
     Activity.getActicity(activityId.value).then(r => {
-        if (r.data.success) activity.value = r.data.data
+        if (r.data.success) {
+            activity.value = r.data.data
+            HistoryController.add({
+                type: historyType.activity,
+                title: activity.value.title,
+                subtitle: '活动时间: ' + timeRange2txt(activity.value.startTime, activity.value.endTime),
+                image: activity.value.acmedias?.at(0)?.url,
+                tags: activity.value.tag,
+                price: activity.value.chargeAmount,
+            })
+        }
         else error.value = r.data.errorMsg
     })
 }

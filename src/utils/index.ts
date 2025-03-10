@@ -10,6 +10,7 @@ export function humanizeNumber(x: number) {
     } else return `${x}`
 }
 
+/** 解析 API 响应中不带 Z 的 ISO 时间字符串, `不可用于解析标准 ISO 时间戳` */
 export function parseDate(dateString: string) {
     return new Date(dateString + 'Z')
 }
@@ -30,6 +31,14 @@ export function html2txt(html: string) {
     const el = document.createElement('div')
     el.innerHTML = html
     return el.textContent
+}
+
+/** 两个时间转成文字表示的时间范围, 可自动转换字符串但 `不可用于解析带 Z 的标准 ISO 时间戳` */
+export function timeRange2txt(from?: Date | string, to?: Date | string) {
+    if (typeof from == 'string') from = parseDate(from)
+    if (typeof to == 'string') to = parseDate(to)
+
+    return `${from?.toLocaleString()} - ${to?.toLocaleString()}`
 }
 
 export function splitStringBySpace(s: string | null) {

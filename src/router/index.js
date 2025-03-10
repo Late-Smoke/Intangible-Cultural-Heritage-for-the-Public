@@ -241,6 +241,13 @@ const router = createRouter({
       component: () => import('@/views/settings/privacy.vue'),
     },
 
+    // history
+    {
+      path: '/history',
+      name: 'history',
+      component: () => import('@/views/history/history.vue'),
+    },
+
     // 404
     {
       path: '/:pathMatch(.*)*',

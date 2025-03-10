@@ -1,5 +1,5 @@
 <template>
-    <SvgBackgroundLion />
+    <SvgBackgroundDragon />
     <page-header-sticky-with-back title="通知提醒" />
 
     <div class="setting">
@@ -20,9 +20,9 @@
 
 <script setup lang="ts">
 import PageHeaderStickyWithBack from '@/components/slot/PageHeaderStickyWithBack.vue';
-import SvgBackgroundLion from '@/components/slot/SvgBackgroundLion.vue';
 import * as Notifications from '@/axios/api/notifications'
 import { reactive } from 'vue';
+import SvgBackgroundDragon from '@/components/slot/SvgBackgroundDragon.vue';
 
 const settings = reactive({
     reply: true,

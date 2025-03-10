@@ -216,6 +216,7 @@ import ErrorPage from '@/views/error/ErrorPage.vue';
 import { formatDate, gotoPostComment, gotoUser, setClipboard } from '@/utils';
 import * as Self from '@/axios/api/self'
 import SvgBackgroundDragon from '@/components/slot/SvgBackgroundDragon.vue';
+import { HistoryController, historyType } from '@/controllers/history';
 
 const props = defineProps<{
     postId: string
@@ -308,7 +309,17 @@ function copyLink() {
 
 function loadPost() {
     Posts.getPostById(props.postId).then(r => {
-        if (r.data.success) post.value = r.data.data
+        if (r.data.success) {
+            post.value = r.data.data
+            HistoryController.add({
+                type: historyType.post,
+                title: post.value.title,
+                image: post.value.urls?.at(0)?.url,
+                username: post.value.nickName,
+                userAvatar: post.value.avatarUrl,
+                tags: post.value.tag,
+            })
+        }
         else error.value = r.data.errorMsg
     })
 }

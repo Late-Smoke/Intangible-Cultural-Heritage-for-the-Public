@@ -24,6 +24,7 @@ const { sticky = false } = defineProps<{
     &.sticky {
         position: sticky;
         top: 0;
+        z-index: 10;
     }
 
     .title {
@@ -40,10 +41,11 @@ const { sticky = false } = defineProps<{
         display: flex;
         align-items: center;
         gap: 8px;
+        font-size: 0.9em;
 
         :deep(>svg) {
             padding: 0.15em;
-            font-size: 2.5em;
+            font-size: 2.8em;
         }
     }
 }

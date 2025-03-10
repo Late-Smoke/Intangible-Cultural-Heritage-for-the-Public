@@ -1,5 +1,5 @@
 <template>
-    <SvgBackgroundLion />
+    <SvgBackgroundDragon />
     <page-header-sticky-with-back title="设置" />
 
     <div class="root">
@@ -28,11 +28,11 @@
 
 <script setup lang="ts">
 import PageHeaderStickyWithBack from '@/components/slot/PageHeaderStickyWithBack.vue';
-import SvgBackgroundLion from '@/components/slot/SvgBackgroundLion.vue';
 import router from '@/router';
 import { removeToken } from '@/axios/axios';
 import { reactive } from 'vue';
 import ConfirmDialog from '@/components/slot/ConfirmDialog.vue';
+import SvgBackgroundDragon from '@/components/slot/SvgBackgroundDragon.vue';
 
 const logout = reactive({
     showing: false,
