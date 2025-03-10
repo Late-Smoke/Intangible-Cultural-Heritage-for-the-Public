@@ -1,8 +1,13 @@
 <template>
     <SvgBackgroundLion />
-    <page-header-sticky-with-back title="通知提醒" />
+    <page-header-sticky-with-back title="设置" />
 
     <div class="root">
+        <div class="setting" @click="">
+            个人资料
+            <mdiChevronRight />
+        </div>
+
         <div class="setting" @click="router.push({ name: 'privacySettings' })">
             隐私设置
             <mdiChevronRight />

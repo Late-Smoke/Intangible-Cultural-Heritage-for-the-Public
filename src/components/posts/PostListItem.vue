@@ -34,7 +34,7 @@ defineProps<{
             <div class="item-content" @click="gotoPost(post.id)">
                 <div class="content-title">{{ post.title }}</div>
                 <div class="content-text">{{ html2txt(post.content).slice(0, 100) }}</div>
-                <el-image class="content-img" v-if="post?.urls?.length" :src="post?.urls[0]?.url" :preview-src-list="[post.urls[0].url]" fit="cover" @click.stop="" />
+                <el-image class="content-img" v-if="post.urls?.length" :src="post.urls[0].url" :preview-src-list="[post.urls[0].url]" fit="cover" @click.stop="" />
             </div>
 
             <div class="item-footer">

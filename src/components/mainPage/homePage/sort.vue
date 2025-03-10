@@ -143,7 +143,7 @@ const categories = ref([
             "其他"
         ],
         visible: [0, 0, 0, 0, 0],
-        data: [[],[],[],[],[]],
+        data: [[], [], [], [], []],
     },
     {
         title: "传统音乐",
@@ -155,7 +155,7 @@ const categories = ref([
             "其他"
         ],
         visible: [0, 0, 0, 0, 0],
-        data: [[],[],[],[],[]]
+        data: [[], [], [], [], []]
     },
     {
         title: "传统舞蹈",
@@ -167,7 +167,7 @@ const categories = ref([
             "其他"
         ],
         visible: [0, 0, 0, 0, 0],
-        data: [[],[],[],[],[]]
+        data: [[], [], [], [], []]
     },
     {
         title: "传统戏剧",
@@ -179,7 +179,7 @@ const categories = ref([
             "其他"
         ],
         visible: [0, 0, 0, 0, 0],
-        data: [[],[],[],[],[]]
+        data: [[], [], [], [], []]
     },
     {
         title: "曲艺",
@@ -191,7 +191,7 @@ const categories = ref([
             "其他"
         ],
         visible: [0, 0, 0, 0, 0],
-        data: [[],[],[],[],[]]
+        data: [[], [], [], [], []]
     },
     {
         title: "传统美术",
@@ -203,7 +203,7 @@ const categories = ref([
             "其他"
         ],
         visible: [0, 0, 0, 0, 0],
-        data: [[],[],[],[],[]]
+        data: [[], [], [], [], []]
     },
     {
         title: "传统技艺",
@@ -215,7 +215,7 @@ const categories = ref([
             "其他"
         ],
         visible: [0, 0, 0, 0, 0],
-        data: [[],[],[],[],[]]
+        data: [[], [], [], [], []]
     },
     {
         title: "传统医药",
@@ -227,7 +227,7 @@ const categories = ref([
             "其他"
         ],
         visible: [0, 0, 0, 0, 0],
-        data: [[],[],[],[],[]]
+        data: [[], [], [], [], []]
     },
     {
         title: "民俗",
@@ -239,7 +239,7 @@ const categories = ref([
             "其他"
         ],
         visible: [0, 0, 0, 0, 0],
-        data: [[],[],[],[],[]]
+        data: [[], [], [], [], []]
     },
     {
         title: "传统体育、游艺与杂技",
@@ -251,7 +251,7 @@ const categories = ref([
             "其他"
         ],
         visible: [0, 0, 0, 0, 0],
-        data: [[],[],[],[],[]]
+        data: [[], [], [], [], []]
     }
 ]);
 
@@ -331,7 +331,8 @@ onMounted(() => {
                                 :fill="svgColor(index)" fill-opacity="0.26" />
                         </svg>
                         <div v-for="(second, key) in item.data[index]" :key="key" class="second-level">
-                            <div>{{ second.title }}【{{ second.unit }}】</div>
+                            <div>{{ second.title.length > 8 ? second.title.slice(0, 8) + '...' : second.title }}【{{
+                                second.unit.length > 5 ? second.unit.slice(0,5)+'...':second.unit }}】</div>
                         </div>
                     </div>
                 </div>
@@ -435,6 +436,7 @@ onMounted(() => {
 }
 
 .second-box {
+    min-height: 120px;
     border-radius: 5px;
     display: flex;
     flex-direction: column;

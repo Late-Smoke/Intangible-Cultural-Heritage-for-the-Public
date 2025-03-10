@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import heritageCode from '@/components/mainPage/homePage/pca-code.json'
 import artistCode from '@/components/mainPage/homePage/pca-code.json'
@@ -26,16 +26,17 @@ const activityData = ref([]);
 /*select*/
 // 非遗项目
 const heritageArea = ref([]);
+
 const heritageOptions = ref([
   {
     label: '公布时间',
     value: '', // 默认值为空字符串
-    options: ['-', '2006(第一批)', '2008(第二批)', '2011(第三批)', '2014(第四批)', '2021(第五批)']
+    options: ['', '2006(第一批)', '2008(第二批)', '2011(第三批)', '2014(第四批)', '2021(第五批)']
   },
   {
     label: '类别',
     value: '', // 默认值为空字符串
-    options: ["-", "民间文学", "传统音乐", "传统舞蹈", "传统戏剧", "曲艺",
+    options: ["", "民间文学", "传统音乐", "传统舞蹈", "传统戏剧", "曲艺",
       "传统美术", "传统技艺", "传统医药", "民俗", "传统体育、游艺与杂技"]
   },
   {
@@ -43,7 +44,7 @@ const heritageOptions = ref([
     value: '', // 默认值为空字符串
     options: [
       [
-        "-"
+        ""
       ],
       [
         "神话与传说",
@@ -122,24 +123,25 @@ const heritageSum = ref(0);
 const heritageSearchName = ref('');
 const heritageIndex = ref(0);
 const heritageData = ref([]);
+
 //非遗传承人
 const artistArea = ref([]);
 const artistOptions = ref([
   {
     label: '公布时间',
     value: '', // 默认值为空字符串
-    options: ['-', '2006(第一批)', '2008(第二批)', '2011(第三批)', '2014(第四批)', '2021(第五批)']
+    options: ['', '2006(第一批)', '2008(第二批)', '2011(第三批)', '2014(第四批)', '2021(第五批)']
   },
   {
     label: '类别',
     value: '', // 默认值为空字符串
-    options: ["-", "民间文学", "传统音乐", "传统舞蹈", "传统戏剧", "曲艺",
+    options: ["", "民间文学", "传统音乐", "传统舞蹈", "传统戏剧", "曲艺",
       "传统美术", "传统技艺", "传统医药", "民俗", "传统体育、游艺与杂技"]
   },
   {
     label: '性别',
     value: '', // 默认值为空字符串
-    options: ['-', '女', '男']
+    options: ['', '女', '男']
   }
 ]);
 const artistSearchName = ref('');
@@ -210,145 +212,152 @@ watch(() => positionStore.currentCode, (newValue) => { //地图切换地区
   artistArea.value = res;
 }, { immediate: true })
 
-watch(() => [heritageArea.value, heritageOptions.value.map(item => item.value)], () => { //选项发生变化-非遗项目
-  getFromAdcodeApi(concatADCode(heritageArea.value)).then(res => {
-    heritageData.value = res.data.data;
-    if (!heritageData.value) return;
-    heritageData.value = heritageData.value.filter(item => {
-      return (item.rxTime === heritageOptions.value[0].value || !heritageOptions.value[0].value) &&
-        (item.type === heritageOptions.value[1].value || !heritageOptions.value[1].value) &&
-        (item.secondType === heritageOptions.value[2].value || !heritageOptions.value[2].value);
+watch(TabName, () => {
+  if (TabName.value === 'related-post') {
+    getLocationPostApi().then(res => { //附近帖子
+      postData.value = res.data.data;
+    });
+  } else if (TabName.value === 'exhibition') {
+    getLocationActivityApi().then(res => { //附近活动
+      activityData.value = res.data.data;
     })
-  })
+  } else if (TabName.value === 'heritage') {
+    watch(() => [heritageArea.value, heritageOptions.value.map(item => item.value)], () => { //选项发生变化-非遗项目
+      getFromAdcodeApi(concatADCode(heritageArea.value)).then(res => {
+        heritageData.value = res.data.data;
+        if (!heritageData.value) return;
+        heritageData.value = heritageData.value.filter(item => {
+          return (item.rxTime === heritageOptions.value[0].value || !heritageOptions.value[0].value) &&
+            (item.type === heritageOptions.value[1].value || !heritageOptions.value[1].value) &&
+            (item.secondType === heritageOptions.value[2].value || !heritageOptions.value[2].value);
+        })
+      })
+    }, { immediate: true })
+  } else
+    watch(() => [artistArea.value, artistOptions.value.map(item => item.value)], () => { //选项发生变化-非遗传承人
+      if (!artistArea.value) return;
+      getArtistApi(concatADCode(artistArea.value), artistOptions.value[0].value,
+        artistOptions.value[1].value, artistOptions.value[2].value).then(res => {
+          artistData.value = res.data.data;
+        })
+    }, { immediate: true })
 }, { immediate: true })
 
-
-watch(() => [artistArea.value, artistOptions.value.map(item => item.value)], () => { //选项发生变化-非遗传承人
-  getArtistApi(concatADCode(artistArea.value), artistOptions.value[0].value,
-    artistOptions.value[1].value, artistOptions.value[2].value).then(res => {
-      artistData.value = res.data.data;
-    })
-}, { immediate: true })
-
-onMounted(async () => {
-
-  getLocationPostApi().then(res => { //附近帖子
-    postData.value = res.data.data;
-  });
-  getLocationActivityApi().then(res => { //附近活动
-    activityData.value = res.data.data;
-  })
-})
 </script>
 
 <template>
   <div class="bigMap">
     <Map />
   </div>
-  <el-tabs v-model="TabName" class="tabs">
-    <el-tab-pane label="相关帖子" name="related-post" class="relatedPost">
-      <PostListItem v-for="post in postData" :post="post" />
-    </el-tab-pane>
-    <el-tab-pane label="展览/活动" name="exhibition" class="exhibition">
-      <ActivityListItem class="activity-item" v-for="a in activityData" :activity="a" bottom="address" />
-    </el-tab-pane>
-    <el-tab-pane label="非遗项目" name="heritage">
-      <div class="inheritor">
-        <div class="select">
-          <el-cascader placeholder="所属地区" popper-class="select-popper" v-model="heritageArea" :show-all-levels="false"
-            :options="heritageCode" size="default" placement="bottom"
-            :props="{ checkStrictly: true, value: 'code', label: 'name', children: 'children' }" />
-          <div class="select-item">
-            <el-select v-for="(item, index) in heritageOptions" :key="index" popper-class="select-popper sex-popper"
-              class="select-popper-smallBox" v-model="item.value" :placeholder="item.label" :show-arrow="false"
-              :suffix-icon="ArrowDownBold">
-              <el-option v-if="index !== 2" v-for="(option, opIndex) in item.options" :key="opIndex" :label="option"
-                :value="option" :disabled="option.disabled" @click="heritageIndex = opIndex" />
-              <el-option v-else v-for="option in item.options[heritageIndex]" :key="key" :label="option" :value="option"
-                :disabled="option.disabled" />
-            </el-select>
+    <el-tabs v-model="TabName" class="tabs">
+      <el-tab-pane label="相关帖子" name="related-post" class="relatedPost">
+        <PostListItem v-for="post in postData" :post="post" />
+      </el-tab-pane>
+      <el-tab-pane label="展览/活动" name="exhibition" class="exhibition">
+        <ActivityListItem class="activity-item" v-for="a in activityData" :activity="a" bottom="address" />
+      </el-tab-pane>
+      <el-tab-pane lazy label="非遗项目" name="heritage">
+        <div class="heritage">
+          <div class="select">
+            <el-cascader placeholder="所属地区" popper-class="select-popper" v-model="heritageArea" :show-all-levels="false"
+              :options="heritageCode" size="default" placement="bottom"
+              :props="{ checkStrictly: true, value: 'code', label: 'name', children: 'children' }" />
+            <div class="select-item">
+              <el-select v-for="(item, index) in heritageOptions" :key="index" popper-class="select-popper sex-popper"
+                class="select-popper-smallBox" v-model="item.value" :placeholder="item.label" :show-arrow="false"
+                :suffix-icon="ArrowDownBold">
+                <el-option v-if="index !== 2" v-for="(option, opIndex) in item.options" :key="opIndex"
+                  :label="option ? option : '全部'" :value="option" :disabled="option.disabled"
+                  @click="heritageIndex = opIndex" />
+                <el-option v-else v-for="option in item.options[heritageIndex]" :key="key" :label="option"
+                  :value="option ? option : '全部'" :disabled="option.disabled" />
+              </el-select>
+            </div>
           </div>
-        </div>
-        <div class="input">
-          <el-input class="inheritor-input" v-model="heritageSearchName"
-            style="width:274px;height:26px;font-size: 18px;color:#00000080;" placeholder="关键词：项目名称" size="default">
-            <template #suffix>
-              <div v-show="heritageSearchName" class="clean">
-                <svg @click="heritageSearchName = '';" width="14" height="13" viewBox="0 0 14 13" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12.5 1L1.5 12M12.5 12L1.5 1" stroke="#BBB6B6" stroke-width="2" stroke-linecap="round" />
-                </svg>
-              </div>
-            </template>
-          </el-input>
-          <el-button @click="handleHeritageSearch" class="search-btn" color="#F0E4D4">搜索</el-button>
-        </div>
-        <div class="sum">
-          共<span style="color:#D90000;padding:0 5px">{{ heritageData?.length?heritageData.length:0 }}</span>个项目
-        </div>
-        <el-table :data="heritageData" height="250" :header-cell-style="{ borderColor: '#D1C4B6CC' }"
-          :cell-style="{ borderColor: '#D1C4B6CC' }" style="width: 100%">
-          <el-table-column prop="num" label="序号" width="50px" />
-          <el-table-column prop="projectNum" label="项目序号" />
-          <el-table-column prop="num" label="编号" width="50px" />
-          <el-table-column prop="title" label="名称" />
-          <el-table-column prop="type" label="类别" />
-          <el-table-column prop="rxTime" label="公布时间" />
-          <el-table-column prop="secondType" label="类型" />
-          <el-table-column prop="unit" label="申报地区或单位" />
-          <el-table-column prop="protectUnit" label="保护单位" />
-        </el-table>
-      </div>
-    </el-tab-pane>
-    <el-tab-pane label="非遗传承人" name="inheritor">
-      <div class="inheritor">
-        <div class="select">
-          <el-cascader placeholder="所属地区" popper-class="select-popper" v-model="artistArea" :show-all-levels="false"
-            :options="artistCode" size="default" placement="bottom"
-            :props="{ checkStrictly: true, value: 'code', label: 'name', children: 'children' }" />
-          <div class="select-item">
-            <el-select v-for="(item, index) in artistOptions" :key="index" popper-class="select-popper sex-popper"
-              class="select-popper-smallBox" v-model="item.value" :placeholder="item.label" :show-arrow="false"
-              :suffix-icon="ArrowDownBold">
-              <el-option v-for="option in item.options" :key="option" :label="option" :value="option"
-                :disabled="option.disabled" />
-            </el-select>
+          <div class="input">
+            <el-input class="inheritor-input" v-model="heritageSearchName"
+              style="width:274px;height:26px;font-size: 18px;color:#00000080;" placeholder="关键词：项目名称" size="default">
+              <template #suffix>
+                <div v-show="heritageSearchName" class="clean">
+                  <svg @click="heritageSearchName = '';" width="14" height="13" viewBox="0 0 14 13" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 1L1.5 12M12.5 12L1.5 1" stroke="#BBB6B6" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </div>
+              </template>
+            </el-input>
+            <el-button @click="handleHeritageSearch" class="search-btn" color="#F0E4D4">搜索</el-button>
           </div>
+          <div class="sum">
+            共<span style="color:#D90000;padding:0 5px">{{ heritageData?.length ? heritageData.length : 0 }}</span>个项目
+          </div>
+          <el-table :data="heritageData" height="400" :header-cell-style="{ borderColor: '#D1C4B6CC' }"
+            :cell-style="{ borderColor: '#D1C4B6CC' }" style="width: 100%">
+            <el-table-column prop="num" label="序号" width="50px" />
+            <el-table-column prop="projectNum" label="项目序号" />
+            <el-table-column prop="num" label="编号" width="50px" />
+            <el-table-column prop="title" label="名称" />
+            <el-table-column prop="type" label="类别" />
+            <el-table-column prop="rxTime" label="公布时间" />
+            <el-table-column prop="secondType" label="类型" />
+            <el-table-column prop="unit" label="申报地区或单位" />
+            <el-table-column prop="protectUnit" label="保护单位" />
+          </el-table>
         </div>
-        <div class="input">
-          <el-input class="inheritor-input" v-model="artistSearchName"
-            style="width:274px;height:26px;font-size: 18px;color:#00000080;" placeholder="关键词：姓名/项目名称" size="default">
-            <template #suffix>
-              <div v-show="artistSearchName" class="clean">
-                <svg @click="artistSearchName = '';" width="14" height="13" viewBox="0 0 14 13" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12.5 1L1.5 12M12.5 12L1.5 1" stroke="#BBB6B6" stroke-width="2" stroke-linecap="round" />
-                </svg>
-              </div>
-            </template>
-          </el-input>
-          <el-button @click="handleArtistSearch" class="search-btn" color="#F0E4D4">搜索</el-button>
+      </el-tab-pane>
+      <el-tab-pane lazy label="非遗传承人" name="inheritor">
+        <div class="inheritor">
+          <div class="select">
+            <el-cascader placeholder="所属地区" popper-class="select-popper" v-model="artistArea" :show-all-levels="false"
+              :options="artistCode" size="default" placement="bottom"
+              :props="{ checkStrictly: true, value: 'code', label: 'name', children: 'children' }" />
+            <div class="select-item">
+              <el-select v-for="(item, index) in artistOptions" :key="index" popper-class="select-popper sex-popper"
+                class="select-popper-smallBox" v-model="item.value" :placeholder="item.label" :show-arrow="false"
+                :suffix-icon="ArrowDownBold">
+                <el-option v-for="option in item.options" :key="option" :label="option ? option : '全部'" :value="option"
+                  :disabled="option.disabled" />
+              </el-select>
+            </div>
+          </div>
+          <div class="input">
+            <el-input class="inheritor-input" v-model="artistSearchName"
+              style="width:274px;height:26px;font-size: 18px;color:#00000080;" placeholder="关键词：姓名/项目名称" size="default">
+              <template #suffix>
+                <div v-show="artistSearchName" class="clean">
+                  <svg @click="artistSearchName = '';" width="14" height="13" viewBox="0 0 14 13" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 1L1.5 12M12.5 12L1.5 1" stroke="#BBB6B6" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </div>
+              </template>
+            </el-input>
+            <el-button @click="handleArtistSearch" class="search-btn" color="#F0E4D4">搜索</el-button>
+          </div>
+          <div class="sum">
+            共<span style="color:#D90000;padding:0 5px;">{{ artistData?.length ? artistData.length : 0 }}</span>个人
+          </div>
+          <el-table :data="artistData" height="250" :header-cell-style="{ borderColor: '#D1C4B6CC' }"
+            :cell-style="{ borderColor: '#D1C4B6CC' }" style="width: 100%">
+            <el-table-column prop="id" label="序号" />
+            <el-table-column prop="name" label="姓名" width="50px" />
+            <el-table-column prop="gender" label="性别" width="40px" />
+            <el-table-column prop="category" label="类别" width="60px" />
+            <el-table-column prop="projectNumber" label="项目编号" width="60px" />
+            <el-table-column prop="projectName" label="项目名称" />
+            <el-table-column prop="region" label="申报地区或单位" />
+          </el-table>
         </div>
-        <div class="sum">
-          共<span style="color:#D90000;padding:0 5px;">{{ artistData?.length?artistData.length:0 }}</span>个人
-        </div>
-        <el-table :data="artistData" height="250" :header-cell-style="{ borderColor: '#D1C4B6CC' }"
-          :cell-style="{ borderColor: '#D1C4B6CC' }" style="width: 100%">
-          <el-table-column prop="id" label="序号" />
-          <el-table-column prop="name" label="姓名" width="50px" />
-          <el-table-column prop="gender" label="性别" width="40px" />
-          <el-table-column prop="category" label="类别" width="60px" />
-          <el-table-column prop="projectNumber" label="项目编号" width="60px" />
-          <el-table-column prop="projectName" label="项目名称" />
-          <el-table-column prop="region" label="申报地区或单位" />
-        </el-table>
-      </div>
-    </el-tab-pane>
-  </el-tabs>
+      </el-tab-pane>
+    </el-tabs>
 </template>
 
 
 <style scoped>
+.tabs :deep(.el-tab-pane) {
+  min-height: 40vh;
+}
+
 .bigMap {
   position: relative;
   width: 100%;

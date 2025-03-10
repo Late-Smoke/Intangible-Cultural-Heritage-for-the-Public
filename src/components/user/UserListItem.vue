@@ -14,8 +14,8 @@
         </div>
 
         <div class="action">
-            <div class="outline" v-if="!isFollowing" @click="setFollowing(true)">关注</div>
-            <div class="gray" v-else-if="!Self.FollowController.isFollower(user.id).value" @click="setFollowing(false)">已关注</div>
+            <div class="outline" v-if="!isFollowing" @click="setFollowing(true)">+ 关注</div>
+            <div class="gray" v-else-if="!Self.FollowController.followers.includes(user.id)" @click="setFollowing(false)">已关注</div>
             <div class="gray" v-else @click="setFollowing(false)">已互粉</div>
         </div>
     </div>
@@ -25,17 +25,18 @@
 import * as Self from '@/axios/api/self';
 import * as User from '@/axios/api/user';
 import { gotoUser, promiseSuccess, splitStringBySpace } from '@/utils';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const { user } = defineProps<{
-    user: Self.FollowUser
+    user: User.BaseUser
 }>()
 
-const isFollowing = ref(Self.FollowController.isFollowing(user.id).value)
+const isFollowing = computed(() => isFollowingAlt.value != undefined ? isFollowingAlt.value : Self.FollowController.following.includes(user.id))
+const isFollowingAlt = ref<boolean>()
 
 function setFollowing(value: boolean) {
     promiseSuccess(value ? User.follow(user.id) : User.unfollow(user.id))
-        .then(() => isFollowing.value = value)
+        .then(() => isFollowingAlt.value = value)
 }
 </script>
 

@@ -5,7 +5,6 @@ import { usePositionStore } from '@/stores/user';
 const positionStore = usePositionStore();
 const latitude = ref(positionStore.latitude);
 const longitude = ref(positionStore.longitude);
-const errorMessage = ref('');
 
 const getLocation = () => {
     if (navigator.geolocation) {
@@ -14,7 +13,6 @@ const getLocation = () => {
                 // 成功获取位置信息
                 latitude.value = position.coords.latitude;
                 longitude.value = position.coords.longitude;
-                errorMessage.value = '';
                 positionStore.changeLatitude(latitude.value);
                 positionStore.changeLongitude(longitude.value);
             },
@@ -34,15 +32,15 @@ const getLocation = () => {
                         message = '发生未知错误。';
                         break;
                 }
-                errorMessage.value = message;
                 ElMessage.error(`定位失败: ${message}`);
+                console.error(message);
                 latitude.value = null;
                 longitude.value = null;
             }
         );
     }
     else {
-        errorMessage.value = '该浏览器不支持地理定位。';
+        ElMessage.error('该浏览器不支持地理定位。');
     }
 };
 

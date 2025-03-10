@@ -66,7 +66,7 @@ const routerDiv = ref<HTMLDivElement>()
 }
 
 .full-height {
-    height: 100vh;
+    height: 100%;
     overflow: auto;
 }
 

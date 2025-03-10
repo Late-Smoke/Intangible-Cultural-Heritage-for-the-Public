@@ -141,7 +141,7 @@ export interface Post {
     /**
      * 图片视频集合
      */
-    urls: Url[];
+    urls: Url[] | null;
     /**
      * 发布者id
      */

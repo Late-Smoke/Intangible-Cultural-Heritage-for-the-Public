@@ -102,7 +102,7 @@ const key = ref(0);
 .el-header {
     width: 100%;
     height: auto;
-    padding: 48px 15px 10px 15px;
+    padding: 15px 15px 10px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;

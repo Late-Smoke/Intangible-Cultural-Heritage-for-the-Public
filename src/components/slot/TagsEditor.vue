@@ -1,6 +1,6 @@
 <template>
     <div class="tags-editor">
-        <el-tag v-for="tag in dynamicTags" :key="tag" type="primary" closable :disable-transitions="true" @close="handleClose(tag)">
+        <el-tag v-for="tag in dynamicTags" :key="tag" type="primary" :closable="editable" :disable-transitions="true" @close="handleClose(tag)">
             {{ tag }}
         </el-tag>
 

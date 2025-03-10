@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
 import PostListItem from '@/components/posts/PostListItem.vue'
 import Info from '@/components/slot/info.vue';
 import { getFollowPostApi, getPictureApi } from '@/axios/api/mainPage';
-import { getInfoApi,getHotPostApi } from '@/axios/api/search';
+import { getInfoApi, getHotPostApi } from '@/axios/api/search';
 
 
 const selectedTag = ref('find');
@@ -14,23 +14,28 @@ const findPost = ref([]);
 const followPost = ref([]);
 const infoData = ref([]);
 const picture = ref([]);
-onMounted(() => {
-    getHotPostApi("").then(res => {
-        if (res.status == 200) {
-            findPost.value = res.data.data;
-        }
-    })
-    getFollowPostApi().then(res => {
-        if (res.status == 200) {
-            followPost.value = res.data.data;
-        }
-    })
-    getInfoApi("").then(res => {
-        infoData.value = res.data.data;
-    })
-    getPictureApi().then(res => {
-        picture.value = res.data.data;
-    })
+
+watchEffect(() => {
+    if (selectedTag.value == 'find') {
+        getPictureApi().then(res => {
+            picture.value = res.data.data;
+        })
+        getHotPostApi("").then(res => {// 发现 
+            if (res.status == 200) {
+                findPost.value = res.data.data;
+            }
+        })
+    }
+    if (selectedTag.value == 'follow')
+        getFollowPostApi().then(res => { // 关注
+            if (res.status == 200) {
+                followPost.value = res.data.data;
+            }
+        })
+    if (selectedTag.value == 'info') 
+        getInfoApi("").then(res => { // 资讯
+            infoData.value = res.data.data;
+        })
 })
 </script>
 
@@ -52,7 +57,7 @@ onMounted(() => {
     <div class="router">
         <dvi v-if="selectedTag === 'follow'">
             <div class="follow">
-                <PostListItem v-for="post in findPost" :post="post" />
+                <PostListItem v-for="post in followPost" :post="post" />
             </div>
         </dvi>
         <dvi v-if="selectedTag === 'find'">
@@ -64,7 +69,7 @@ onMounted(() => {
                 </el-carousel>
             </div>
             <div class="find">
-                <PostListItem v-for="post in followPost" :post="post" />
+                <PostListItem v-for="post in findPost" :post="post" />
             </div>
         </dvi>
         <dvi v-if="selectedTag === 'info'">

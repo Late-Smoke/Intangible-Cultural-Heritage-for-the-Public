@@ -18,21 +18,7 @@ const TabName = ref('map');
 const scrollStore = useScrollStore();
 const scrollRef = ref(null);
 scrollStore.setScrollContainer(scrollRef);
-const scrolling = (e) => {
-    const clientHeight = e.target.clientHeight;
-    const scrollHeight = e.target.scrollHeight;
-    const scrollTop = e.target.scrollTop;
-    if (!scrollTop) {
-        scrollStore.changeScrollTop(true);
-        scrollStore.changeScrollBottom(false);
-    }
-    else {
-        scrollStore.changeScrollTop(false);
-        if (scrollTop + clientHeight >= scrollHeight) {
-            scrollStore.changeScrollBottom(true);
-        }
-    }
-}
+
 </script>
 
 <template>
@@ -73,7 +59,7 @@ const scrolling = (e) => {
         </el-tab-pane>
         <el-tab-pane label="推荐" name="advice">
             <div @scroll="scrolling" ref="scrollRef">
-                <Advice />
+                <Advice/>
             </div>
         </el-tab-pane>
         <el-tab-pane label="非遗谱系" name="sort">
@@ -86,8 +72,8 @@ const scrolling = (e) => {
 <style scoped>
 .el-header {
     width: 100%;
-    height: 90px;
-    padding: 40px 15px 10px 15px;
+    height: auto;
+    padding: 15px 15px 10px 15px;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
