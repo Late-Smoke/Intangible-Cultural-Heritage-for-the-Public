@@ -11,20 +11,22 @@
             </div>
             <div class="address" v-if="history.type == historyType.activity">
                 {{ history.subtitle }}
-                <TagList :tags="history.tags" style="margin-top: 4px;"/>
+                <TagList :tags="history.tags" style="margin-top: 4px;" />
             </div>
 
             <div style="flex: 1;"></div>
 
             <div class="bottom">
-                <TagList v-if="history.type == historyType.post" :tags="history.tags" />
+                <div v-if="history.type == historyType.post">
+                    <TagList :tags="history.tags" />
+                </div>
                 <div class="price" v-if="history.type == historyType.activity">￥{{ history.price }}</div>
 
                 <div class="time">{{ formatDate(history.time) }}</div>
             </div>
         </div>
 
-        <div class="action" v-if="selectable" @click.stop="">
+        <div class="action" v-if="selectable">
             <mdiCheckCircle color="rgb(177,151,128)" v-if="history.selected" />
             <mdiCircleOutline color="#888" v-if="!history.selected" />
         </div>

@@ -35,7 +35,7 @@
         <div style="color: #f44;" @click="confirmDelete()" v-if="selectedCount">
             <mdiTrashCanOutline />删除 ({{ selectedCount }})
         </div>
-        <div style="color: #955;" v-else>
+        <div style="color: #755;" v-else>
             <mdiTrashCanOutline />删除
         </div>
     </div>

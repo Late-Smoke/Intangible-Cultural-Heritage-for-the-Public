@@ -74,8 +74,9 @@ export function gotoPost(postId) {
 
 export function gotoPostComment(postId, commentId) {
     router.push({
-        name: 'postComment',
-        params: { postId, commentId }
+        name: 'post',
+        params: { postId },
+        query: { commentId }
     })
 }
 

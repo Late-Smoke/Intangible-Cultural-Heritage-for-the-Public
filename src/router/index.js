@@ -45,11 +45,6 @@ const router = createRouter({
 
     // login
     {
-      path: '/test',
-      name: 'test',
-      component: () => import('../views/test.vue'), 
-    },
-    {
       path: '/login',
       name: 'loginView',
       component: () => import('../views/login/loginView.vue'),
@@ -150,6 +145,11 @@ const router = createRouter({
     {
       path: '/test',
       name: 'test',
+      component: () => import('../views/test.vue'),
+    },
+    {
+      path: '/test1',
+      name: 'test1',
       component: () => import('@/views/test/test.vue'),
     },
 
@@ -160,15 +160,7 @@ const router = createRouter({
       component: () => import('@/views/posts/post.vue'),
       props: route => ({
         postId: route.params.postId,
-      })
-    },
-    {
-      path: '/post/:postId/comment/:commentId',
-      name: 'postComment',
-      component: () => import('@/views/posts/post.vue'),
-      props: route => ({
-        postId: route.params.postId,
-        commentId: route.params.commentId
+        commentId: route.query.commentId
       })
     },
 
@@ -239,6 +231,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: () => import('@/views/settings/home.vue'),
+    },
+    {
+      path: '/settings/account',
+      name: 'accountSettings',
+      component: () => import('@/views/settings/account.vue'),
     },
     {
       path: '/settings/privacy',

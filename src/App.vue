@@ -5,14 +5,17 @@ import { useRoute } from 'vue-router';
 const route = useRoute()
 
 watch(() => route.name, () => {
-  if (!history.state.forward) scrollTo({ top: 0 })
+  if (!history.state.forward) {
+    console.log('Scroll to top:', route.name)
+    scrollTo({ top: 0 })
+  }
 })
 
 </script>
 
 <template>
   <router-view v-slot="{ Component }">
-    <keep-alive include="mainPageView,searchView,home">
+    <keep-alive include="mainPageView,searchView,home,history">
       <component :is="Component" :key="route.name == 'userHome' ? route.params.id : undefined" />
     </keep-alive>
   </router-view>

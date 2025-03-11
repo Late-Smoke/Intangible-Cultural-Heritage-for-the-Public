@@ -3,47 +3,45 @@
     <page-header-sticky-with-back title="设置" />
 
     <div class="root">
-        <div class="setting" @click="">
-            个人资料
-            <mdiChevronRight />
-        </div>
-
-        <div class="setting" @click="router.push({ name: 'privacySettings' })">
-            隐私设置
+        <div class="setting" @click="router.push({ name: 'accountSettings' })">
+            <span>
+                <mdiAccountOutline />账号与安全
+            </span>
             <mdiChevronRight />
         </div>
 
         <div class="setting" @click="router.push({ name: 'notificationsSettings' })">
-            通知设置
+            <span>
+                <mdiBellOutline />通知设置
+            </span>
             <mdiChevronRight />
         </div>
 
-        <div class="setting action" @click="logout.show()">
-            <mdiLogout />退出登录
+        <div class="setting" @click="router.push({ name: 'privacySettings' })">
+            <span>
+                <mdiAccountLockOutline />隐私设置
+            </span>
+            <mdiChevronRight />
         </div>
-    </div>
 
-    <ConfirmDialog v-model="logout.showing" content="确定退出登录吗?" :action="logout.confirm" />
+        <ElButton class="btn-action" type="primary" size="large" @click="comfirmLogout">退出登录</ElButton>
+    </div>
 </template>
 
 <script setup lang="ts">
 import PageHeaderStickyWithBack from '@/components/slot/PageHeaderStickyWithBack.vue';
 import router from '@/router';
 import { removeToken } from '@/axios/axios';
-import { reactive } from 'vue';
-import ConfirmDialog from '@/components/slot/ConfirmDialog.vue';
 import SvgBackgroundDragon from '@/components/slot/SvgBackgroundDragon.vue';
+import { ElMessageBox } from 'element-plus';
 
-const logout = reactive({
-    showing: false,
-    show() {
-        logout.showing = true
-    },
-    confirm() {
+
+function comfirmLogout() {
+    ElMessageBox.confirm('确定要退出登录吗?', '退出登录').then(() => {
         removeToken()
         router.push({ name: 'mainPageView' }).then(() => router.go(0))
-    }
-})
+    }).catch(() => { })
+}
 
 </script>
 
@@ -54,11 +52,22 @@ const logout = reactive({
     min-height: 100%;
 
     .setting {
-        padding: 16px 24px;
+        padding: 0 24px;
+        height: 54px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid #ddd;
+        // border-bottom: 1px solid #ddd;
+
+        span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            >svg {
+                font-size: 1.7em;
+            }
+        }
 
         >svg {
             font-size: 1.5em;
@@ -69,11 +78,16 @@ const logout = reactive({
         display: flex;
         align-items: center;
         justify-content: center;
-        color: rgb(255, 64, 64);
+        // color: rgb(255, 64, 64);
+        border-top: 1px solid #ddd;
 
         >svg {
             margin-right: 4px;
         }
+    }
+
+    .btn-action {
+        margin: 16px 15%;
     }
 }
 </style>

@@ -3,7 +3,6 @@ import { Response } from "./common";
 import * as Posts from '@/axios/api/posts'
 import * as Activity from '@/axios/api/activity'
 import * as User from './user'
-import { createElementPlusSettingSwitch } from "@/settings";
 import { reactive, ref } from "vue";
 import { debouncePromise, promiseSuccess } from "@/utils";
 import { AxiosResponse } from "axios";
@@ -61,16 +60,24 @@ export function updateProfile(data: ProfileUpdateDTO) {
     return apiClient.put('/update/userMessage', data)
 }
 
+export function updatePassword(phoneNumber: string | number, code: string | number, password: string) {
+    return apiClient.put<Response<any>>('/users/auth/password/update', {
+        phoneNumber: typeof phoneNumber == 'string' ? parseInt(phoneNumber) : phoneNumber,
+        code: typeof code == 'string' ? parseInt(code) : code,
+        password
+    })
+}
+
 
 // privacy
 export interface IPrivacySettings {
-    id: number
-    userId: number
-    followSetting: boolean
-    commentSetting: boolean
-    favoriteSetting: boolean
-    activitySetting: boolean
-    createdTime: string
+    // id: number
+    // userId: number
+    followSetting?: boolean
+    commentSetting?: boolean
+    favoriteSetting?: boolean
+    activitySetting?: boolean
+    // createdTime: string
 }
 
 export const PrivacySettings = {
@@ -79,23 +86,6 @@ export const PrivacySettings = {
     toggleActivities: () => apiClient.put<Response<any>>('/personal/privacy/activity'),
     toggleFollowing: () => apiClient.put<Response<any>>('/personal/privacy/follow'),
     toggleFavorites: () => apiClient.put<Response<any>>('/personal/privacy/favorite'),
-}
-
-export const PrivacySettingsController = {
-    load() {
-        PrivacySettings.get().then(r => {
-            for (const key in this.settings) {
-                this.settings[key as keyof IPrivacySettings].value = r.data.data[key as keyof IPrivacySettings] as boolean
-                this.settings[key as keyof IPrivacySettings].loading = false
-            }
-        })
-    },
-    settings: {
-        commentSetting: createElementPlusSettingSwitch('公开评论', PrivacySettings.toggleComment),
-        activitySetting: createElementPlusSettingSwitch('公开参与的活动', PrivacySettings.toggleActivities),
-        followSetting: createElementPlusSettingSwitch('公开关注列表', PrivacySettings.toggleFollowing),
-        favoriteSetting: createElementPlusSettingSwitch('公开收藏夹', PrivacySettings.toggleFavorites),
-    } as Record<keyof IPrivacySettings, ReturnType<typeof createElementPlusSettingSwitch>>,
 }
 
 

@@ -31,7 +31,7 @@
                     <div class="main">
                         <div class="name">
                             {{ user.nickName }}
-                            <span v-if="isSelf" @click="changeName()">
+                            <span v-if="isSelf" @click="changeNickname(user.nickName, loadUser)">
                                 <el-icon>
                                     <EditPen />
                                 </el-icon>
@@ -156,6 +156,7 @@ import ContentListContainer from '@/components/slot/ContentListContainer.vue';
 import { AxiosResponse } from 'axios';
 import ErrorPage from '../error/ErrorPage.vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { changeNickname } from '@/settings';
 
 const { userId } = defineProps<{
     userId: string
@@ -310,23 +311,6 @@ function loadUnreads() {
 function setFollowing(value: boolean) {
     promiseSuccess(value ? User.follow(user.value.id) : User.unfollow(user.value.id))
         .then(() => Self.FollowController.loadBoth())
-}
-
-function changeName() {
-    ElMessageBox.prompt('输入新昵称', '修改昵称', {
-        // confirmButtonText: 'OK',
-        // cancelButtonText: 'Cancel',
-        inputValue: user.value.nickName,
-        inputPattern: /.+/,
-        inputErrorMessage: '昵称不能为空',
-    }).then(({ value }) => {
-        promiseSuccess(Self.updateProfile({ nickName: value })).then(() => {
-            ElMessage.success('修改成功')
-            loadUser()
-        }).catch((r: AxiosResponse<Response<any>>) => {
-            ElMessage.error(r?.data?.errorMsg || r as unknown)
-        })
-    }).catch(() => { })
 }
 
 onActivated(() => {

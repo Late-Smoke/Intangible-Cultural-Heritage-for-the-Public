@@ -1,6 +1,6 @@
 <template>
     <SvgBackgroundDragon />
-    <page-header-sticky-with-back title="通知提醒" />
+    <page-header-sticky-with-back title="通知设置" />
 
     <div class="setting">
         回复我的
