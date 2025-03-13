@@ -111,6 +111,7 @@ export function getFollowers() {
 
 export interface IFollowController {
     users?: FollowUser[],
+    userResponse?: Response<FollowUser[]>,
     load: () => Promise<any>
     includes: (id: number | string) => boolean
 }
@@ -119,7 +120,10 @@ function createFollowController(getMethod: () => Promise<AxiosResponse<Response<
     const loadFunction = () => promiseSuccess(getMethod())
     return {
         load() {
-            return debouncePromise(loadFunction).then(r => this.users = r.data.data)
+            return debouncePromise(loadFunction).then(r => {
+                this.users = Array.isArray(r.data.data) ? r.data.data : []
+                this.userResponse = r.data
+            })
         },
         includes(id) {
             if (!this.users) {

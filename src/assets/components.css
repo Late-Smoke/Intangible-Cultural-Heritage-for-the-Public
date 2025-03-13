@@ -1,0 +1,8 @@
+.btn-outline {
+    display: inline-block;
+    color: #987B5B;
+    font-size: 0.9em;
+    border: 1px solid #987B5B;
+    padding: 0.15em 0.4em;
+    border-radius: 0.4em;
+}

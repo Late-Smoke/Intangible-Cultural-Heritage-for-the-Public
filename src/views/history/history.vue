@@ -1,10 +1,10 @@
 <template>
-    <PageHeaderStickyWithBack title="浏览历史" class="header">
+    <PageHeader title="浏览历史" class="header" :transparent="false">
         <div style="flex: 1;"></div>
 
         <div v-if="!editing" @click="editing = true; allSelected = false">管理</div>
         <div v-if="editing" @click="editing = false">取消</div>
-    </PageHeaderStickyWithBack>
+    </PageHeader>
 
     <ElTabs class="outline sticky">
         <ElTabPane label="帖子" class="flex-reverse list">
@@ -46,8 +46,9 @@ import { HistoryController, historyType } from '@/controllers/history';
 import router from '@/router';
 import HistoryListItem from '@/components/history/HistoryListItem.vue'
 import { ref, computed } from 'vue';
-import PageHeaderStickyWithBack from '@/components/slot/PageHeaderStickyWithBack.vue';
+import PageHeader from '@/components/slot/PageHeader.vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { onActivated } from 'vue';
 
 const editing = ref(false)
 
@@ -72,12 +73,16 @@ function confirmDelete() {
         editing.value = false
     }).catch(() => { })
 }
+
+onActivated(() => {
+    editing.value = false
+    allSelected.value = false
+})
 </script>
 
 <style scoped lang="scss">
 .header {
     height: 56px;
-    background-color: white;
 }
 
 .el-tabs :deep(>.el-tabs__header) {

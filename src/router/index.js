@@ -143,11 +143,6 @@ const router = createRouter({
 
     // test
     {
-      path: '/test',
-      name: 'test',
-      component: () => import('../views/test.vue'),
-    },
-    {
       path: '/test1',
       name: 'test1',
       component: () => import('@/views/test/test.vue'),
@@ -248,6 +243,22 @@ const router = createRouter({
       path: '/history',
       name: 'history',
       component: () => import('@/views/history/history.vue'),
+    },
+
+    // courses
+    {
+      path: '/course/mine',
+      name: 'myCourses',
+      component: () => import('@/views/courses/mine.vue'),
+    },
+    {
+      path: '/user/:id/courses',
+      name: 'userCourses',
+      props: route => ({
+        userId: route.params.id,
+        unlock: route.query.unlock,
+      }),
+      component: () => import('@/views/courses/user.vue'),
     },
 
     // 404

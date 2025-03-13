@@ -1,6 +1,6 @@
 <template>
     <SvgBackgroundDragon />
-    <page-header-sticky-with-back title="隐私设置" />
+    <PageHeader title="隐私设置" />
 
     <SettingItem name="公开评论" type="switch" :value="settings.commentSetting" :action="createToggleAction(Self.PrivacySettings.toggleComment, 'commentSetting')" />
     <SettingItem name="公开参与的活动" type="switch" :value="settings.activitySetting" :action="createToggleAction(Self.PrivacySettings.toggleActivities, 'activitySetting')" />
@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import PageHeaderStickyWithBack from '@/components/slot/PageHeaderStickyWithBack.vue';
+import PageHeader from '@/components/slot/PageHeader.vue';
 import * as Self from '@/axios/api/self'
 import { onMounted } from 'vue';
 import SvgBackgroundDragon from '@/components/slot/SvgBackgroundDragon.vue';

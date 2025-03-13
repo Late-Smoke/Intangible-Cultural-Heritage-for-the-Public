@@ -1,16 +1,25 @@
 <template>
-    <div :class="{ 'header': true, 'sticky': sticky }">
+    <div :class="{ 'header': true, 'sticky': sticky, 'transparent': transparent }">
         <div class="title">{{ title }}</div>
         <div class="action">
+            <mdiChevronLeft @click="router.back()" v-if="back" />
             <slot></slot>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-const { sticky = false } = defineProps<{
+import router from '@/router';
+
+const {
+    sticky = true,
+    transparent = true,
+    back = true,
+} = defineProps<{
     title?: string
     sticky?: boolean
+    transparent?: boolean
+    back?: boolean
 }>()
 </script>
 
@@ -18,13 +27,17 @@ const { sticky = false } = defineProps<{
 .header {
     position: relative;
     padding: 8px;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: white;
     backdrop-filter: blur(8px);
 
     &.sticky {
         position: sticky;
         top: 0;
         z-index: 10;
+    }
+
+    &.transparent {
+        background-color: rgba(255, 255, 255, 0.7);
     }
 
     .title {

@@ -69,7 +69,7 @@
                         </svg>
 
                         <!-- 我的课程 -->
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="99.566 208.394 276.999 47.587" width="276.999px" height="47.587px">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="99.566 208.394 276.999 47.587" width="276.999px" height="47.587px" @click="router.push({ name: 'myCourses' }); menuOpen = false">
                             <defs>
                                 <clipPath id="clip0_1152_3635">
                                     <rect width="35" height="35" fill="white" transform="translate(70.7487 49.5078) rotate(-135)" />

@@ -1,6 +1,6 @@
 <template>
     <SvgBackgroundDragon />
-    <page-header-sticky-with-back title="通知设置" />
+    <PageHeader title="通知设置" />
 
     <div class="setting">
         回复我的
@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import PageHeaderStickyWithBack from '@/components/slot/PageHeaderStickyWithBack.vue';
+import PageHeader from '@/components/slot/PageHeader.vue';
 import * as Notifications from '@/axios/api/notifications'
 import { reactive } from 'vue';
 import SvgBackgroundDragon from '@/components/slot/SvgBackgroundDragon.vue';

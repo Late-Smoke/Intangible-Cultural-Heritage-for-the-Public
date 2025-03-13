@@ -1,6 +1,6 @@
 <template>
     <SvgBackgroundDragon />
-    <page-header-sticky-with-back title="设置" />
+    <PageHeader title="设置" />
 
     <div class="root">
         <div class="setting" @click="router.push({ name: 'accountSettings' })">
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import PageHeaderStickyWithBack from '@/components/slot/PageHeaderStickyWithBack.vue';
+import PageHeader from '@/components/slot/PageHeader.vue';
 import router from '@/router';
 import { removeToken } from '@/axios/axios';
 import SvgBackgroundDragon from '@/components/slot/SvgBackgroundDragon.vue';

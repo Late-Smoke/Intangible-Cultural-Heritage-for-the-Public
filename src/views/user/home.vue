@@ -44,7 +44,7 @@
                     </div>
 
                     <div class="action" v-if="!isSelf">
-                        <template v-if="!User.isSelf(user.id)">
+                        <template v-if="!isUserSelf">
                             <el-button type="primary" v-if="!Self.FollowController.following.includes(user.id)" @click="setFollowing(true)">关注</el-button>
                             <el-button type="primary" plain v-else-if="!Self.FollowController.followers.includes(user.id)" @click="setFollowing(false)">已关注</el-button>
                             <el-button type="primary" plain v-else @click="setFollowing(false)">已互粉</el-button>
@@ -88,7 +88,8 @@
                     <div class="text-main">
                         <mdiStore />非遗工坊
                     </div>
-                    <div class="text-secondary">在售商品管理</div>
+                    <div class="text-secondary" v-if="isUserSelf">在售商品管理</div>
+                    <div class="text-secondary" v-else>查看在售商品</div>
                 </div>
 
                 <div v-if="isSelf" @click="">
@@ -98,30 +99,31 @@
                     <div class="text-secondary">投稿收益管理</div>
                 </div>
 
-                <div v-if="user && user.userType" @click="">
+                <div v-if="user && user.userType" @click="router.push({ name: 'userCourses', params: { id: user.id } })">
                     <div class="text-main">
                         <mdiBookOpenVariantOutline />非遗课程
                     </div>
-                    <div class="text-secondary">课程收益管理</div>
+                    <div class="text-secondary" v-if="isUserSelf">课程收益管理</div>
+                    <div class="text-secondary" v-else>查看用户课程</div>
                 </div>
             </div>
 
             <el-tabs class="tabs outline sticky" v-model="tabs.current">
                 <el-tab-pane v-for="tab in tabs.tabs" :label="tab.name" :name="tab.name">
-                    <ContentListContainer v-if="tab.data" v-model="tab.data.response">
+                    <ResponseListContainer v-if="tab.data" v-model="tab.data.response">
 
                         <PostListItemSelf v-if="tab.name == tabNames.posts" v-for="post in tab.data.response.data" :post="post" :reload-action="() => tabs.loadTab()" :self="isSelf" />
                         <CommentQuoteReply v-if="tab.name == tabNames.comments" v-for="comment in tab.data.response.data" :comment="comment" />
                         <PostListItem class="post" v-if="tab.name == tabNames.favorites" v-for="post in tab.data.response.data" :post="post" />
 
-                    </ContentListContainer>
+                    </ResponseListContainer>
 
                     <el-tabs v-else v-model="activityTabs.current" class="solid border" style="margin-top: 4px;">
                         <el-tab-pane v-for="activityTab in activityTabs.tabs" :label="activityTab.name" :name="activityTab.name">
-                            <ContentListContainer v-model="activityTab.data.response">
+                            <ResponseListContainer v-model="activityTab.data.response">
 
                                 <ActivityListItem v-for="a in activityTab.data.response.data" :activity="a" :bottom="activityTab.name == activityTabNames.joined ? 'detail' : undefined" />
-                            </ContentListContainer>
+                            </ResponseListContainer>
                         </el-tab-pane>
                     </el-tabs>
                 </el-tab-pane>
@@ -137,14 +139,12 @@
 <script setup lang="ts">
 import { ref, watch, onActivated, computed, reactive } from 'vue'
 import * as Self from '@/axios/api/self'
-import { useRoute } from 'vue-router';
 import TagsEditor from '@/components/slot/TagsEditor.vue';
 import { humanizeNumber, promiseSuccess, splitStringBySpace } from '@/utils'
 import * as Posts from '@/axios/api/posts'
 import PostListItemSelf from '@/components/posts/PostListItemSelf.vue'
 import PostListItem from '@/components/posts/PostListItem.vue'
 import CommentQuoteReply from '@/components/posts/CommentQuoteReply.vue';
-import * as Activity from '@/axios/api/activity'
 import * as ExampleData from '@/axios/example-data'
 import ActivityListItem from '@/components/activity/ActivityListItem.vue';
 import DrawerMenu from '@/components/menu/DrawerMenu.vue';
@@ -152,10 +152,9 @@ import * as Notifications from '@/axios/api/notifications'
 import router from '@/router';
 import * as User from '@/axios/api/user'
 import { Response } from '@/axios/api/common';
-import ContentListContainer from '@/components/slot/ContentListContainer.vue';
+import ResponseListContainer from '@/components/slot/ResponseListContainer.vue';
 import { AxiosResponse } from 'axios';
 import ErrorPage from '../error/ErrorPage.vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import { changeNickname } from '@/settings';
 
 const { userId } = defineProps<{
@@ -168,11 +167,8 @@ const userTags = ref<string[]>([])  // 不能用 computed 从 user.tags 里面�
 
 const userExists = computed(() => !(user.value && user.value.id == null))
 
-const isSelf = computed(() => {
-    if (!userId) return true
-    // else if (user.value && User.isSelf(user.value.id)) return true
-    else return false
-})
+const isSelf = computed(() => !userId)
+const isUserSelf = computed(() => isSelf.value || User.isSelf(userId))
 
 const unreadCount = ref(0)
 
@@ -445,7 +441,7 @@ onActivated(() => {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            // gap: 8px;
 
             .tags-editor {
                 margin: 8px 0;
@@ -486,9 +482,15 @@ onActivated(() => {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 36px;
+                gap: 14px;
                 font-size: 0.9em;
                 text-align: center;
+                white-space: nowrap;
+                max-width: 40vw;
+
+                >div {
+                    padding: 0 8px;
+                }
 
                 .number {
                     font-size: 1.35em;
