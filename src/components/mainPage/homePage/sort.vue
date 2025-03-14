@@ -255,6 +255,10 @@ const categories = ref([
     }
 ]);
 
+const chartName = ref('first');
+
+const isExpanded = ref(false);
+
 function handleFirstLevel(index, name) {//点击一级分类
     firstType.value = name;
 }
@@ -294,20 +298,55 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="sort" ref="sortRef">
-        <div class="sort-item" v-for="(item, index) in sortData" :key="index"
-            :class="{ 'sort-item-last': index === sortData.length - 1 }" @click="handleFirstLevel(index, item.name)">
-            <div v-html="item.icon" class="item-img"></div>
-            <div class="item-title">{{ item.name }}</div>
+    <!-- <div class="chart-box">
+        <div class="chart"></div>
+        <div class="chart-btn">
+            <div class="btn-item"></div>
         </div>
-    </div>
-    <div class="tip">
-        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-                d="M8.5 8.5V5.3125M8.5 10.8626V10.8906M14.875 8.5C14.875 12.0208 12.0208 14.875 8.5 14.875C4.97918 14.875 2.125 12.0208 2.125 8.5C2.125 4.97918 4.97918 2.125 8.5 2.125C12.0208 2.125 14.875 4.97918 14.875 8.5Z"
-                stroke="black" stroke-opacity="0.65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        国家级非物质文化遗产代表性项目名录将非遗分为该十大门类
+    </div> -->
+    <el-tabs tab-position="bottom" v-model="chartName" class="chart" @tab-click="handleClick">
+        <el-tab-pane label="各门类数目一览" name="first">
+            <el-image class="chart-img" src="/icon/first.jpg" />
+        </el-tab-pane>
+        <el-tab-pane label="申报数量变化" name="second">
+            <el-image class="chart-img" src="/icon/second.jpg" />
+        </el-tab-pane>
+        <el-tab-pane label="各省分部占比" name="third">
+            <el-image class="chart-img" src="/icon/third.png" />
+        </el-tab-pane>
+        <el-tab-pane label="各类非遗传承人人数变化" name="fourth">
+            <el-image class="chart-img" src="/icon/fourth.png" />
+        </el-tab-pane>
+    </el-tabs>
+    <div class="sort-box">
+        <span class="title">非遗门类</span>
+        <el-tooltip class="tip" content="国家级非物质文化遗产代表性项目名录" placement="top">
+            <svg style="margin-left:5px" width="17" height="17" viewBox="0 0 17 17" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M8.5 8.5V5.3125M8.5 10.8626V10.8906M14.875 8.5C14.875 12.0208 12.0208 14.875 8.5 14.875C4.97918 14.875 2.125 12.0208 2.125 8.5C2.125 4.97918 4.97918 2.125 8.5 2.125C12.0208 2.125 14.875 4.97918 14.875 8.5Z"
+                    stroke="black" stroke-opacity="0.65" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </el-tooltip>
+        <div class="sort-container">
+            <div class="sort" :style="{ maxHeight: isExpanded ? 'none' : '100px' }">
+                <div class="sort-item" v-for="(item, index) in sortData" :key="index"
+                    :class="{ 'sort-item-last': index === sortData.length - 1 }"
+                    @click="handleFirstLevel(index, item.name)">
+                    <div v-html="item.icon" class="item-img"></div>
+                    <div class="item-title">{{ item.name }}</div>
+                </div>
+            </div>
+            <div class="sort-btn" @click="isExpanded = !isExpanded">
+                <el-icon v-show="!isExpanded">
+                    <ArrowDownBold color="#987B5B"/>
+                </el-icon>
+                <el-icon v-show="isExpanded">
+                    <ArrowUpBold />
+                </el-icon>
+            </div>
+        </div>
     </div>
     <div class="content-box">
         <div class="title-box">
@@ -332,7 +371,7 @@ onMounted(() => {
                         </svg>
                         <div v-for="(second, key) in item.data[index]" :key="key" class="second-level">
                             <div>{{ second.title.length > 8 ? second.title.slice(0, 8) + '...' : second.title }}【{{
-                                second.unit.length > 5 ? second.unit.slice(0,5)+'...':second.unit }}】</div>
+                                second.unit.length > 5 ? second.unit.slice(0, 5) + '...' : second.unit }}】</div>
                         </div>
                     </div>
                 </div>
@@ -343,14 +382,52 @@ onMounted(() => {
 
 
 <style scoped>
+.chart-img {
+    width: 100%;
+    height: 40vh;
+    border: 2px solid rgba(230, 219, 205, 1);
+}
+
+:deep(.chart .el-tabs__item) {
+    font-size: 13px;
+}
+
 /*sort*/
+.sort-box {
+    padding: 0 15px;
+}
+
+.sort-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .sort {
     width: 100%;
-    padding: 15px;
-    padding-bottom: 10px;
     display: flex;
+    margin-top: 10px;
+    padding: 10px;
     flex-wrap: wrap;
     gap: 25px;
+    border-radius: 15px;
+    border: solid 1px rgba(255, 222, 92, 1);
+    box-shadow: 3px 3px 4px 1px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    /* 添加过渡效果 */
+}
+
+.sort-btn {
+    width: 73px;
+    height: 20px;
+    position: relative;
+    bottom: 10px;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 1);
+    border: solid 1px rgba(255, 222, 92, 1);
+    text-align: center;
+    box-shadow: inset -1px -1px 3px 1px rgba(0, 0, 0, 0.25);
 }
 
 .sort-item {
@@ -367,16 +444,6 @@ onMounted(() => {
     text-overflow: ellipsis;
     width: 100%;
     text-align: center;
-}
-
-/*tip*/
-.tip {
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-    gap: 5px;
-    color: #000000A6;
-    font-size: 12px;
 }
 
 /*content-box*/
@@ -454,6 +521,7 @@ onMounted(() => {
 
 .second-level {
     position: relative;
+    color: rgba(87, 57, 20, 1);
 }
 
 

@@ -109,20 +109,24 @@
 }
 
 .el-popper__arrow {
-  display: none; 
+  display: none;
 }
+
+/* .el-cascader .el-input__wrapper {
+  background-color: aqua;
+} */
 
 /*gaode*/
 .el-dialog__header {
   padding: 0;
 }
 
-.el-tabs--left .el-tabs__item.is-left{
-  padding-left: 0; 
+.el-tabs--left .el-tabs__item.is-left {
+  padding-left: 0;
 }
 
 .el-tabs--left .el-tabs__nav-wrap.is-left.is-scrollable {
-  padding: 0; 
+  padding: 0;
 }
 
 .el-tabs__nav-scroll {
@@ -135,6 +139,43 @@
   display: none; /* Chrome, Safari, and Opera */
 }
 
-.el-tabs__nav-prev,.el-tabs__nav-next {
-  display: none !important;
+.el-tabs--left .el-tabs__nav-wrap.is-left > .el-tabs__nav-prev {
+  top: -10px;
+}
+
+.el-tabs--left .el-tabs__nav-wrap.is-left > .el-tabs__nav-next {
+  display: none;
+}
+
+/*sort*/
+.chart .el-tabs__nav-scroll {
+  margin: 0 0 10px !important;
+}
+
+.chart .el-tabs__active-bar {
+  display: none;
+}
+
+.chart .el-tabs__nav {
+  gap: 10px !important;
+  white-space: normal !important;
+}
+
+.chart .el-tabs__nav-prev ,.chart .el-tabs__nav-next{
+  top: -5px;
+}
+
+.chart .el-tabs__item {
+  font-size: 12px !important;
+  padding: 0;
+  width: 91px;
+  height: 31px;
+  border: solid 1px rgba(246, 185, 55, 1);
+  border-radius: 5px;
+  box-shadow: inset -2px -2px 2px 0px rgba(0, 0, 0, 0.25);
+}
+
+.chart .el-tabs__item:last-child {
+  font-size: 11px !important;
+  padding: 5px;
 }

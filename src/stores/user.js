@@ -81,7 +81,6 @@ export const useActivityStore = defineStore("activity", {
     position: "全国",
     startTime: '',
     endTime:'',
-    ifPage: false,
   }),
   actions: {
     changeShow(show) {
@@ -93,9 +92,6 @@ export const useActivityStore = defineStore("activity", {
     changeTime(time) {
       this.time = time;
     },
-    changeIfPage(ifPage) {
-      this.ifPage = ifPage; 
-    }
   },
 });
 

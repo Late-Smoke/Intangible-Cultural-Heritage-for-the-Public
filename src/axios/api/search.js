@@ -34,6 +34,10 @@ export function getUserApi(keyword, userType) {
 }
 
 //activity
+// export function getActivitiesApi(keyword,firstType,secondType,city,startTime,endTime) {
+//   return apiClient.put("/search/activities", {keyword,firstType,secondType,city,startTime,endTime});
+// }
+
 export function getActivitiesApi(params) {
   return apiClient.put("/search/activities", params);
 }

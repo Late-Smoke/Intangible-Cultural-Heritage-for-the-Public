@@ -7,6 +7,7 @@ const activityStore = useActivityStore();
 const positionStore = usePositionStore();
 const step = ref(-1);
 const handleBack = () => {
+  activityStore.ifBackFromCity = true;
   router.go(step.value);
 }
 

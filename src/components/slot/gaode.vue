@@ -1,7 +1,8 @@
 <template>
     <div id="outer-box" style="width:100%;height:100%">
         <el-dialog class="dialog" append-to-body="true" width="100%" style="margin:115px 0 0;aspect-ratio: 1 / 1;box-shadow: none;
-        border: 2px solid rgba(230, 219, 205, 1);" :modal="false" v-model="dialogVisible">
+        border: 2px solid rgba(230, 219, 205, 1);" :modal="false" v-model="dialogVisible"
+            :before-close="closeDialog()">
             <template #header="{ close, titleId }">
                 <div class="custom-dialog-header">
                     <span :id="titleId" class="custom-title">筛选标点</span>
@@ -20,8 +21,7 @@
                                         <span :style="{ color: borderColor[index] }">{{ secondType }}</span>
                                     </div>
                                 </template>
-                                <el-checkbox-group v-model="selectHeritage" size="small"
-                                    @change="console.log(selectHeritage)">
+                                <el-checkbox-group v-model="selectHeritage" size="small">
                                     <el-checkbox-button v-for="(detail, key) in firstType.data[index]" :key="key"
                                         :value="detail">
                                         <el-badge
@@ -73,7 +73,7 @@
             </button>
             <div>定位至当前位置</div>
         </div>
-        <div class="select" @click="dialogVisible = true;ifViewPoints = false;">
+        <div class="select" @click="dialogVisible = true; ifViewPoints = false;">
             <svg width="37" height="43" viewBox="0 0 37 43" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M35.5252 0H1.4728C0.339575 0 -0.368115 1.60349 0.200812 2.88268L10.9595 26.6288V41.0782C10.9595 42.1412 11.6164 43 12.4304 43H24.5675C25.3816 43 26.0384 42.1412 26.0384 41.0782V26.6288L36.8018 2.88268C37.3661 1.60349 36.6584 0 35.5252 0ZM22.7266 38.676H14.2714V29.3073H22.7313V38.676H22.7266ZM23.1707 24.4668L22.7313 25.4637H14.2667L13.8273 24.4668L4.6551 4.32402H32.3429L23.1707 24.4668Z"
@@ -231,16 +231,20 @@ function handleSecondLevel(firstType, secondType, index) {//点击二级分类
         })
     }
 }
-function clickHeritage(firstType, index, key, detail) {
+function clickHeritage(firstType, index, key, detail) { //控制非遗项目的显影
     if (firstType.visible[index][key]) {
         return selectHeritage.value.findIndex(item => item.id === detail.id) + 1;
     }
 }
-function clickRefresh() {
+function clickRefresh() { //重置
+    ifRefresh.value = true;
     selectHeritage.value = [];
     categories.value.forEach(item => {
         item.visible = [[], [], [], [], []];
     })
+}
+function closeDialog() {
+    if (!dialogVisible.value) ifRefresh.value = false;
 }
 
 // 地图对象
@@ -260,58 +264,6 @@ const colors = [
 
 const heritageData = ref([]);
 
-// watch(() => positionStore.cityCode, () => {
-//     if (positionStore.cityCode) {
-//         getFromAdcodeApi(positionStore.cityCode).then(res => {
-//             heritageData.value = res.data.data.map(item => [parseFloat(item.lng), parseFloat(item.lat)]);
-
-//             AMapUI.loadUI(['misc/PointSimplifier'], function (PointSimplifier) {
-//                 if (!PointSimplifier.supportCanvas) {
-//                     alert('当前环境不支持 Canvas!');
-//                     return;
-//                 }
-//                 initPage(PointSimplifier);
-//             });
-//         });
-
-//         function initPage(PointSimplifier) {
-//             var pointSimplifierIns = new PointSimplifier({
-//                 map: map,
-//                 autoSetFitView: false,
-//                 compareDataItem: function (a, b, aIndex, bIndex) {
-//                     return aIndex > bIndex ? -1 : 1;
-//                 },
-//                 getPosition: function (dataItem) {
-//                     return dataItem;
-//                 },
-//                 renderOptions: {
-//                     pointStyle: {
-//                         width: 6,
-//                         height: 6,
-//                         content: 'circle',
-//                         fillStyle: 'rgba(159, 125, 90, 0.5)',
-//                         strokeStyle: 'rgba(159, 125, 90, 1)',
-//                         strokeWeight: 1,
-//                     },
-//                     pointHardcoreStyle: {
-//                         width: 10,
-//                         height: 10,
-//                         content: 'circle',
-//                         strokeStyle: '#FF8D00',
-//                     }
-//                 }
-//             });
-
-//             pointSimplifierIns.setData(heritageData.value);
-
-//             pointSimplifierIns.on('pointClick', function (e, record) {
-//                 console.log('点击了点：', record);
-//             });
-//         }
-
-//     }
-// })
-
 onMounted(() => {
     const button = document.getElementsByClassName('btn-position')[0];
     map = new AMap.Map('container', {
@@ -324,9 +276,11 @@ onMounted(() => {
             alert('当前环境不支持 Canvas!');
             return;
         }
+
         var pointSimplifierIns = new PointSimplifier({  //点标记
             map: map,
             autoSetFitView: false,
+            zIndex: 2,
             compareDataItem: function (a, b, aIndex, bIndex) {
                 return aIndex > bIndex ? -1 : 1;
             },
@@ -338,18 +292,18 @@ onMounted(() => {
                     width: 6,
                     height: 6,
                     content: 'circle',
-                    fillStyle: 'rgba(159, 125, 90, 0.5)',
-                    strokeStyle: 'rgba(159, 125, 90, 1)',
+                    fillStyle: '#FADBBF',
                     strokeWeight: 1,
                 },
                 pointHardcoreStyle: {
                     width: 10,
                     height: 10,
                     content: 'circle',
-                    strokeStyle: '#FF8D00',
-                }
+                    strokeStyle: '#FFF0E1',
+                    strokeWeight: 2,
+                },
             }
-        });
+        })
         pointSimplifierIns.on('pointClick', function (e, record) {
             console.log('点击了点：', record);
         });
@@ -370,7 +324,6 @@ onMounted(() => {
                 map.addControl(geolocation);
 
                 function movePosition() {
-                    console.log('clickLocation');
                     geolocation.getCurrentPosition(function (status, result) {
                         if (status == 'complete') {
                             // 获取定位城市
@@ -399,7 +352,6 @@ onMounted(() => {
 
             districtExplorer.on('featureClick', (e, feature) => {
                 const props = feature.properties;
-                //console.log(props);
                 switch2AreaNode(props.adcode);
             });
 
@@ -420,7 +372,6 @@ onMounted(() => {
                 loadAreaNode(adcode, (error, areaNode) => {
                     if (error) return;
                     positionStore.currentCode = adcode;
-                    console.log(adcode);
                     currentAreaNode = areaNode;
                     districtExplorer.setAreaNodesForLocating([currentAreaNode]);
                     renderAreaPolygons(areaNode);
@@ -462,17 +413,67 @@ onMounted(() => {
             }// 加载全国地图
         });
 
-        watch(() => positionStore.cityCode, () => {
+        watch(() => positionStore.cityCode, () => { // 用户所在城市的非遗项目标点
             if (!positionStore.cityCode) return;
             getFromAdcodeApi(positionStore.cityCode).then(res => {
                 heritageData.value = res.data.data.filter(item => item.lng != null && item.lat != null).map(item => [item.lng, item.lat]);
                 pointSimplifierIns.setData(heritageData.value);
+                // heritageData.value.forEach((position, index) => {
+                //     var text = new AMap.Text({
+                //         text: index.toString(), // 显示索引
+                //         position: position, // 设置位置
+                //         offset: new AMap.Pixel(0, -10), // 调整偏移量
+                //         style: {
+                //             fontSize: '12px',
+                //             fontWeight: 'bold',
+                //             fillColor: 'black',
+                //             strokeColor: 'white',
+                //             strokeWidth: 2,
+                //             padding: '2px',
+                //             backgroundColor: 'rgba(255,255,255,0.5)',
+                //             textAlign: 'center'
+                //         }
+                //     });
+                //     text.setMap(map);
+                // });
             });
         })
 
-        watch(ifViewPoints, () => {
+        watch(ifViewPoints, () => { // 显示筛选标点
             if (ifViewPoints.value) {
-                pointSimplifierIns.setData(selectHeritage.value.filter(item => item.lng != null && item.lat != null).map(item => [item.lng, item.lat]));
+                var data = selectHeritage.value.filter(item => item.lng != null && item.lat != null).map(item => [item.lng, item.lat]);
+                pointSimplifierIns.setData(data);
+                data.forEach((position, index) => {
+                    var text = new AMap.Text({
+                        text: index.toString(), // 显示索引
+                        position: position, // 设置位置
+                        offset: new AMap.Pixel(0, 0), // 调整偏移量
+                        zIndex: 3,
+                        style: {
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            color: 'white',
+                            lineHeight: '15px',
+                            textAlign: 'center',
+                            backgroundColor: '#ff5722', // 圆形背景颜色
+                            borderRadius: '50%', // 让背景变成圆形
+                            padding: '5px',
+                            width: '15px',  // 设置宽高为相同值，使其为圆形
+                            height: '15px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            boxShadow: '0 0 3px rgba(0,0,0,0.5)', // 可选：添加阴影
+                        }
+                    });
+                    text.setMap(map);
+                });
+            }
+        })
+
+        watch(ifRefresh, () => { // 重置
+            if (ifRefresh.value) {
+                pointSimplifierIns.setData(heritageData.value);
             }
         })
     });
