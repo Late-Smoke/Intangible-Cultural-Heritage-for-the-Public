@@ -30,7 +30,7 @@
 
 
         <!-- Main content -->
-        <h3 class="title">{{ post.title }}</h3>
+        <div class="title">{{ post.title }}</div>
         <div class="body" v-html="post.content"></div>
 
 
@@ -384,6 +384,8 @@ onMounted(() => {
 
 .title {
     margin: 12px 8px;
+    font-size: 1.15em;
+    font-weight: bold;
 }
 
 .body {
@@ -395,6 +397,14 @@ onMounted(() => {
         margin: 0 0 0.5em 0 !important;
         padding: 0 !important;
         line-height: 1.5em !important;
+    }
+
+    :deep(h1) {
+        font-size: var(--font-size-h1) !important;
+    }
+
+    :deep(h2) {
+        font-size: var(--font-size-h2) !important;
     }
 }
 

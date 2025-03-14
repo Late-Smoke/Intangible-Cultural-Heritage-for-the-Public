@@ -116,4 +116,11 @@
         border-bottom: none;
         border-radius: var(--radius) var(--radius) 0 0;
     }
+
+    &.center>.el-tabs__header {
+        .el-tabs__nav {
+            width: 100%;
+            justify-content: center;
+        }
+    }
 }

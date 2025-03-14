@@ -41,6 +41,15 @@ export function timeRange2txt(from?: Date | string, to?: Date | string) {
     return `${from?.toLocaleString()} - ${to?.toLocaleString()}`
 }
 
+export function file2dataURL(file: File) {
+    return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = () => reject(reader.error)
+        reader.readAsDataURL(file)
+    })
+}
+
 export function splitStringBySpace(s: string | null) {
     return s ? [...s.split(' ')] : []
 }
