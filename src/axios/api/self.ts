@@ -117,12 +117,11 @@ export interface IFollowController {
 }
 
 function createFollowController(getMethod: () => Promise<AxiosResponse<Response<FollowUser[]>, any>>): IFollowController {
-    const loadFunction = () => promiseSuccess(getMethod())
     return {
         load() {
-            return debouncePromise(loadFunction).then(r => {
-                this.users = Array.isArray(r.data.data) ? r.data.data : []
+            return debouncePromise(getMethod).then(r => {
                 this.userResponse = r.data
+                this.users = Array.isArray(r.data.data) ? r.data.data : []
             })
         },
         includes(id) {

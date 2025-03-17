@@ -83,6 +83,12 @@ export function getStarredActivities(id) {
     return apiClient.get<Response<Activity.Activity[]>>('/other/favorite/activity', { params: { id } })
 }
 
+/** 
+ * 判断用户是否本人  
+ * **注意: 本方法延迟执行, 应避免在页面加载时使用此方法判断本人**  
+ * 在个人id加载之前始终返回 `false`  
+ * 首次调用此方法且个人id未加载时, 自动加载个人id
+ */
 export function isSelf(id) {
     return id == Self.getId()
 }
