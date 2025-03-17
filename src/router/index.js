@@ -284,11 +284,16 @@ const router = createRouter({
 
     // workShop
     {
-      path: '/self/:id/workShop',
+      path: '/user/:id/workShop',
       name: 'workShop',
       props: route => ({
         userId: route.params.id,
       }),
+      component: () => import('../components/workShop/workShop.vue'),
+    },
+    {
+      path: '/self/workShop',
+      name: 'myWorkShop',
       component: () => import('../components/workShop/workShop.vue'),
     },
 

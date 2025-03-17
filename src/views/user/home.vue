@@ -84,7 +84,11 @@
 
         <div class="card">
             <div class="entry-button">
-                <div v-if="user && user.userType" @click="router.push({ name: 'workShop', params: { id: user.id }})">
+                <div v-if="user && user.userType" @click="
+                    isUserSelf
+                        ? router.push({ name: 'myWorkShop' })
+                        : router.push({ name: 'workShop', params: { id: user.id } })
+                    ">
                     <div class="text-main">
                         <mdiStore />非遗工坊
                     </div>

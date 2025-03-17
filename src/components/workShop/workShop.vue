@@ -137,6 +137,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus'
 import router from '@/router';
 import * as User from '@/axios/api/user'
+import * as Self from '@/axios/api/self'
 import * as shop from '@/axios/api/workShop'
 import ImageUpload from '../slot/ImageUpload.vue';
 import { watch } from 'vue';
@@ -145,7 +146,7 @@ const { userId } = defineProps<{
     userId?: string
 }>()
 
-const isSelf = computed(() => User.isSelf(userId))
+const isSelf = computed(() => Boolean(!userId))
 
 const user = ref();
 
@@ -206,9 +207,13 @@ function handleDownGoods(index) { // 下架商品
 }
 
 onMounted(() => {
-    shop.getUserApi(userId).then(res => { //获取用户头像名字
-        user.value = res.data.data
-    })
+    if (isSelf) {
+        Self.getSelf().then(r => user.value = r.data.data)
+    } else {
+        shop.getUserApi(userId).then(res => { //获取用户头像名字
+            user.value = res.data.data
+        })
+    }
     if (isSelf.value) {
         shop.getMyGoodsApi().then(res => {
             goodsData.value = res.data.data;
