@@ -4,8 +4,13 @@
 
         <el-switch v-if="setting.type == 'switch'" size="large" :loading="setting.value == undefined || loading" v-model="setting.value" @change="handleSwitch" />
 
-        <div v-if="setting.type == 'input'" class="input">
+        <div v-if="setting.type == 'input'" class="current-value">
             <span>{{ setting.value }}</span>
+            <mdiChevronRight />
+        </div>
+
+        <div v-if="setting.type == 'image'" :class="{ 'current-value': true, 'rounded-image': setting.roundedImage }">
+            <img :src="setting.value">
             <mdiChevronRight />
         </div>
     </div>
@@ -17,20 +22,33 @@ import { ref } from 'vue';
 
 const setting = defineProps<{
     name: string
-    type: 'switch' | 'input'
+    type: 'switch' | 'input' | 'image'
     value?: any
-    action?: (value?: any) => Promise<any>
+    /**
+     * @param value The new value  
+     * `switch`: The toggled value  
+     * `input`: The entered text if no `inputAction` was given  
+     * `image`: `undefined`  
+     */
+    action?: (value?: any) => Promise<any> | void
 
+    // `input` specific settings
     inputTips?: string
     /** Overrides the default action which shows an `el-input` */
     inputAction?: () => void
+
+    // `image` specific settings
+    roundedImage?: boolean
 }>()
 
 const loading = ref(false)
 
 function handleSwitch() {
     loading.value = true
-    setting.action(!setting.value).finally(() => loading.value = false)
+    const promise = setting.action(!setting.value)
+    if (promise instanceof Promise)
+        promise.finally(() => loading.value = false)
+    else loading.value = false
 }
 
 function handleClick() {
@@ -46,6 +64,8 @@ function handleClick() {
             setting.action(value)
         }).catch(() => { })
     }
+
+    if (setting.type == 'image') setting.action()
 }
 
 </script>
@@ -62,14 +82,24 @@ function handleClick() {
         font-size: 1.5em;
     }
 
-    >.input {
+    >.current-value {
         display: flex;
         align-items: center;
         gap: 8px;
 
-        >span{
+        >span {
             font-size: 0.9em;
             color: #888;
+        }
+
+        >img {
+            height: 36px;
+        }
+
+        &.rounded-image>img {
+            width: 36px;
+            border-radius: 100%;
+            object-fit: cover;
         }
     }
 }

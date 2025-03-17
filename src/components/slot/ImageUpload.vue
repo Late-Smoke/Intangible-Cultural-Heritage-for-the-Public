@@ -8,7 +8,7 @@
             <mdiClose class="btn-delete" @click="uploadController.removeFile(index)" />
         </div>
 
-        <div class="btn-upload" @click="uploadController.addFile()">
+        <div class="btn-upload" @click="uploadController.addFile('image/*')">
             <svg width="45" height="45" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.5 9L22.5 36M36 22.5L9 22.5" stroke="#B19780" stroke-width="2" stroke-linecap="round" />
             </svg>

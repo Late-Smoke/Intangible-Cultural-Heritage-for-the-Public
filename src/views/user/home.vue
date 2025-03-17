@@ -26,12 +26,12 @@
 
             <div class="user" v-if="user">
                 <div class="top">
-                    <img :src="user.avatarUrl">
+                    <img :src="user.avatarUrl" @click="isSelf ? showChangeAvatar(user.avatarUrl, loadUser) : undefined">
 
                     <div class="main">
                         <div class="name">
                             {{ user.nickName }}
-                            <span v-if="isSelf" @click="changeNickname(user.nickName, loadUser)">
+                            <span v-if="isSelf" @click="showChangeNickname(user.nickName, loadUser)">
                                 <el-icon>
                                     <EditPen />
                                 </el-icon>
@@ -159,7 +159,7 @@ import { Response } from '@/axios/api/common';
 import ResponseListContainer from '@/components/slot/ResponseListContainer.vue';
 import { AxiosResponse } from 'axios';
 import ErrorPage from '../error/ErrorPage.vue';
-import { changeNickname } from '@/settings';
+import { showChangeAvatar, showChangeNickname } from '@/settings';
 
 const { userId } = defineProps<{
     userId: string
@@ -400,8 +400,8 @@ onActivated(() => {
             gap: 8px;
 
             >img {
-                width: 48px;
-                height: 48px;
+                width: 54px;
+                height: 54px;
                 border-radius: 100%;
                 object-fit: cover;
             }

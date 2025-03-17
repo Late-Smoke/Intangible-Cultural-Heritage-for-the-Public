@@ -57,7 +57,7 @@ export function getStarredActivities() {
 }
 
 export function updateProfile(data: ProfileUpdateDTO) {
-    return apiClient.put('/update/userMessage', data)
+    return apiClient.put<Response<any>>('/update/userMessage', data)
 }
 
 export function updatePassword(phoneNumber: string | number, code: string | number, password: string) {

@@ -2,10 +2,11 @@
     <SvgBackgroundDragon />
     <PageHeader title="账号与安全" />
 
-    <SettingItem name="昵称" type="input" :value="settings.nickname" :input-action="() => changeNickname(settings.nickname, loadSettings)" />
+    <SettingItem name="头像" type="image" :value="settings.avatar" :action="() => showChangeAvatar(settings.avatar, loadSettings)" rounded-image />
+    <SettingItem name="昵称" type="input" :value="settings.nickname" :input-action="() => showChangeNickname(settings.nickname, loadSettings)" />
     <SettingItem name="个性签名" type="input" :value="settings.signature" :action="updateSignature" input-tips="修改个性签名" />
     <SettingItem name="手机号码" type="input" :value="settings.phone" input-tips="修改手机号码" />
-    <SettingItem name="修改密码" type="input" :input-action="updatePassword" />
+    <SettingItem name="修改密码" type="input" :input-action="showChangePassword" />
 
     <div ref="overlay"></div>
 </template>
@@ -17,18 +18,13 @@ import { onMounted } from 'vue';
 import SvgBackgroundDragon from '@/components/slot/SvgBackgroundDragon.vue';
 import SettingItem from '@/components/settings/SettingItem.vue';
 import { reactive } from 'vue';
-import { changeNickname } from '@/settings';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { h } from 'vue';
+import { showChangeNickname, showChangeAvatar, showChangePassword } from '@/settings';
 import { ref } from 'vue';
-import PasswordUpdate from '@/components/settings/PasswordUpdate.vue';
-import { AxiosResponse } from 'axios';
-import { Response } from '@/axios/api/common';
 
 const overlay = ref<HTMLDivElement>()
 
 const settings = reactive({
-    avatar: undefined as File,
+    avatar: undefined as string,
     nickname: '',
     signature: '',
     phone: '暂不支持修改',
@@ -38,34 +34,9 @@ function updateSignature(value: string) {
     return Self.updateProfile({ signature: value }).then(loadSettings)
 }
 
-function updatePassword() {
-    let submitAction: () => Promise<AxiosResponse<Response<any>, any>>
-
-    ElMessageBox({
-        title: '修改密码',
-        message: h(PasswordUpdate, {
-            onVnodeMounted: ({ el, component }) => {
-                submitAction = component.exposed.submit
-            }
-        }),
-        showCancelButton: true,
-        appendTo: overlay.value,
-
-        beforeClose: (action, instance, done) => {
-            if (action === 'confirm') {
-                instance.confirmButtonLoading = true
-                submitAction().then(() => {
-                    done()
-                    ElMessage.success('修改成功')
-                }).finally(() => instance.confirmButtonLoading = false)
-            } else done()
-        },
-    })
-}
-
-
 function loadSettings() {
     Self.getSelf().then(r => {
+        settings.avatar = r.data.data.avatarUrl
         settings.nickname = r.data.data.nickName
         settings.signature = r.data.data.signature
     })
