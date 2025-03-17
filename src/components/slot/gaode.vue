@@ -21,22 +21,27 @@
                                         <span :style="{ color: borderColor[index] }">{{ secondType }}</span>
                                     </div>
                                 </template>
-                                <el-checkbox-group v-model="selectHeritage" size="small">
-                                    <el-checkbox-button v-for="(detail, key) in firstType.data[index]" :key="key"
-                                        :value="detail">
-                                        <el-badge
-                                            @click="firstType.visible[index][key] = !firstType.visible[index][key];"
-                                            :hidden="!firstType.visible[index][key]" :offset="[10, 0]"
-                                            :value="clickHeritage(firstType, index, key, detail)" class="item-badge"
-                                            type="warning">
-                                            {{ detail.title.length > 8 ? detail.title.slice(0, 8) + '...' : detail.title
-                                            }}【{{
-                                                detail.unit.length > 5 ? detail.unit.slice(0, 5) + '...' : detail.unit }}】
-                                        </el-badge>
-                                    </el-checkbox-button>
-                                </el-checkbox-group>
+                                <el-scrollbar height="200px">
+                                    <el-checkbox-group v-model="selectHeritage" size="small">
+                                        <el-checkbox-button v-for="(detail, key) in firstType.data[index]" :key="key"
+                                            :value="detail">
+                                            <el-badge
+                                                @click="firstType.visible[index][key] = !firstType.visible[index][key];"
+                                                :hidden="!firstType.visible[index][key]" :offset="[10, 0]"
+                                                :value="clickHeritage(firstType, index, key, detail)" class="item-badge"
+                                                type="warning">
+                                                {{ detail.title.length > 8 ? detail.title.slice(0, 8) + '...' :
+                                                    detail.title
+                                                }}【{{
+                                                    detail.unit.length > 5 ? detail.unit.slice(0, 5) + '...' : detail.unit
+                                                }}】
+                                            </el-badge>
+                                        </el-checkbox-button>
+                                    </el-checkbox-group>
+                                </el-scrollbar>
                             </el-collapse-item>
-                        </el-collapse></el-scrollbar>
+                        </el-collapse>
+                    </el-scrollbar>
                 </el-tab-pane>
             </el-tabs>
             <div class="bottom-box">
@@ -46,7 +51,8 @@
                     </el-icon>
                     <div>重置</div>
                 </div>
-                <div class="viewPoints" @click="ifViewPoints = true; dialogVisible = false">
+                <div class="viewPoints"
+                    @click="ifViewPoints = true; dialogVisible = false; positionStore.firstPoint = selectHeritage[0];">
                     <div class="svgPoints">
                         <svg width="17" height="15" viewBox="0 0 17 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -411,6 +417,10 @@ onMounted(() => {
                     fillOpacity: 0.35
                 });
             }// 加载全国地图
+
+            watch(() => positionStore.firstPoint, () => { // 筛选标点后调整视野
+            if (positionStore.firstPoint != {}) switch2AreaNode(positionStore.firstPoint.area);
+        })
         });
 
         watch(() => positionStore.cityCode, () => { // 用户所在城市的非遗项目标点
@@ -445,7 +455,7 @@ onMounted(() => {
                 pointSimplifierIns.setData(data);
                 data.forEach((position, index) => {
                     var text = new AMap.Text({
-                        text: index.toString(), // 显示索引
+                        text: (index + 1).toString(), // 显示索引
                         position: position, // 设置位置
                         offset: new AMap.Pixel(0, 0), // 调整偏移量
                         zIndex: 3,

@@ -71,35 +71,54 @@
                 </el-icon>
                 <div>上新商品</div>
             </div>
-            <el-dialog v-model="dialogShowGoods" draggable class="dialog-showGoods" title="发布商品">
+            <el-dialog v-model="dialogShowGoods" draggable class="dialog-showGoods">
+                <template #header="{ close }">
+                    <div class="my-header-big">
+                        <svg class="big-svg" width="80" height="55" viewBox="0 0 80 55" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M80 55V0H36L0 55H80Z" fill="#D3A579" />
+                        </svg>
+                        <el-icon class="el-icon--right" @click="close" color="#fff" size="36">
+                            <Close />
+                        </el-icon>
+                    </div>
+                </template>
                 <div class="img-box-big">
-                    <el-image class="img-big" :src="detailData.mediaList[0].url"
-                        :preview-src-list="detailData.mediaList.map(item => item.url)" fit="cover" @click.stop="" />
+                    <el-carousel class="img-big">
+                        <el-carousel-item v-for="(item, key) in detailData.mediaList" :key="key" arrow="always">
+                            <el-image v-if="detailData.stock" :src="item.url" alt="" :initial-index="key"
+                                :preview-src-list="detailData.mediaList.map(item => item.url)" fit="cover"
+                                :preview-teleported="true" />
+                            <el-image v-else :src="item.url" alt="" />
+                        </el-carousel-item>
+                    </el-carousel>
                 </div>
                 <div class="content-big">
                     <div class="header-big">
-                        <div class="title-big" :class="{ 'title-down': !detailData.stock }">{{ detailData.name }}</div>
+                        <div class="title-big" :class="{ 'title-down-big': !detailData.stock }">{{ detailData.name }}
+                        </div>
                         <div class="views-big">{{ detailData.views }}人看过</div>
                     </div>
                     <div class="description-big">
                         <span v-if="detailData.description">{{ detailData.description }}</span>
-                        <span v-else>暂无商品描述</span>
+                        <span v-else style="opacity:0">暂无商品描述</span>
                     </div>
                     <div class="bottom-big">
-                        <div class="link-big" :class="{ 'link-down': !detailData.stock }">
-                            <span v-if="detailData.stock">点击跳转链接购买</span>
+                        <div class="link-big" :class="{ 'link-down-big': !detailData.stock }">
+                            <a v-if="detailData.stock" :href="detailData.link" target="_blank">点击跳转链接购买</a>
                             <span v-else>该商品已下架</span>
                         </div>
                     </div>
                 </div>
             </el-dialog>
             <div class="goods-container" v-for="(data, index) in goodsData" :key="index"
-                @click="dialogShowGoods = true; handleDetailProject(index)">
+                @click="handleDetailProject(index, data.id)">
                 <div class="img-box">
-                    <el-image class="img" :src="data.mediaList[0].url"
+                    <el-image v-if="data.stock" class="img" :src="data.mediaList[0].url"
                         :preview-src-list="data.mediaList.map(item => item.url)" fit="cover" @click.stop="" />
-                    <svg class="down-svg" v-if="isManage && data.stock" @click="handleDownGoods(index)" width="67"
-                        height="23" viewBox="0 0 67 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <el-image v-else class="img" :src="data.mediaList[0].url" />
+                    <svg class="down-svg" v-if="isManage && data.stock" @click="handleDownGoods(index)" @click.stop=""
+                        width="67" height="23" viewBox="0 0 67 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4.57377 0H67V23H0L4.57377 0Z" fill="#B35C5C" />
                         <path
                             d="M8.33008 6.24365H20.6699V7.28467H14.5V10.0522L15.084 9.23975C17.0221 10.3823 18.6471 11.4106 19.959 12.3247L19.21 13.353C17.8981 12.3459 16.3281 11.2837 14.5 10.1665V17.6187H13.3447V7.28467H8.33008V6.24365ZM33.8223 16.1841C33.5091 16.5311 33.2467 16.8527 33.0352 17.1489C30.9277 16.4295 29.2435 15.306 27.9824 13.7783V17.7456H27.0176V13.7593C25.5957 15.3081 23.8945 16.4888 21.9141 17.3013C21.7194 17.0474 21.474 16.7596 21.1777 16.438C23.1032 15.7821 24.8086 14.8172 26.2939 13.5435H21.4062V12.6548H27.0176V11.2329H27.9824V12.6548H33.6572V13.5435H28.6616C30.0285 14.868 31.7487 15.7482 33.8223 16.1841ZM28.2871 6.25635H32.9082V11.2583H31.9688V10.6108H29.2266V11.2964H28.2871V6.25635ZM21.5713 6.59912H23.3994C23.4248 6.15902 23.4375 5.67236 23.4375 5.13916H24.377C24.377 5.66813 24.3664 6.15479 24.3452 6.59912H27.1953C27.153 7.76709 27.1064 8.71077 27.0557 9.43018C27.0049 10.2004 26.8568 10.7166 26.6113 10.979C26.3913 11.2414 25.9681 11.3726 25.3418 11.3726C25.0879 11.3726 24.7578 11.3683 24.3516 11.3599C24.2923 11.0213 24.2204 10.7039 24.1357 10.4077C24.6351 10.4585 25.0202 10.4839 25.291 10.4839C25.7819 10.4839 26.0485 10.2173 26.0908 9.68408C26.1585 8.84619 26.2051 8.10563 26.2305 7.4624H24.2817C24.2098 9.23975 23.4163 10.7505 21.9014 11.9946C21.7067 11.7661 21.4613 11.5334 21.165 11.2964C22.4769 10.3146 23.1963 9.03662 23.3232 7.4624H21.5713V6.59912ZM31.9688 7.11963H29.2266V9.74756H31.9688V7.11963ZM35.2188 9.27783H38.3037C38.0117 8.85042 37.6943 8.42725 37.3516 8.0083L38.126 7.48779C38.5322 7.96175 38.9004 8.40186 39.2305 8.80811L38.5449 9.27783H41.4268C41.8542 8.7277 42.2477 8.14795 42.6074 7.53857L43.5723 8.09717C43.1702 8.57536 42.8317 8.96891 42.5566 9.27783H45.7178V15.9302C45.7178 16.9966 45.2311 17.534 44.2578 17.5425C43.7331 17.5509 43.1406 17.5467 42.4805 17.5298C42.4128 17.0389 42.3493 16.6834 42.29 16.4634C42.9587 16.5311 43.5088 16.5649 43.9404 16.5649C44.4906 16.5649 44.7656 16.2603 44.7656 15.6509V10.1538H36.1709V17.6948H35.2188V9.27783ZM37.9609 16.438V12.3501H43.0518V15.7651H38.875V16.438H37.9609ZM34.292 6.56104H40.0874C39.9266 6.26058 39.7298 5.92627 39.4971 5.55811L40.4746 5.11377C40.7285 5.54964 40.9951 6.03206 41.2744 6.56104H46.7461V7.4624H34.292V6.56104ZM42.1377 14.9526V13.1626H38.875V14.9526H42.1377ZM38.9385 10.2935L39.624 10.9536C38.6338 11.8 37.707 12.5448 36.8438 13.188C36.5898 12.841 36.391 12.5913 36.2471 12.439C37.1781 11.8211 38.0752 11.106 38.9385 10.2935ZM41.1729 10.9917L41.7314 10.2935C42.984 11.0806 43.932 11.7111 44.5752 12.1851L43.9404 12.9849C43.1025 12.3078 42.18 11.6434 41.1729 10.9917ZM49.1201 5.74854H57.8799V10.7759H56.8643V10.3696H50.1357V10.7759H49.1201V5.74854ZM54.2871 11.8169H59.1367V17.6821H58.1719V16.8188H55.252V17.6821H54.2871V11.8169ZM47.876 11.8169H52.7129V17.6821H51.748V16.8315H48.8408V17.6821H47.876V11.8169ZM56.8643 6.63721H50.1357V9.48096H56.8643V6.63721ZM58.1719 12.7056H55.252V15.9937H58.1719V12.7056ZM51.748 12.7056H48.8408V15.9683H51.748V12.7056Z"
@@ -113,7 +132,7 @@
                     </div>
                     <div class="description">
                         <span v-if="data.description">{{ data.description }}</span>
-                        <span v-else>暂无商品描述</span>
+                        <span v-else style="opacity:0">暂无商品描述</span>
                     </div>
                     <div class="bottom">
                         <div class="link" :class="{ 'link-down': !data.stock }">
@@ -136,7 +155,6 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus'
 import router from '@/router';
-import * as User from '@/axios/api/user'
 import * as Self from '@/axios/api/self'
 import * as shop from '@/axios/api/workShop'
 import ImageUpload from '../slot/ImageUpload.vue';
@@ -184,11 +202,14 @@ function handleCloseAddGoods() { // 关闭添加商品弹窗
 
 function handleDownGoods(index) { // 下架商品
     ElMessageBox.confirm(
-        '确认下架该商品？',
+        '<span style="color: rgba(0, 0, 0); font-size: 28px">确认下架该商品？</span>',
         {
             dangerouslyUseHTMLString: true,
             confirmButtonText: '确认',
             cancelButtonText: '取消',
+            center: true,
+            showClose: false,
+            customClass: 'confirm-addGoods'
         }
     ).then(() => {
         goodsData.value[index].stock = false;
@@ -206,24 +227,27 @@ function handleDownGoods(index) { // 下架商品
     })
 }
 
-onMounted(() => {
-    if (isSelf) {
-        Self.getSelf().then(r => user.value = r.data.data)
-    } else {
-        shop.getUserApi(userId).then(res => { //获取用户头像名字
-            user.value = res.data.data
-        })
-    }
+function getData() { // 获取商品数据
     if (isSelf.value) {
         shop.getMyGoodsApi().then(res => {
             goodsData.value = res.data.data;
-            console.log(res.data.data);
         })
     } else {
         shop.getOtherGoodsApi(userId).then(res => {
             goodsData.value = res.data.data
         })
     }
+}
+
+onMounted(() => {
+    if (isSelf.value) {
+        Self.getSelf().then(r => user.value = r.data.data)
+    } else {
+        shop.getUserApi(userId).then(res => { //获取用户头像名字
+            user.value = res.data.data
+        })
+    }
+    getData();
 })
 
 //uploader
@@ -285,6 +309,9 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布商品
                 shop.postGoodsApi(ruleForm.name, ruleForm.link, ruleForm.describe, mediaList).then(res => {
                     ElMessage.success('商品发布成功')
                     dialogAddGoods.value = false;
+                    shop.getMyGoodsApi().then(res => {
+                        goodsData.value = res.data.data;
+                    })
                 })
                 console.log(ruleForm.img);
             }).catch(() => {
@@ -300,8 +327,15 @@ const dialogShowGoods = ref(false);
 
 const detailData = ref();
 
-function handleDetailProject(index) {
-    detailData.value = goodsData.value[index];
+function handleDetailProject(index, id) {
+    if (!isManage.value)
+        dialogShowGoods.value = true;
+        detailData.value = goodsData.value[index];
+    if (!isSelf.value) {
+        shop.putLookApi(id).then(res => {
+            detailData.value.views++;
+        })
+    }
 }
 </script>
 
@@ -444,13 +478,27 @@ function handleDetailProject(index) {
     z-index: 2;
 }
 
+.dialog-showGoods {
+    position: relative;
+}
+
+.my-header-big {
+    position: relative;
+    height: 55px;
+}
+
 .big-svg {
     position: absolute;
     right: 0;
-    bottom: 0;
+    top: 0;
     z-index: 1;
-    width: 141px;
-    height: 142px;
+}
+
+.el-icon--right {
+    position: absolute;
+    right: 0;
+    z-index: 2;
+    margin: 10px 10px 0 0;
 }
 
 .submit-btn-box {
@@ -552,68 +600,64 @@ function handleDetailProject(index) {
 }
 
 /*big-goods*/
-.dialog-showGoods{
-    // width: 350px;
-    // aspect-ratio: 4 / 5;
-    // margin: 0 !important;
-    // border: solid 1px rgba(177, 151, 128, 1);
-    // box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.1);
-    // background-color: #fff;
-    background-color: aqua !important;
-}
 
-.tip {
-    margin-top: 20px;
-    padding-bottom: 10px;
-    text-align: center;
-}
-
-.img-box {
+.img-box-big {
     position: relative;
+    border-top: solid 2px rgba(177, 151, 128, 1);
+    border-bottom: solid 2px rgba(177, 151, 128, 1);
 }
 
-.img {
+.img-big {
     width: 100%;
     aspect-ratio: 16 / 9;
 }
 
-.down-svg {
+:deep(.img-big .el-carousel__arrow) {
+    border-radius: 0;
+}
+
+.down-svg-big {
     position: absolute;
     top: 0;
     right: 0;
 }
 
-.content {
+:deep(.dialog-showGoods .el-dialog__headerbtn) {
+    display: none;
+}
+
+.content-big {
     padding: 0 10px;
 }
 
-.header {
+.header-big {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: 10px 0;
 }
 
-.title {
+.title-big {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     color: rgba(152, 123, 91, 1);
+    font-size: 28px;
 }
 
-.title-down {
+.title-down-big {
     color: rgba(151, 151, 151, 1);
     text-decoration: line-through;
 }
 
-.views {
-    font-size: 11px;
+.views-big {
+    font-size: 20px;
     white-space: nowrap;
     color: rgba(151, 151, 151, 1);
 }
 
-.description {
-    font-size: 13px;
+.description-big {
+    font-size: 20px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -621,19 +665,25 @@ function handleDetailProject(index) {
     margin-bottom: 10px;
 }
 
-.bottom {
+.bottom-big {
     text-align: center;
 }
 
-.link {
-    font-size: 13px;
+.link-big {
+    font-size: 20px;
     color: #fff;
     padding: 5px 5px;
+    margin-top: 20px;
     border-radius: 7px;
-    background-color: rgba(201, 136, 78, 0.6);
+    background-color: rgba(211, 165, 121, 1);
 }
 
-.link-down {
+.link-big a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.link-down-big {
     background-color: rgba(151, 151, 151, 1);
 }
 </style>

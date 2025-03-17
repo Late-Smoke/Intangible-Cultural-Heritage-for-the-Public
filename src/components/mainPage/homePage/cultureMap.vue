@@ -212,6 +212,14 @@ watch(() => positionStore.currentCode, (newValue) => { //地图切换地区
   artistArea.value = res;
 }, { immediate: true })
 
+watch(() => positionStore.firstPoint, (newValue) => { // 筛选标点联动选项
+  if (positionStore.firstPoint != {}) {
+    heritageOptions.value[0].value = newValue.rxTime;
+    heritageOptions.value[1].value = newValue.type;
+    heritageOptions.value[2].value = newValue.secondType;
+  }
+})
+
 watch(TabName, () => {
   if (TabName.value === 'related-post') {
     getLocationPostApi().then(res => { //附近帖子
@@ -416,7 +424,8 @@ watch(TabName, () => {
 }
 
 
-:deep(.area .el-input__wrapper),:deep(.select-popper .el-select__wrapper) {
+:deep(.area .el-input__wrapper),
+:deep(.select-popper .el-select__wrapper) {
   background-color: #F0E4D4;
   border-radius: 5px;
   box-shadow: none;

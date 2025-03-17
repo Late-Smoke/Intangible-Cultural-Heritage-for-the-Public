@@ -31,3 +31,13 @@ export function downGoodsApi(id) {
   // 下架非遗商品
   return apiClient.delete(`/products/${id}`);
 }
+
+export function putLookApi(id) {
+  // 增加浏览量
+  return apiClient.put(`/products/look/${id}`);
+}
+
+export function getIdGoodsApi(id) {
+  //根据id获取对应商品信息
+  return apiClient.get(`/products/${id}`);
+}

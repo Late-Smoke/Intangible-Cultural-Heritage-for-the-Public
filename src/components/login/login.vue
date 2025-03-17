@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue';
 import router from '@/router';
 import { useTypeStore,usePositionStore } from '@/stores/user';
@@ -13,7 +13,7 @@ const changeType = (formEl) => {
     formEl.resetFields();
     type.changeType(!type.type);
 };
-const agreed = ref(false);// 同意协议
+
 const formRef = ref(null);
 const form = reactive({
     phone: '',
@@ -93,9 +93,8 @@ const handleForgetPassword = () => {
 
 const submitForm = (formEl) => {
     if (!formEl) return;
-    ifLogin.value = true;
     formEl.validate(async (valid) => {
-        if (valid && agreed.value) {
+        if (valid) {
             if (type.type) {// 验证码登录
                 const response = await codeLoginApi(form.phone, form.code,positionStore.latitude,positionStore.longitude);
                 console.log('验证码登录：', response.data);
@@ -130,21 +129,6 @@ function OnLoginSuccess(token) {
     setToken(token)
     router.push({ name: 'mainPageView' }).then(() => router.go(0))
 }
-
-
-// 三个协议点击（后期增加点击后效果）
-const ifLogin = ref(false);
-const handleUserAgreementClick = () => {
-    console.log('用户协议点击');
-};
-
-const handlePrivacyPolicyClick = () => {
-    console.log('隐私政策点击');
-};
-
-const handleChildProtectionClick = () => {
-    console.log('儿童青少年个人信息保护规则点击');
-};
 
 </script>
 
@@ -194,33 +178,6 @@ const handleChildProtectionClick = () => {
                         </div>
                     </div>
                 </el-form>
-            </div>
-        </div>
-        <!-- <div class="agreement">
-            <span v-show="ifLogin && !agreed">
-                未勾选协议
-            </span>
-            <span>
-            <el-radio v-model="agreed" :value="true" :key="agreed" size="large" @click="agreed =!agreed">
-            </el-radio>
-                    我已阅读并同意
-                    <el-link type="primary" href="#" @click="handleUserAgreementClick">《用户协议》</el-link>
-                    <el-link type="primary" href="#" @click="handlePrivacyPolicyClick">《隐私政策》</el-link>
-                    <el-link type="primary" href="#" @click="handleChildProtectionClick">《儿童青少年个人信息保护规则》</el-link>
-            </span>
-        </div> -->
-        <div class="agreement">
-            <div v-show="ifLogin && !agreed" class="agreement-error">
-                未勾选协议
-            </div>
-            <div class="agreement-content">
-                <el-radio v-model="agreed" :value="true" :key="agreed" size="large" @click="agreed = !agreed" class="agreement-radio" />
-                <span class="agreement-text">
-                    我已阅读并同意
-                    <el-link type="primary" href="#" @click="handleUserAgreementClick" class="agreement-link">《用户协议》</el-link>
-                    <el-link type="primary" href="#" @click="handlePrivacyPolicyClick" class="agreement-link">《隐私政策》</el-link>
-                    <el-link type="primary" href="#" @click="handleChildProtectionClick" class="agreement-link">《儿童青少年个人信息保护规则》</el-link>
-                </span>
             </div>
         </div>
     </div>
@@ -315,23 +272,5 @@ const handleChildProtectionClick = () => {
     margin-top: 10px;
     color: #979797;
     font-size: 12px;
-}
-
-/*agreement*/
-.agreement {
-    text-align: center;
-    font-size: 13px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.el-radio.el-radio--large {
-    margin: 0;
-}
-
-.agreement-error {
-    color: red;
-    margin-left: 80px;
 }
 </style>

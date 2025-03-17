@@ -7,6 +7,7 @@ export const usePositionStore = defineStore("position", {
     cityName: '',
     cityCode: '',
     currentCode: '',
+    firstPoint:{}
   }),
   actions: {
     changeLatitude(newLatitude) {

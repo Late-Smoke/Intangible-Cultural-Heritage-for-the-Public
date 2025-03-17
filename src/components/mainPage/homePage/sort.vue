@@ -298,24 +298,18 @@ onMounted(() => {
 </script>
 
 <template>
-    <!-- <div class="chart-box">
-        <div class="chart"></div>
-        <div class="chart-btn">
-            <div class="btn-item"></div>
-        </div>
-    </div> -->
     <el-tabs tab-position="bottom" v-model="chartName" class="chart" @tab-click="handleClick">
         <el-tab-pane label="各门类数目一览" name="first">
-            <el-image class="chart-img" src="/icon/first.jpg" />
+            <el-image class="chart-img" src="/icon/first.jpg" :preview-src-list="['/icon/first.jpg']"/>
         </el-tab-pane>
         <el-tab-pane label="申报数量变化" name="second">
-            <el-image class="chart-img" src="/icon/second.jpg" />
+            <el-image class="chart-img" src="/icon/second.jpg" :preview-src-list="['/icon/second.jpg']"/>
         </el-tab-pane>
         <el-tab-pane label="各省分部占比" name="third">
-            <el-image class="chart-img" src="/icon/third.png" />
+            <el-image class="chart-img" src="/icon/third.png" :preview-src-list="['/icon/third.png']"/>
         </el-tab-pane>
         <el-tab-pane label="各类非遗传承人人数变化" name="fourth">
-            <el-image class="chart-img" src="/icon/fourth.png" />
+            <el-image class="chart-img" src="/icon/fourth.png" :preview-src-list="['/icon/fourth.png']"/>
         </el-tab-pane>
     </el-tabs>
     <div class="sort-box">
@@ -390,6 +384,10 @@ onMounted(() => {
 
 :deep(.chart .el-tabs__item) {
     font-size: 13px;
+}
+
+.chart .el-tabs__nav-wrap {
+    overflow: scroll;
 }
 
 /*sort*/
