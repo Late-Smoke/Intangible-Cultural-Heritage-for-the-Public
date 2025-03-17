@@ -260,15 +260,6 @@ const router = createRouter({
       }),
       component: () => import('@/views/courses/user.vue'),
     },
-    // workShop
-    {
-      path: '/self/:id/workShop',
-      name:'workShop',
-      props: route => ({
-        userId: route.params.id,
-      }),
-      component: () => import('../components/workShop/workShop.vue'),
-    },
     {
       path: '/course/add',
       name: 'courseAdd',
@@ -289,6 +280,16 @@ const router = createRouter({
         courseId: route.params.id,
       }),
       component: () => import('@/views/courses/course.vue'),
+    },
+
+    // workShop
+    {
+      path: '/self/:id/workShop',
+      name: 'workShop',
+      props: route => ({
+        userId: route.params.id,
+      }),
+      component: () => import('../components/workShop/workShop.vue'),
     },
 
     // 404

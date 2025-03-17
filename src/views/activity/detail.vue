@@ -49,7 +49,7 @@
                 <mdiMapMarkerOutline style="vertical-align: middle;" />
                 <div>
                     <div style="margin-bottom: 4px;">地址:</div>
-                    <div>{{ activity.activityAddresses.addressDetail }}</div>
+                    <div>{{ activity.activityAddresses?.addressDetail || '未知' }}</div>
                 </div>
             </div>
 
