@@ -20,7 +20,7 @@ export interface Activity {
     chargeAmount: number;
     tag: string | null;
     acmedias: Acmedia[];
-    activityAddresses: ActivityAddresses;
+    activityAddresses: ActivityAddresses | null;
     favoritesNumber: number;
     currentUserFavorite: boolean;
     firstType: string;
