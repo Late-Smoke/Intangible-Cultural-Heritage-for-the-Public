@@ -22,7 +22,7 @@ export function createUploadController() {
     return reactive<IUploadController>({
         files: [],
         addFile(type) {
-            selectFile(type).then(async (fileList) => {
+            selectFiles(type).then(async (fileList) => {
                 for (const file of fileList) {
                     const item: IUploadItem = reactive({
                         file,
@@ -50,8 +50,8 @@ export function createUploadController() {
     })
 }
 
-export function selectFile(type = '*', multiple = true) {
-    return new Promise<File[]>((resolve, reject) => {
+export function selectFiles(type = '*', multiple = true): Promise<File[]> {
+    return new Promise((resolve, reject) => {
         const input = document.createElement('input')
         input.type = 'file'
         input.multiple = multiple
@@ -68,11 +68,19 @@ export function selectFile(type = '*', multiple = true) {
 }
 
 export function selectAndUploadFiles(type: string | undefined, callback: (url: string) => any) {
-    selectFile(type).then(fileList => {
+    selectFiles(type).then(fileList => {
         for (const file of fileList) {
             uploadFile(file).then(callback)
         }
     })
+}
+
+export function selectFile(type?: string) {
+    return selectFiles(type, false).then(fileList => fileList[0])
+}
+
+export function selectAndUploadFile(type?: string) {
+    return selectFile(type).then(file => uploadFile(file))
 }
 
 export function uploadFile(file: File): Promise<string> {
