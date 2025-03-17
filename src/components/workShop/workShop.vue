@@ -71,13 +71,33 @@
                 </el-icon>
                 <div>上新商品</div>
             </div>
-            <el-dialog v-model="dialogShowGoods" draggable custom-class="dialog-showGoods" title="发布商品">
-                hello
+            <el-dialog v-model="dialogShowGoods" draggable class="dialog-showGoods" title="发布商品">
+                <div class="img-box-big">
+                    <el-image class="img-big" :src="detailData.mediaList[0].url"
+                        :preview-src-list="detailData.mediaList.map(item => item.url)" fit="cover" @click.stop="" />
+                </div>
+                <div class="content-big">
+                    <div class="header-big">
+                        <div class="title-big" :class="{ 'title-down': !detailData.stock }">{{ detailData.name }}</div>
+                        <div class="views-big">{{ detailData.views }}人看过</div>
+                    </div>
+                    <div class="description-big">
+                        <span v-if="detailData.description">{{ detailData.description }}</span>
+                        <span v-else>暂无商品描述</span>
+                    </div>
+                    <div class="bottom-big">
+                        <div class="link-big" :class="{ 'link-down': !detailData.stock }">
+                            <span v-if="detailData.stock">点击跳转链接购买</span>
+                            <span v-else>该商品已下架</span>
+                        </div>
+                    </div>
+                </div>
             </el-dialog>
-            <div class="goods-container" v-for="(data, index) in goodsData" :key="index" @click="dialogShowGoods = true">
+            <div class="goods-container" v-for="(data, index) in goodsData" :key="index"
+                @click="dialogShowGoods = true; handleDetailProject(index)">
                 <div class="img-box">
                     <el-image class="img" :src="data.mediaList[0].url"
-                        :preview-src-list="data.mediaList.map(item => item.url)" fit="cover" @click.stop=""/>
+                        :preview-src-list="data.mediaList.map(item => item.url)" fit="cover" @click.stop="" />
                     <svg class="down-svg" v-if="isManage && data.stock" @click="handleDownGoods(index)" width="67"
                         height="23" viewBox="0 0 67 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4.57377 0H67V23H0L4.57377 0Z" fill="#B35C5C" />
@@ -91,7 +111,10 @@
                         <div class="title" :class="{ 'title-down': !data.stock }">{{ data.name }}</div>
                         <div class="views">{{ data.views }}人看过</div>
                     </div>
-                    <div class="description">{{ data.description }}</div>
+                    <div class="description">
+                        <span v-if="data.description">{{ data.description }}</span>
+                        <span v-else>暂无商品描述</span>
+                    </div>
                     <div class="bottom">
                         <div class="link" :class="{ 'link-down': !data.stock }">
                             <span v-if="data.stock">点击跳转链接购买</span>
@@ -127,7 +150,6 @@ const isSelf = computed(() => User.isSelf(userId))
 const user = ref();
 
 const dialogAddGoods = ref(false);
-const dialogShowGoods = ref(false);
 
 const goodsData = ref([]);
 
@@ -201,14 +223,6 @@ onMounted(() => {
 
 //uploader
 const fileList = ref<string[]>([]);
-const handleChange = (file) => {
-    const url = URL.createObjectURL(file.raw);
-    file.url = url; // 更新文件的预览 URL
-    ruleForm.img.push(url);
-};
-function exceed() {
-    ElMessage.warning('最多上传3张图片');
-}
 
 //form
 const ruleFormRef = ref<FormInstance>();
@@ -274,6 +288,15 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布商品
 
         }
     })
+}
+
+//details dialog
+const dialogShowGoods = ref(false);
+
+const detailData = ref();
+
+function handleDetailProject(index) {
+    detailData.value = goodsData.value[index];
 }
 </script>
 
@@ -446,6 +469,92 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布商品
     border: solid 1px rgba(177, 151, 128, 1);
     box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.1);
     background-color: #fff;
+}
+
+.tip {
+    margin-top: 20px;
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.img-box {
+    position: relative;
+}
+
+.img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}
+
+.down-svg {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.content {
+    padding: 0 10px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: rgba(152, 123, 91, 1);
+}
+
+.title-down {
+    color: rgba(151, 151, 151, 1);
+    text-decoration: line-through;
+}
+
+.views {
+    font-size: 11px;
+    white-space: nowrap;
+    color: rgba(151, 151, 151, 1);
+}
+
+.description {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: rgba(151, 151, 151, 1);
+    margin-bottom: 10px;
+}
+
+.bottom {
+    text-align: center;
+}
+
+.link {
+    font-size: 13px;
+    color: #fff;
+    padding: 5px 5px;
+    border-radius: 7px;
+    background-color: rgba(201, 136, 78, 0.6);
+}
+
+.link-down {
+    background-color: rgba(151, 151, 151, 1);
+}
+
+/*big-goods*/
+.dialog-showGoods{
+    // width: 350px;
+    // aspect-ratio: 4 / 5;
+    // margin: 0 !important;
+    // border: solid 1px rgba(177, 151, 128, 1);
+    // box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.1);
+    // background-color: #fff;
+    background-color: aqua !important;
 }
 
 .tip {
