@@ -74,7 +74,7 @@
             </div>
             <div class="goods-container" v-for="(data, index) in goodsData" :key="index">
                 <div class="img-box">
-                    <el-image class="img" :src="data.mediaList[0].url" :preview-src-list="[data.mediaList[0].url]"
+                    <el-image class="img" :src="data.mediaList[0].url" :preview-src-list="data.mediaList.map(item=>item.url)"
                         fit="cover" />
                     <svg class="down-svg" v-if="isManage && data.stock" @click="handleDownGoods(index)" width="67"
                         height="23" viewBox="0 0 67 23" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -98,6 +98,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="tip">
+            <span v-if="goodsData.length != 0">已展示全部商品</span>
+            <span v-else>暂无商品</span>
         </div>
     </div>
 </template>
@@ -431,6 +435,11 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布商品
     border: solid 1px rgba(177, 151, 128, 1);
     box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.1);
     background-color: #fff;
+}
+
+.tip {
+    margin-top: 30px;
+    text-align: center;
 }
 
 .img-box {
