@@ -87,7 +87,6 @@ import PageHeader from '@/components/slot/PageHeader.vue';
 import SvgBackgroundFan from '@/components/slot/SvgBackgroundFan.vue';
 import * as Courses from '@/axios/api/courses';
 import { ref } from 'vue';
-import { onMounted } from 'vue';
 import CourseListItem from '@/components/courses/CourseListItem.vue';
 import * as User from '@/axios/api/user'
 import { computed } from 'vue';
@@ -95,6 +94,7 @@ import OverlayCard from '@/components/slot/OverlayCard.vue';
 import router from '@/router';
 import { watch } from 'vue';
 import { gotoUser } from '@/utils';
+import { onActivated } from 'vue';
 
 
 const { userId, unlock } = defineProps<{
@@ -114,8 +114,11 @@ watch(() => unlock, () => {
 })
 const selectedPriceSum = computed(() => user.value?.courses.filter(c => c.selected).reduce((sum, c) => sum + c.price * 100, 0) / 100)
 
-onMounted(() => {
+onActivated(() => {
     Courses.getUser(userId).then(r => user.value = r.data.data)
+    if (!history.state.forward) {
+        editing.value = false
+    }
 })
 
 </script>
@@ -167,8 +170,7 @@ onMounted(() => {
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-direction: column;
-        gap: 12px;
+        gap: 24px;
         background-color: rgba(0, 0, 0, 0.25);
 
         >button {

@@ -150,7 +150,7 @@ const router = createRouter({
 
     // post
     {
-      path: '/post/:postId',
+      path: '/post/:postId(\\d+)',
       name: 'post',
       component: () => import('@/views/posts/post.vue'),
       props: route => ({
@@ -166,19 +166,19 @@ const router = createRouter({
       component: () => import('@/views/activity/home.vue'),
     },
     {
-      path: '/activity/:id',
+      path: '/activity/:id(\\d+)',
       name: 'activityDetail',
       component: () => import('@/views/activity/detail.vue'),
     },
     {
-      path: '/activity/:id/participate',
+      path: '/activity/:id(\\d+)/participate',
       name: 'activityParticipate',
       component: () => import('@/views/activity/participate.vue'),
     },
 
     // user
     {
-      path: '/user/:id',
+      path: '/user/:id(\\d+)',
       name: 'userHome',
       component: () => import('@/views/user/home.vue'),
       props: route => ({
@@ -186,7 +186,7 @@ const router = createRouter({
       })
     },
     {
-      path: '/user/:id/following',
+      path: '/user/:id(\\d+)/following',
       name: 'userFollowing',
       component: () => import('@/views/user/UserList.vue'),
       props: route => ({
@@ -252,7 +252,7 @@ const router = createRouter({
       component: () => import('@/views/courses/mine.vue'),
     },
     {
-      path: '/user/:id/courses',
+      path: '/user/:id(\\d+)/courses',
       name: 'userCourses',
       props: route => ({
         userId: route.params.id,
@@ -269,6 +269,28 @@ const router = createRouter({
       }),
       component: () => import('../components/workShop/workShop.vue'),
     },
+    {
+      path: '/course/add',
+      name: 'courseAdd',
+      component: () => import('@/views/courses/edit.vue'),
+    },
+    {
+      path: '/course/:id(\\d+)/edit',
+      name: 'courseEdit',
+      props: route => ({
+        courseId: route.params.id,
+      }),
+      component: () => import('@/views/courses/edit.vue'),
+    },
+    {
+      path: '/course/:id(\\d+)',
+      name: 'course',
+      props: route => ({
+        courseId: route.params.id,
+      }),
+      component: () => import('@/views/courses/course.vue'),
+    },
+
     // 404
     {
       path: '/:pathMatch(.*)*',

@@ -19,7 +19,7 @@
                 <mdiLockOutline v-else class="locked" />
             </template>
 
-            <div v-if="action == 'edit'" class="btn-outline" @click.stop="console.log('editCourse')">编辑</div>
+            <div v-if="action == 'edit'" class="btn-outline" @click.stop="router.push({ name: 'courseEdit', params: { id: course.id } })">编辑</div>
 
             <mdiCheck v-if="course.selected" class="selected-icon" />
         </template>
@@ -38,13 +38,13 @@ import router from '@/router';
 const { course, action, userId, selectable } = defineProps<{
     course?: Courses.Course
     action?: 'progress' | 'unlock' | 'edit' | 'add'
-    userId?: any
+    userId?: string | number
     selectable?: boolean
 }>()
 
 function handleClick() {
     if (action == 'add') {
-        console.log('add')
+        router.push({ name: 'courseAdd' })
         return
     }
 
