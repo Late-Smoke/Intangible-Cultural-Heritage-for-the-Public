@@ -1,6 +1,6 @@
 <template>
     <SvgBackgroundLion />
-    <page-header-sticky-with-back :title="getTitle()" />
+    <PageHeader :title="getTitle()" />
 
     <template v-if="notifications">
         <div class="list-item" v-for="notification in notifications">
@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import PageHeaderStickyWithBack from '@/components/slot/PageHeaderStickyWithBack.vue';
+import PageHeader from '@/components/slot/PageHeader.vue';
 import SvgBackgroundLion from '@/components/slot/SvgBackgroundLion.vue';
 import * as Notifications from '@/axios/api/notifications'
 import { ref, onMounted, reactive } from 'vue'

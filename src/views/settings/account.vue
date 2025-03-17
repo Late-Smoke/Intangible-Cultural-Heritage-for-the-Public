@@ -1,6 +1,6 @@
 <template>
     <SvgBackgroundDragon />
-    <page-header-sticky-with-back title="账号与安全" />
+    <PageHeader title="账号与安全" />
 
     <SettingItem name="昵称" type="input" :value="settings.nickname" :input-action="() => changeNickname(settings.nickname, loadSettings)" />
     <SettingItem name="个性签名" type="input" :value="settings.signature" :action="updateSignature" input-tips="修改个性签名" />
@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="tsx">
-import PageHeaderStickyWithBack from '@/components/slot/PageHeaderStickyWithBack.vue';
+import PageHeader from '@/components/slot/PageHeader.vue';
 import * as Self from '@/axios/api/self'
 import { onMounted } from 'vue';
 import SvgBackgroundDragon from '@/components/slot/SvgBackgroundDragon.vue';

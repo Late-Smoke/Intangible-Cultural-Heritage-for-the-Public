@@ -1,7 +1,7 @@
 <template>
     <div :class="{ 'overlay-card': true, 'bottom': bottom }" @click="closeAction">
-        <div class="card" :style="{ height: height }" @click.stop="">
-            <div class="card-title">
+        <div class="card" :style="{ height: height, borderRadius: title == undefined ? 0 : undefined }" @click.stop="">
+            <div class="card-title" v-if="title != undefined">
                 <div>{{ title }}</div>
                 <el-button text circle icon="close" @click="closeAction"></el-button>
             </div>

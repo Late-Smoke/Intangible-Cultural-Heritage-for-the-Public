@@ -245,6 +245,30 @@ const router = createRouter({
       component: () => import('@/views/history/history.vue'),
     },
 
+    // courses
+    {
+      path: '/course/mine',
+      name: 'myCourses',
+      component: () => import('@/views/courses/mine.vue'),
+    },
+    {
+      path: '/user/:id/courses',
+      name: 'userCourses',
+      props: route => ({
+        userId: route.params.id,
+        unlock: route.query.unlock,
+      }),
+      component: () => import('@/views/courses/user.vue'),
+    },
+    // workShop
+    {
+      path: '/self/:id/workShop',
+      name:'workShop',
+      props: route => ({
+        userId: route.params.id,
+      }),
+      component: () => import('../components/workShop/workShop.vue'),
+    },
     // 404
     {
       path: '/:pathMatch(.*)*',

@@ -2,110 +2,118 @@
 @import "./fonts.css";
 @import "./layout.css";
 @import "./element-plus.scss";
+@import "./components.css";
 /* @import "tailwindcss"; */
 
 /*login*/
 .custom-message {
-  width: 80% !important;
-  height: 100px !important;
-  border-radius: 15px !important;
+    width: 80% !important;
+    height: 100px !important;
+    border-radius: 15px !important;
 }
 
 .custom-message .el-message__icon {
-  font-size: 40px;
-  /* 设置图标大小 */
+    font-size: 40px;
+    /* 设置图标大小 */
 }
 
 /*search*/
 .confirm-delete-history {
-  border-radius: 13px !important;
-  border: solid 2px #a89e93 !important;
-  width: 318px !important;
-  height: 172px !important;
+    border-radius: 13px !important;
+    border: solid 2px #a89e93 !important;
+    width: 318px !important;
+    height: 172px !important;
 }
 
 .confirm-delete-history .el-message-box__message {
-  margin: 20px 0;
-  font-size: 24px;
-  color: #000000;
+    margin: 20px 0;
+    font-size: 24px;
+    color: #000000;
 }
 
 .confirm-delete-history .el-message-box__btns {
-  gap: 40px;
+    gap: 40px;
 }
 
-.confirm-delete-history .el-message-box__btns .el-button {
-  font-size: 20px;
-  color: #987b5b;
-  border-radius: 10px;
-  border: solid 2px #a89e93;
-  width: 77px;
-  height: 48px;
+.confirm-delete-history .el-message-box__btns .el-button,
+.confirm-addGoods .el-message-box__btns .el-button,
+.confirm-cancel-addGoods .el-message-box__btns .el-button {
+    font-size: 20px;
+    color: #987b5b;
+    border-radius: 10px;
+    border: solid 2px #a89e93;
+    width: 77px;
+    height: 48px;
 }
 
-.confirm-delete-history .el-message-box__btns .el-button--primary {
-  background-color: #f0e4d4;
-  border: none;
-  color: #000000;
+.confirm-delete-history .el-message-box__btns .el-button--primary,
+.confirm-addGoods .el-message-box__btns .el-button--primary,
+.confirm-cancel-addGoods .el-message-box__btns .el-button--primary {
+    background-color: #f0e4d4;
+    border: none;
+    color: #000000;
 }
 
 .sort-popover {
-  background-color: #f8f0e6 !important;
-  border: solid 1px #e6dbcd !important;
-  border-radius: 14px !important;
-  box-shadow: none !important;
+    background-color: #f8f0e6 !important;
+    border: solid 1px #e6dbcd !important;
+    border-radius: 14px !important;
+    box-shadow: none !important;
 }
 
 .user-popover {
-  border: solid 1px #987b5b !important;
-  border-radius: 10px !important;
-  box-shadow: none !important;
-  margin-left: 10px !important;
+    border: solid 1px #987b5b !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+    margin-left: 10px !important;
 }
 
 /*cultureMap*/
 .select-popper {
-  background-color: #f0e4d4 !important;
-  border-radius: 5px !important;
+    background-color: #f0e4d4 !important;
+    border-radius: 5px !important;
 }
 
 .sex-popper {
-  position: absolute;
-  left: -40px;
+    position: absolute;
+    left: -40px;
 }
 
 /*calendar*/
 .calendar-popover {
-  padding: 12px 0 !important;
-  position: absolute !important;
-  top: 175px !important;
-  left: 15px !important;
-  width: calc(100vw - 30px) !important;
-  border-radius: 8px !important;
-  border: 1px solid #aa8c4c !important;
-  box-shadow: none !important;
+    padding: 12px 0 !important;
+    position: absolute !important;
+    top: 175px !important;
+    left: 15px !important;
+    width: calc(100vw - 30px) !important;
+    border-radius: 8px !important;
+    border: 1px solid #aa8c4c !important;
+    box-shadow: none !important;
 }
 
 .select-month .el-select__caret {
-  color: #000000;
+    color: #000000;
 }
 
 /*cultureMap-cascader*/
 .el-cascader-menu {
-  width: calc((100vw - 15px) / 3);
-  min-width: 0;
-  padding-bottom: 10px;
+    width: calc((100vw - 15px) / 3);
+    min-width: 0;
+    padding-bottom: 10px;
 }
 
 .el-cascader-node__label {
-  overflow-x: auto;
-  text-overflow: unset;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+    overflow-x: auto;
+    text-overflow: unset;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
 }
 
 .el-cascader-node__label::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, and Opera */
+    display: none;
+    /* Chrome, Safari, and Opera */
 }
 
 .el-popper__arrow {
@@ -118,7 +126,7 @@
 
 /*gaode*/
 .el-dialog__header {
-  padding: 0;
+    padding: 0;
 }
 
 .el-tabs--left .el-tabs__item.is-left {
@@ -130,13 +138,16 @@
 }
 
 .el-tabs__nav-scroll {
-  overflow: scroll;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+    overflow: scroll;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
 }
 
 .el-tabs__nav-scroll::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, and Opera */
+    display: none;
+    /* Chrome, Safari, and Opera */
 }
 
 .el-tabs--left .el-tabs__nav-wrap.is-left > .el-tabs__nav-prev {
@@ -178,4 +189,44 @@
 .chart .el-tabs__item:last-child {
   font-size: 11px !important;
   padding: 5px;
+}
+
+
+/*workShop*/
+.confirm-addGoods {
+  border-radius: 13px !important;
+  border: solid 2px #a89e93 !important;
+  width: 305px !important;
+  height: 193px !important;
+}
+
+.confirm-addGoods .el-message-box__title {
+  margin: 10px 0;
+  font-size: 26px;
+  font-family: 'Inter';
+  color: #000000;
+}
+
+.confirm-addGoods .el-message-box__btns {
+  margin-top: 10px;
+  gap: 40px;
+}
+
+.confirm-cancel-addGoods {
+  border-radius: 13px !important;
+  border: solid 2px #a89e93 !important;
+  width: 340px !important;
+  height: 193px !important;
+}
+
+.confirm-cancel-addGoods .el-message-box__title {
+  margin: 10px 0;
+  font-size: 20px;
+  font-family: 'Inter';
+  color: #000000;
+}
+
+.confirm-cancel-addGoods .el-message-box__btns {
+  margin-top: 10px;
+  gap: 40px;
 }
