@@ -15,7 +15,7 @@ export interface CourseUser extends UserCourseInfo {
 
 export interface BaseCourse {
     title: string
-    type: string
+    type: '图文' | '视频'
     videoUrl: string | null
     introduction: string | null
     classContent: string | null
@@ -44,11 +44,15 @@ export function getSelfCourses() {
     return apiClient.get<Response<Course[]>>('/personal/courses')
 }
 
+export function getSelfCourse(id): Promise<Course | null> {
+    return getSelfCourses().then(r => r.data.data?.find(c => c.id == id))
+}
+
 export function getUser(userId) {
     return apiClient.get<Response<CourseUser>>(`/courses/${userId}`)
 }
 
-export function getUserCourse(userId, courseId) {
+export function getUserCourse(userId, courseId): Promise<Course | null> {
     return getUser(userId).then(r => r.data.data?.courses?.find(c => c.id == courseId))
 }
 
@@ -70,4 +74,8 @@ export function unlockCourses(courseIds: number[] | string[]) {
 
 export function payCourses(eventIds: number[] | string[]) {
     return apiClient.put('/coursePartEvent', null, { params: { eventIds } })
+}
+
+export function updateCourseProgress(id, process: string) {
+    return apiClient.put('/courses/process', { id, process })
 }

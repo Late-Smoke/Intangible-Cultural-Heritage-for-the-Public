@@ -33,6 +33,7 @@
 
 <script setup lang="ts">
 import * as Courses from '@/axios/api/courses';
+import * as User from '@/axios/api/user';
 import router from '@/router';
 import { html2txt } from '@/utils';
 import { computed } from 'vue';
@@ -45,6 +46,7 @@ const { course, action, userId, selectable } = defineProps<{
 }>()
 
 const computedUserId = computed(() => userId || course.userId)
+const isSelfViewing = computed(() => User.isSelf(computedUserId.value))
 
 function handleClick() {
     if (action == 'add') {
@@ -67,7 +69,9 @@ function handleClick() {
 }
 
 function gotoCourse() {
-    console.log('gotoCourse')
+    isSelfViewing
+        ? router.push({ name: 'courseSelfView', params: { userId: computedUserId.value, courseId: course.id } })
+        : router.push({ name: 'course', params: { courseId: course.id } })
 }
 
 </script>

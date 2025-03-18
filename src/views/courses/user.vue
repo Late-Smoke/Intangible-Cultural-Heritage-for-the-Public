@@ -271,6 +271,7 @@ onActivated(() => {
 
         :deep(.description-edit textarea) {
             height: 40vh;
+            min-height: 200px !important;
         }
     }
 }

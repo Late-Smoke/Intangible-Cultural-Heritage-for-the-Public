@@ -60,6 +60,12 @@ onMounted(() => {
     })
     console.log(editor)
 
+    editorToolbar = editorRoot.value.querySelector<HTMLDivElement>('.ql-toolbar')
+    editorInput = editorRoot.value.querySelector<HTMLDivElement>('.ql-editor')
+
+    editorInput?.classList.add('rich-text-content')
+
+
     // watch quill change
     editor.on('text-change', () => {
         text.value = editor.getText()
@@ -88,10 +94,8 @@ onMounted(() => {
         }
     }, { immediate: true })
 
-    // toolbar configuration
-    editorToolbar = editorRoot.value.querySelector<HTMLDivElement>('.ql-toolbar')
-    editorInput = editorRoot.value.querySelector<HTMLDivElement>('.ql-editor')
 
+    // toolbar configuration
     if (editorToolbar) {
         editorToolbar.style.display = 'none'
         editorToolbar.tabIndex = -1
@@ -176,26 +180,11 @@ onUnmounted(() => {
         :deep(.ql-editor) {
             padding: 0;
             min-height: var(--editor-height);
-            line-height: 1.5;
 
             &.ql-blank::before {
                 left: 0;
                 font-style: normal;
                 color: #888;
-            }
-
-            h1 {
-                font-size: var(--font-size-h1);
-            }
-
-            h2 {
-                font-size: var(--font-size-h2);
-            }
-
-            img {
-                max-width: calc(100% - 24px);
-                display: block;
-                margin: 4px auto;
             }
         }
     }

@@ -1,3 +1,8 @@
+:root {
+    --font-size-h1: 1.1em;
+    --font-size-h2: 1em
+}
+
 .btn-outline {
     display: inline-block;
     color: #987B5B;
@@ -5,4 +10,29 @@
     border: 1px solid #987B5B;
     padding: 0.15em 0.4em;
     border-radius: 0.4em;
+}
+
+.rich-text-content {
+    * {
+        font-size: 1em !important;
+        background: none !important;
+        margin: 0 0 0.5em 0 !important;
+        padding: 0 !important;
+        line-height: 1.5em !important;
+    }
+
+    h1 {
+        font-size: var(--font-size-h1) !important;
+    }
+
+    h2 {
+        font-size: var(--font-size-h2) !important;
+    }
+
+    img {
+        max-width: calc(100% - 24px);
+        display: block;
+        margin: 4px auto !important;
+        max-height: 50vh;
+    }
 }
