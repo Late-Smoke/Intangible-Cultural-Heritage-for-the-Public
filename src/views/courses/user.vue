@@ -13,7 +13,7 @@
             <div @click="gotoUser(userId)">{{ user.nickName }}</div>
         </div>
 
-        <template v-if="(user.name != null && user.description != null && user.topImageUrl != null && Array.isArray(user.courses) && user.courses.length) || editing">
+        <template v-if="hasCourses || editing">
             <div class="head-img" v-if="user.topImageUrl || editing">
                 <template v-if="user.topImageUrl">
                     <img :src="user.topImageUrl">
@@ -52,7 +52,7 @@
         <div v-else class="no-courses">该用户暂无课程</div>
     </template>
 
-    <ElButton v-if="!isSelf" size="large" type="primary" class="btn-unlock" @click="router.push({ name: 'userCourses', params: { id: userId }, query: { unlock: null } })">解锁课程</ElButton>
+    <ElButton v-if="!isSelf && hasCourses" size="large" type="primary" class="btn-unlock" @click="router.push({ name: 'userCourses', params: { id: userId }, query: { unlock: null } })">解锁课程</ElButton>
 
     <OverlayCard v-if="unlock !== undefined && user" class="unlock-overlay" :close-action="() => router.back()">
         <div class="overlay-header">
@@ -106,6 +106,7 @@ const user = ref<Courses.User>()
 
 const isSelf = computed(() => User.isSelf(userId))
 const editing = ref(false)
+const hasCourses = computed(() => Array.isArray(user.value?.courses) && user.value?.courses.length)
 
 watch(() => unlock, () => {
     if (unlock === undefined) {

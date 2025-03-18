@@ -7,7 +7,7 @@
 
             <div class="main">
                 <div>{{ course.title }}</div>
-                <div class="subtitle">{{ course.introduction }}</div>
+                <div class="subtitle">{{ course.introduction || html2txt(course.classContent) }}</div>
             </div>
 
             <div v-if="action == 'progress'" class="progress">
@@ -19,7 +19,7 @@
                 <mdiLockOutline v-else class="locked" />
             </template>
 
-            <div v-if="action == 'edit'" class="btn-outline" @click.stop="router.push({ name: 'courseEdit', params: { id: course.id } })">编辑</div>
+            <div v-if="action == 'edit'" class="btn-outline" @click.stop="router.push({ name: 'courseEdit', params: { userId: computedUserId, courseId: course.id } })">编辑</div>
 
             <mdiCheck v-if="course.selected" class="selected-icon" />
         </template>
@@ -34,6 +34,8 @@
 <script setup lang="ts">
 import * as Courses from '@/axios/api/courses';
 import router from '@/router';
+import { html2txt } from '@/utils';
+import { computed } from 'vue';
 
 const { course, action, userId, selectable } = defineProps<{
     course?: Courses.Course
@@ -41,6 +43,8 @@ const { course, action, userId, selectable } = defineProps<{
     userId?: string | number
     selectable?: boolean
 }>()
+
+const computedUserId = computed(() => userId || course.userId)
 
 function handleClick() {
     if (action == 'add') {
@@ -54,10 +58,8 @@ function handleClick() {
     }
 
     if (action == 'unlock' && !course.unLock) {
-        if (userId) {
-            course.selected = true
-            router.push({ name: 'userCourses', params: { id: userId }, query: { unlock: null } })
-        }
+        course.selected = true
+        router.push({ name: 'userCourses', params: { id: computedUserId.value }, query: { unlock: null } })
         return
     }
 

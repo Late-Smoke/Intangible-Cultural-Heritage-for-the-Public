@@ -25,13 +25,6 @@ export interface Course extends BaseCourse {
     nickName: string | null
     avatarUrl: string | null
 
-    title: string
-    type: string
-    videoUrl: string | null
-    introduction: string | null
-    classContent: string | null
-    price: number
-
     process?: string
     unlockNumber: number
     unLock?: boolean
@@ -52,12 +45,16 @@ export function getUser(userId) {
     return apiClient.get<Response<User>>(`/courses/${userId}`)
 }
 
+export function getUserCourse(userId, courseId) {
+    return getUser(userId).then(r => r.data.data?.courses?.find(c => c.id == courseId))
+}
+
 export function publishCourse(course: BaseCourse) {
     return apiClient.post<Response<any>>('/courses', course)
 }
 
 export function updateCourse(course: CourseUpdateDTO) {
-    return apiClient.put<Response<any>>('/courses/new', course)
+    return apiClient.post<Response<any>>('/courses/new', course)
 }
 
 export function unlockCourses(courseIds: number[] | string[]) {

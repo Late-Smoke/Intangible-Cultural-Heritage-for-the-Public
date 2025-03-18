@@ -1,5 +1,5 @@
 <template>
-    <div class="rich-editor" ref="editorRoot">
+    <div class="rich-editor" ref="editorRoot" :style="{ '--editor-height': height }">
         <div ref="editorContainer"></div>
     </div>
 </template>
@@ -12,13 +12,19 @@ import { onUnmounted } from 'vue';
 import { onMounted } from 'vue';
 import { ref } from 'vue';
 import { selectAndUploadFiles } from '@/axios/api/upload'
+import { watch } from 'vue';
 
 const text = defineModel<string>('text')
 const html = defineModel<string>('html')
 
-const { toolbar = true, placeholder } = defineProps<{
+const {
+    toolbar = true,
+    placeholder,
+    height = '6em',
+} = defineProps<{
     toolbar?: boolean
     placeholder?: string
+    height?: string
 }>()
 
 const editorRoot = ref<HTMLDivElement>()
@@ -54,10 +60,33 @@ onMounted(() => {
     })
     console.log(editor)
 
+    // watch quill change
     editor.on('text-change', () => {
         text.value = editor.getText()
         html.value = editor.getSemanticHTML()
     })
+
+    // watch model change
+    watch(html, () => {
+        if (html.value) {
+            if (html.value != editor.getSemanticHTML()) {
+                editor.root.innerHTML = ''
+                editor.clipboard.dangerouslyPasteHTML(html.value)
+            }
+        } else {
+            editor.root.innerHTML = ''
+        }
+    }, { immediate: true })
+
+    watch(text, () => {
+        if (text.value) {
+            if (text.value != editor.getText()) {
+                editor.setText(text.value)
+            }
+        } else {
+            editor.setText('')
+        }
+    }, { immediate: true })
 
     // toolbar configuration
     editorToolbar = editorRoot.value.querySelector<HTMLDivElement>('.ql-toolbar')
@@ -146,7 +175,7 @@ onUnmounted(() => {
 
         :deep(.ql-editor) {
             padding: 0;
-            min-height: 6em;
+            min-height: var(--editor-height);
             line-height: 1.5;
 
             &.ql-blank::before {

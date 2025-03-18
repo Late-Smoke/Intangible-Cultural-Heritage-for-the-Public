@@ -261,16 +261,17 @@ const router = createRouter({
       component: () => import('@/views/courses/user.vue'),
     },
     {
-      path: '/course/add',
-      name: 'courseAdd',
+      path: '/user/:userId(\\d+)/courses/edit/:courseId(\\d+)',
+      name: 'courseEdit',
+      props: route => ({
+        userId: route.params.userId,
+        courseId: route.params.courseId,
+      }),
       component: () => import('@/views/courses/edit.vue'),
     },
     {
-      path: '/course/:id(\\d+)/edit',
-      name: 'courseEdit',
-      props: route => ({
-        courseId: route.params.id,
-      }),
+      path: '/course/add',
+      name: 'courseAdd',
       component: () => import('@/views/courses/edit.vue'),
     },
     {
