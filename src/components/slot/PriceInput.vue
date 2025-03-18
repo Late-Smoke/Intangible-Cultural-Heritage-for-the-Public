@@ -17,25 +17,33 @@ const validRegex = [
     /^\d+\.\d\d$/,
 ]
 
-function tryAssignNewValue(newValue: string): boolean {
+watch(inputNum, newValue => {
+    if (newValue == '') {
+        lastValidValue = newValue
+        if (model.value != null) model.value = null
+        return
+    }
+
     if (!/^0\d+/.test(newValue)) {
         for (const regex of validRegex) {
             if (regex.test(newValue)) {
                 lastValidValue = newValue
                 inputNum.value = newValue
-                return true
+                model.value = parseFloat(newValue)
+                return
             }
         }
     }
-    inputNum.value = lastValidValue
-    return false
-}
 
-watch(inputNum, newValue => {
-    if (newValue == '') {
-        model.value = null
-    } else if (tryAssignNewValue(newValue)) {
-        model.value = parseFloat(newValue)
-    }
+    inputNum.value = lastValidValue
+    model.value = parseFloat(lastValidValue)
 })
+
+watch(model, newValue => {
+    if (newValue == null) {
+        if (inputNum.value != '') inputNum.value = ''
+    } else if (newValue.toString() != inputNum.value) {
+        inputNum.value = newValue.toFixed(2)
+    }
+}, { immediate: true })
 </script>

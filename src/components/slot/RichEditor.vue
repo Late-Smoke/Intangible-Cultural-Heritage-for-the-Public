@@ -101,7 +101,7 @@ onMounted(() => {
         })
         editorRoot.value.addEventListener('focusout', () => {
             setTimeout(() => {
-                if (!editorRoot.value.contains(document.activeElement)) editorToolbar.style.display = 'none'
+                if (!editorRoot.value?.contains(document.activeElement)) editorToolbar.style.display = 'none'
             }, 35);
         })
 

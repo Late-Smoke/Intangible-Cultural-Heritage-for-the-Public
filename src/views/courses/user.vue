@@ -18,16 +18,16 @@
                 <template v-if="user.topImageUrl">
                     <img :src="user.topImageUrl">
                     <div v-if="editing" class="edit">
-                        <ElButton type="primary" plain round size="large">修改头图</ElButton>
-                        <ElButton type="danger" plain round size="large">删除头图</ElButton>
+                        <ElButton type="primary" plain round size="large" @click="uploadTopImage">修改头图</ElButton>
+                        <ElButton type="danger" plain round size="large" @click="removeTopImage">删除头图</ElButton>
                     </div>
                 </template>
-                <span v-else class="add">+ 添加头图</span>
+                <div v-else class="add" @click="uploadTopImage">+ 添加头图</div>
             </div>
 
             <div :class="{ 'title': true, 'no-title': !user.name }">
                 {{ user.name || '该课程暂无标题' }}
-                <ElIcon v-if="editing">
+                <ElIcon v-if="editing" @click="changeTitle">
                     <EditPen />
                 </ElIcon>
             </div>
@@ -39,9 +39,9 @@
                 </ElTabPane>
 
                 <ElTabPane label="详情">
-                    <div :class="{ 'description': true, 'empty': !user.description }">
+                    <div ref="divDescription" :class="{ 'description': true, 'empty': !user.description }">
                         <div class="btn-edit" v-if="editing">
-                            <span class="btn-outline">编辑</span>
+                            <span class="btn-outline" @click="changeDescription">编辑</span>
                         </div>
                         {{ user.description || '该课程暂无描述' }}
                     </div>
@@ -95,6 +95,8 @@ import router from '@/router';
 import { watch } from 'vue';
 import { gotoUser } from '@/utils';
 import { onActivated } from 'vue';
+import { selectAndUploadFile } from '@/axios/api/upload';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 
 const { userId, unlock } = defineProps<{
@@ -102,7 +104,7 @@ const { userId, unlock } = defineProps<{
     unlock?: boolean
 }>()
 
-const user = ref<Courses.User>()
+const user = ref<Courses.CourseUser>()
 
 const isSelf = computed(() => User.isSelf(userId))
 const editing = ref(false)
@@ -115,8 +117,56 @@ watch(() => unlock, () => {
 })
 const selectedPriceSum = computed(() => user.value?.courses.filter(c => c.selected).reduce((sum, c) => sum + c.price * 100, 0) / 100)
 
-onActivated(() => {
+const divDescription = ref<HTMLDivElement>()
+
+function uploadTopImage() {
+    selectAndUploadFile('image/*').then(topImageUrl => {
+        Courses.updateUser({ topImageUrl }).then(r => {
+            r.data.success ? ElMessage.success(r.data.data) : ElMessage.error(r.data.errorMsg)
+            loadUser()
+        })
+    })
+}
+
+function removeTopImage() {
+    ElMessageBox.confirm('确定要删除头图吗？', '删除头图', { type: 'warning', }).then(() => {
+        Courses.updateUser({ topImageUrl: '' }).then(r => {
+            r.data.success ? ElMessage.success(r.data.data) : ElMessage.error(r.data.errorMsg)
+            loadUser()
+        })
+    }).catch(() => { })
+}
+
+function changeTitle() {
+    ElMessageBox.prompt('请输入课程标题', '修改标题', { inputValue: user.value?.name }).then(({ value }) => {
+        Courses.updateUser({ name: value }).then(r => {
+            r.data.success ? ElMessage.success(r.data.data) : ElMessage.error(r.data.errorMsg)
+            loadUser()
+        })
+    }).catch(() => { })
+}
+
+function changeDescription() {
+    ElMessageBox.prompt('请输入课程简介', '修改简介', {
+        inputValue: user.value?.description,
+        inputType: 'textarea',
+        appendTo: divDescription.value,
+        customClass: 'description-edit',
+        closeOnClickModal: false,
+    }).then(({ value }) => {
+        Courses.updateUser({ description: value }).then(r => {
+            r.data.success ? ElMessage.success(r.data.data) : ElMessage.error(r.data.errorMsg)
+            loadUser()
+        })
+    }).catch(() => { })
+}
+
+function loadUser() {
     Courses.getUser(userId).then(r => user.value = r.data.data)
+}
+
+onActivated(() => {
+    loadUser()
     if (!history.state.forward) {
         editing.value = false
     }
@@ -156,11 +206,12 @@ onActivated(() => {
         object-fit: cover;
     }
 
-    >div {
-        position: relative;
-    }
-
     .add {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         color: #666;
         font-size: 1.4em;
     }
@@ -216,6 +267,10 @@ onActivated(() => {
         .btn-edit {
             text-align: right;
             margin-bottom: 4px;
+        }
+
+        :deep(.description-edit textarea) {
+            height: 40vh;
         }
     }
 }

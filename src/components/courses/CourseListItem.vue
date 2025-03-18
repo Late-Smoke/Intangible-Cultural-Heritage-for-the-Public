@@ -79,7 +79,7 @@ function gotoCourse() {
     gap: 8px;
     padding-right: 8px;
     border: 1px solid #ddd;
-    margin: 8px 20px 14px;
+    margin: 14px 20px;
     min-height: 68px;
     box-shadow: 0 1px 8px -3px #aaa;
     background-color: rgba(255, 255, 255, 0.3);

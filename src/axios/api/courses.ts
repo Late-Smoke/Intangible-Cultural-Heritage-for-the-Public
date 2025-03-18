@@ -1,12 +1,15 @@
 import apiClient from "../axios";
 import { Response } from "./common";
 
-export interface User {
-    nickName: string
-    avatarUrl: string
+export interface UserCourseInfo {
     name?: string
     description?: string
     topImageUrl?: string
+}
+
+export interface CourseUser extends UserCourseInfo {
+    nickName: string
+    avatarUrl: string
     courses: Course[]
 }
 
@@ -42,11 +45,15 @@ export function getSelfCourses() {
 }
 
 export function getUser(userId) {
-    return apiClient.get<Response<User>>(`/courses/${userId}`)
+    return apiClient.get<Response<CourseUser>>(`/courses/${userId}`)
 }
 
 export function getUserCourse(userId, courseId) {
     return getUser(userId).then(r => r.data.data?.courses?.find(c => c.id == courseId))
+}
+
+export function updateUser(user: UserCourseInfo) {
+    return apiClient.post<Response<any>>(`/userCourse`, user)
 }
 
 export function publishCourse(course: BaseCourse) {

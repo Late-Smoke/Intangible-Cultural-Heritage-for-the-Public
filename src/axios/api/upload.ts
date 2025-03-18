@@ -68,11 +68,11 @@ export function selectFiles(type = '*', multiple = true): Promise<File[]> {
 }
 
 export function selectAndUploadFiles(type: string | undefined, callback: (url: string) => any) {
-    selectFiles(type).then(fileList => {
-        for (const file of fileList) {
-            uploadFile(file).then(callback)
-        }
-    })
+    selectFiles(type)
+        .then(fileList => fileList
+            .forEach(file =>
+                uploadFile(file)
+                    .then(callback)))
 }
 
 export function selectFile(type?: string) {
@@ -80,7 +80,7 @@ export function selectFile(type?: string) {
 }
 
 export function selectAndUploadFile(type?: string) {
-    return selectFile(type).then(file => uploadFile(file))
+    return selectFile(type).then(uploadFile)
 }
 
 export function uploadFile(file: File): Promise<string> {
