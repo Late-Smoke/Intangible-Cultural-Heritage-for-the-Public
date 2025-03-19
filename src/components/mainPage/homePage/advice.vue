@@ -32,7 +32,7 @@ watchEffect(() => {
                 followPost.value = res.data.data;
             }
         })
-    if (selectedTag.value == 'info') 
+    if (selectedTag.value == 'info')
         getInfoApi("").then(res => { // 资讯
             infoData.value = res.data.data;
         })
@@ -58,6 +58,10 @@ watchEffect(() => {
         <dvi v-if="selectedTag === 'follow'">
             <div class="follow">
                 <PostListItem v-for="post in followPost" :post="post" />
+            </div>
+            <div style="text-align: center;margin: 10px 0;color:darkgray">
+                <span v-if="!post">暂无内容</span>
+                <span v-else>到底了</span>
             </div>
         </dvi>
         <dvi v-if="selectedTag === 'find'">

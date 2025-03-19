@@ -14,7 +14,7 @@ const sortShow = ref(false);
 watch(() => searchStore.search, (newValue, oldValue) => {//用户修改搜索框值
     if (newValue != oldValue) searchStore.changeIfSearch(false);
 })
-watch(()=>searchStore.ifHistory, (newValue) => {
+watch(() => searchStore.ifHistory, (newValue) => {
     if (newValue) {
         init();
     }
@@ -38,9 +38,12 @@ function getNewPost() {
         }
     })
 }
+const content = ref('');
+const showBaiKe = ref(false);
 function init() {// 初始化
     getBaiKeApi(searchStore.search).then(res => {
         baiKe.value = res.data.data;
+        content.value = baiKe.value[0].content;
     })
     getHotPost();
     getNewPost();
@@ -48,7 +51,15 @@ function init() {// 初始化
 </script>
 
 <template>
-    <div v-show="baiKe.length" class="baiKe" :style="{ backgroundImage: `url(${baiKe.at(0)?.topMediaUrl})` }">
+    <el-dialog v-model="showBaiKe" fullscreen>
+        <div v-html="content" class="dialog-baiKe"></div>
+        <div style="text-align: center;margin: 10px 0;">
+            <span v-if="!content">暂无内容</span>
+            <span v-else>到底了</span>
+        </div>
+    </el-dialog>
+    <div v-show="baiKe.length" @click="showBaiKe = true" class="baiKe"
+        :style="{ backgroundImage: `url(${baiKe.at(0)?.topMediaUrl})` }">
         <span class="head">非遗百科</span>
         <span class="tip">点击查看详情</span>
     </div>
@@ -96,11 +107,26 @@ function init() {// 初始化
         <div style="margin-top: 10px;">
             <PostListItem v-for="post in relatedPost" :post="post" />
         </div>
+        <div style="text-align: center;margin: 10px 0;color:darkgray">
+            <span v-if="!relatedPost.data">暂无内容</span>
+            <span v-else>到底了</span>
+        </div>
     </div>
 </template>
 
 
 <style scoped>
+.dialog-baiKe {
+    background-image: url('/icon/dialogBackground.svg');
+    /* 引用 SVG 文件 */
+    background-size: cover;
+    /* 调整大小以覆盖整个容器 */
+    background-position: center;
+    /* 将背景图像居中 */
+    background-repeat: no-repeat;
+    /* 防止背景图像重复 */
+}
+
 .baiKe {
     width: 100%;
     padding-top: 56.25%;
@@ -116,6 +142,7 @@ function init() {// 初始化
     top: 0;
     left: 0;
     margin: 0;
+    color: #fff;
     padding: 10px 20px;
 }
 

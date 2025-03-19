@@ -152,6 +152,10 @@ watch(() => searchStore.ifHistory, () => {
         </div>
     </div> -->
     <UserListItem v-for="user in data" :user="user" />
+    <div style="text-align: center;margin: 10px 0;color:darkgray">
+            <span v-if="data">暂无用户</span>
+            <span v-else>到底了</span>
+        </div>
 </template>
 
 

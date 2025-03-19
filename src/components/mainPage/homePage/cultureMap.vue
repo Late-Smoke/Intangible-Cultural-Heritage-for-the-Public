@@ -23,6 +23,23 @@ const postData = ref([]);
 /*activity*/
 const activityData = ref([]);
 
+/*detail*/
+const showProject = ref(false);
+const decodedContent = ref('');
+function showDetail(data) {
+  showProject.value = true;
+  const content = data.content;
+  decodedContent.value = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+}
+
+const showArtist = ref(false);
+const content = ref('');
+function showDetail2(data) {
+  showArtist.value = true;
+  content.value = data;
+  console.log(content.value);
+}
+
 /*select*/
 // 非遗项目
 const heritageArea = ref([]);
@@ -213,7 +230,7 @@ watch(() => positionStore.currentCode, (newValue) => { //地图切换地区
 }, { immediate: true })
 
 watch(() => positionStore.firstPoint, (newValue) => { // 筛选标点联动选项
-  if (positionStore.firstPoint != {}) {
+  if (positionStore.firstPoint != null) {
     heritageOptions.value[0].value = newValue.rxTime;
     heritageOptions.value[1].value = newValue.type;
     heritageOptions.value[2].value = newValue.secondType;
@@ -250,13 +267,46 @@ watch(TabName, () => {
         })
     }, { immediate: true })
 }, { immediate: true })
-
 </script>
 
 <template>
   <div class="bigMap">
     <Map />
   </div>
+  <el-dialog v-model="showProject" fullscreen style="background-image: url('/icon/dialogBackground.svg');background-size: cover;
+    background-position: center;background-repeat: no-repeat;">
+    <div v-html="decodedContent" class="dialog-project">
+    </div>
+    <div style="text-align: center;margin: 10px 0;">
+      <span v-if="!decodedContent">暂无内容</span>
+      <span v-else>到底了</span>
+    </div>
+  </el-dialog>
+  <el-dialog v-model="showArtist" fullscreen style="background-image: url('/icon/artistBackground.svg');background-size: cover;    
+    background-repeat: no-repeat;background-color: #F5F0F0;">
+    <div class="dialog-artist">
+      <div class="dialog-artist-title">{{ content.name }}</div>
+      <div class="dialog-artist-content">
+        <div class="item">序号：{{ content.id }}</div>
+        <div class="item">性别：{{ content.gender }}</div>
+        <div class="item">出生日期：
+          <span v-if="content.birthDate">{{ content.birthDate }}</span>
+          <span v-else>不详</span>
+        </div>
+        <div class="item">民族：
+          <span v-if="content.ethnicity">{{ content.ethnicity }}</span>
+          <span v-else>不详</span>
+        </div>
+        <div class="item">类别：{{ content.category }}</div>
+        <div class="item">项目编号：{{ content.projectNumber }}</div>
+        <div class="item">项目名称：{{ content.projectName }}</div>
+        <div class="item">申报地区或单位：{{ content.region }}</div>
+      </div>
+    </div>
+    <div style="text-align: center;margin: 10px 0;">
+      <span v-if="!content">暂无内容</span>
+    </div>
+  </el-dialog>
   <el-tabs v-model="TabName" class="tabs">
     <el-tab-pane label="相关帖子" name="related-post" class="relatedPost">
       <PostListItem v-for="post in postData" :post="post" />
@@ -304,7 +354,11 @@ watch(TabName, () => {
           <el-table-column prop="num" label="序号" width="50px" />
           <el-table-column prop="projectNum" label="项目序号" />
           <el-table-column prop="num" label="编号" width="50px" />
-          <el-table-column prop="title" label="名称" />
+          <el-table-column label="名称">
+            <template #default="scope">
+              <span @click="showDetail(scope.row)">{{ scope.row.title }}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="type" label="类别" />
           <el-table-column prop="rxTime" label="公布时间" />
           <el-table-column prop="secondType" label="类型" />
@@ -348,7 +402,11 @@ watch(TabName, () => {
         <el-table :data="artistData" height="250" :header-cell-style="{ borderColor: '#D1C4B6CC' }"
           :cell-style="{ borderColor: '#D1C4B6CC' }" style="width: 100%">
           <el-table-column prop="id" label="序号" />
-          <el-table-column prop="name" label="姓名" width="50px" />
+          <el-table-column prop="name" label="姓名" width="50px">
+            <template #default="scope">
+              <span @click="showDetail2(scope.row)">{{ scope.row.name }}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="gender" label="性别" width="40px" />
           <el-table-column prop="category" label="类别" width="60px" />
           <el-table-column prop="projectNumber" label="项目编号" width="60px" />
@@ -362,6 +420,35 @@ watch(TabName, () => {
 
 
 <style scoped>
+.dialog-project,
+.dialog-artist {
+  padding-top: 20px;
+  line-height: 25px;
+}
+
+.dialog-artist-title {
+  color: #000;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 600;
+  padding-bottom: 20px;
+}
+
+.dialog-artist-content {
+  color: #4f4b4b;
+  font-size: 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-top: 10px;
+  border-top: dashed 1px #BBB6B6;
+}
+
+.item {
+  padding: 0 0 10px 10px;
+  border-bottom: dashed 1px #BBB6B6;
+}
+
 .tabs :deep(.el-tab-pane) {
   min-height: 40vh;
 }

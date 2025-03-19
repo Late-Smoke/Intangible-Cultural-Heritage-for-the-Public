@@ -76,6 +76,10 @@ watch(params.value, () => {
             <span @click="params.secondType = '非遗活动'" :class="{ active: params.secondType == '非遗活动' }">非遗活动</span>
         </div>
         <ActivityListItem class="activity-item" v-for="a in data" :activity="a" bottom="address" />
+        <div style="text-align: center;margin: 10px 0;color:darkgray">
+            <span v-if="!data">暂无内容</span>
+            <span v-else>到底了</span>
+        </div>
     </div>
 
 </template>
@@ -84,6 +88,7 @@ watch(params.value, () => {
 <style scoped>
 .container {
     padding: 10px 15px;
+    margin: 0;
 }
 
 .head {
