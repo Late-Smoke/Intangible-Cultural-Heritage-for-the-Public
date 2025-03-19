@@ -18,7 +18,8 @@
         background: none !important;
         margin: 0 0 0.5em 0 !important;
         padding: 0 !important;
-        line-height: 1.5em !important;
+        line-height: 1.4em !important;
+        word-break: break-word !important;
     }
 
     h1 {
@@ -34,5 +35,7 @@
         display: block;
         margin: 4px auto !important;
         max-height: 50vh;
+        width: auto;
+        height: auto;
     }
 }

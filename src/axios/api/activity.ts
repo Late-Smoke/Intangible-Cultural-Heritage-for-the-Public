@@ -89,5 +89,5 @@ export function removeFav(id) {
 }
 
 export function participateActivity(payload: ActivityParticipate) {
-    return apiClient.post<Response<any>>('/activities/activityChargeEvent/', payload)
+    return apiClient.post<Response<number>>('/activities/activityChargeEvent/', payload)
 }

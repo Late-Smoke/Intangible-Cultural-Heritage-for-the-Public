@@ -18,19 +18,23 @@
 
 <script setup lang="ts">
 import { createUploadController } from '@/axios/api/upload';
-import { watch } from 'vue';
-import { computed } from 'vue';
+import { arraySame } from '@/utils';
+import { computed, watch } from 'vue';
 
 const model = defineModel<string[]>()
 
 const uploadController = createUploadController()
 
-const uploadedList = computed(() => {
-    return uploadController.files.filter(file => file.status === 'success').map(file => file.url!)
+function needUpdate() {
+    return !arraySame(uploadController.fileUrls, model.value)
+}
+
+watch(() => uploadController.fileUrls, () => {
+    if (needUpdate()) model.value = uploadController.fileUrls
 })
 
-watch(uploadedList, () => {
-    model.value = uploadedList.value
+watch(model, () => {
+    if (needUpdate()) uploadController.fileUrls = model.value
 })
 
 const statusText = {

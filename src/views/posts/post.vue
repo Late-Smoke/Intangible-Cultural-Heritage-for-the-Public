@@ -11,17 +11,19 @@
                 <span @click="gotoUser(post.userId)">{{ post.nickName }}</span>
             </div>
 
-            <el-button v-if="!post.beFan" round @click="setFollow(true)">
-                <span style="color: #855D12; font-size: 1.7em; margin-right: 4px;">+</span>关注
-            </el-button>
-            <el-button v-else round @click="setFollow(false)">已关注</el-button>
+            <template v-if="!isUserSelf">
+                <el-button v-if="!post.beFan" round @click="setFollow(true)">
+                    <span style="color: #855D12; font-size: 1.7em; margin-right: 4px;">+</span>关注
+                </el-button>
+                <el-button v-else round @click="setFollow(false)">已关注</el-button>
+            </template>
 
             <el-button round icon="mdiShareOutline" style="font-size: 1.5em; color: #A0814D;" @click="showShare = true"></el-button>
         </div>
 
 
         <!-- Images -->
-        <el-carousel v-if="post.urls" trigger="click" height="40vh" :autoplay="false">
+        <el-carousel v-if="post.urls?.length" trigger="click" height="40vh" :autoplay="false">
             <el-carousel-item v-for="(item, index) in post.urls">
                 <el-image v-if="item.type == 0" fit="contain" :preview-teleported="true" :src="item.url" :preview-src-list="post.urls.map(x => x.url)" :initial-index="index" />
                 <video v-if="item.type == 1" :src="item.url"></video>
@@ -223,6 +225,7 @@ const props = defineProps<{
     commentId?: string
 }>()
 
+const isUserSelf = computed(() => User.isSelf(post.value?.userId))
 
 const post = ref<Posts.Post>()
 const comments = ref<Comments.Comment[]>()
@@ -383,13 +386,13 @@ onMounted(() => {
 }
 
 .title {
-    margin: 12px 8px;
+    margin: 12px;
     font-size: 1.15em;
     font-weight: bold;
 }
 
 .body {
-    margin: 8px;
+    margin: 8px 12px;
 }
 
 .tags {

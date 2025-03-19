@@ -69,9 +69,9 @@ function handleClick() {
 }
 
 function gotoCourse() {
-    isSelfViewing
+    isSelfViewing.value
         ? router.push({ name: 'courseSelfView', params: { userId: computedUserId.value, courseId: course.id } })
-        : router.push({ name: 'course', params: { courseId: course.id } })
+        : router.push({ name: 'course', params: { id: course.id } })
 }
 
 </script>

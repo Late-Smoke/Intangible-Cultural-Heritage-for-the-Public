@@ -24,7 +24,6 @@
     <div class="class-content">
         <RichEditor v-show="course.type == '图文'" v-model:html="course.classContent" placeholder="在此处填写课程内容" />
         <RichEditor v-show="course.type == '视频'" v-model:text="course.introduction" placeholder="请输入课程简介" :toolbar="false" />
-        <!-- <el-input v-if="course.type == '视频'" v-model="course.introduction" :autosize="{ minRows: 3, maxRows: 12 }" type="textarea" placeholder="请输入课程简介" /> -->
     </div>
 
     <div class="price">
@@ -53,6 +52,7 @@ import RichEditor from '@/components/slot/RichEditor.vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PriceInput from '@/components/slot/PriceInput.vue';
 import PageHeader from '@/components/slot/PageHeader.vue';
+import { importProps } from '@/utils';
 
 const { userId, courseId } = defineProps<{
     userId?: string
@@ -101,11 +101,7 @@ function submit() {
 
 onMounted(() => {
     if (courseId) {
-        Courses.getUserCourse(userId, courseId).then(c => {
-            for (const key in course.value) {
-                course.value[key] = c[key]
-            }
-        })
+        Courses.getUserCourse(userId, courseId).then(c => importProps(course.value, c))
     }
 })
 </script>
@@ -160,16 +156,6 @@ onMounted(() => {
 .class-content {
     margin: 12px 20px;
     outline: none;
-
-    .el-textarea {
-        font-size: 1em;
-
-        :deep(textarea) {
-            box-shadow: none;
-            padding: 0;
-            color: black;
-        }
-    }
 }
 
 .image-list {

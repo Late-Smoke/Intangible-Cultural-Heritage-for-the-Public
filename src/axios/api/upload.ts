@@ -1,10 +1,11 @@
-import { file2dataURL, promiseSuccess } from "@/utils"
+import { arraySame, file2dataURL, promiseSuccess } from "@/utils"
 import apiClient from "../axios"
 import { Response } from "./common"
 import { reactive } from "vue"
 
 export interface IUploadController {
     files: IUploadItem[]
+    fileUrls: string[]
     addFile: (type?: string) => void
     removeFile: (index: number) => void
     retryUpload: (index: number) => void
@@ -18,9 +19,34 @@ export interface IUploadItem {
     url?: string
 }
 
-export function createUploadController() {
-    return reactive<IUploadController>({
+export function createUploadController(): IUploadController {
+    const controller: IUploadController = reactive<IUploadController>({
         files: [],
+        get fileUrls() {
+            return controller.files.filter(file => file.status == 'success').map(file => file.url)
+        },
+        set fileUrls(urls) {
+            if (!Array.isArray(urls)) {
+                controller.files = []
+            }
+
+            let newFiles = [...controller.files]
+
+            for (const url of urls) {
+                if (!newFiles.some(file => file.url == url)) {
+                    newFiles.push({
+                        file: undefined,
+                        dataUrl: url,
+                        status: 'success',
+                        url,
+                    })
+                }
+            }
+            newFiles = newFiles.filter(file => urls.includes(file.url))
+
+            if (!arraySame(controller.files, newFiles))
+                controller.files = newFiles
+        },
         addFile(type) {
             selectFiles(type).then(async (fileList) => {
                 for (const file of fileList) {
@@ -48,6 +74,7 @@ export function createUploadController() {
             }).catch(() => file.status = 'failed')
         },
     })
+    return controller
 }
 
 export function selectFiles(type = '*', multiple = true): Promise<File[]> {

@@ -78,7 +78,7 @@
         <CourseListItem v-for="course in user.courses.filter(x => !x.unLock)" :course="course" action="unlock" selectable />
 
         <div style="height: 80px;"></div>
-        <ElButton v-if="!isSelf" size="large" type="primary" class="btn-unlock" @click="">确认支付</ElButton>
+        <ElButton v-if="!isSelf" size="large" type="primary" class="btn-unlock" @click="unlockCourses">确认支付</ElButton>
     </OverlayCard>
 </template>
 
@@ -97,6 +97,7 @@ import { gotoUser } from '@/utils';
 import { onActivated } from 'vue';
 import { selectAndUploadFile } from '@/axios/api/upload';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { promiseSuccess } from '@/utils';
 
 
 const { userId, unlock } = defineProps<{
@@ -159,6 +160,16 @@ function changeDescription() {
             loadUser()
         })
     }).catch(() => { })
+}
+
+function unlockCourses() {
+    promiseSuccess(Courses.unlockCourses(user.value?.courses.filter(x => x.selected).map(x => x.id))).then(r => {
+        promiseSuccess(Courses.payCourses(r.data.data)).then(r => {
+            ElMessage.success(r.data.data)
+            router.back()
+            loadUser()
+        })
+    }).catch(r => ElMessage.error(r?.data?.errorMsg))
 }
 
 function loadUser() {

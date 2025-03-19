@@ -65,6 +65,21 @@ export function setClipboard(txt: string) {
     })
 }
 
+export function importProps<T, S extends T>(target: T, src: S): void {
+    for (const key in target) {
+        target[key] = src[key]
+    }
+}
+
+export function arraySame(a: any[] | null, b: any[] | null, ordered = true): Boolean {
+    if (!Array.isArray(a) || !Array.isArray(b)) return false
+
+    if (ordered)
+        return a.length == b.length && a.every((x, i) => x == b[i])
+    else
+        return a.length == b.length && a.filter(x => b.includes(x)).length == a.length
+}
+
 
 // quick navigation
 export function gotoUser(id) {
@@ -89,6 +104,13 @@ export function gotoPostComment(postId, commentId) {
     })
 }
 
+export function gotoPostEdit(id) {
+    router.push({
+        name: 'postEdit',
+        params: { id }
+    })
+}
+
 
 // API
 export function promiseSuccess<T>(axiosPromise: Promise<AxiosResponse<Response<T>, any>>): Promise<AxiosResponse<Response<T>, any>> {
@@ -108,4 +130,14 @@ export function debouncePromise<T>(loadFunction: () => Promise<T>): Promise<T> {
     promise.finally(() => debounceMap.delete(loadFunction))
     debounceMap.set(loadFunction, promise)
     return promise
+}
+
+export function array2query(params: Record<string, (string | number | boolean)[]>) {
+    const queryStrings = []
+    for (const [param, values] of Object.entries(params)) {
+        for (const value of values) {
+            queryStrings.push(`${encodeURIComponent(param)}=${encodeURIComponent(value)}`)
+        }
+    }
+    return queryStrings.join('&')
 }

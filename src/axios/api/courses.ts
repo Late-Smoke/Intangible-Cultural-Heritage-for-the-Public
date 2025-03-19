@@ -1,3 +1,4 @@
+import { array2query } from "@/utils";
 import apiClient from "../axios";
 import { Response } from "./common";
 
@@ -69,11 +70,11 @@ export function updateCourse(course: CourseUpdateDTO) {
 }
 
 export function unlockCourses(courseIds: number[] | string[]) {
-    return apiClient.put('/coursePartEvent', null, { params: { courseIds } })
+    return apiClient.put<Response<number[]>>(`/coursePartEvent?${array2query({ courseIds })}`)
 }
 
-export function payCourses(eventIds: number[] | string[]) {
-    return apiClient.put('/coursePartEvent', null, { params: { eventIds } })
+export function payCourses(invoiceIds: number[] | string[]) {
+    return apiClient.put<Response<string>>(`/coursePartEvent/charge?${array2query({ eventIds: invoiceIds })}`)
 }
 
 export function updateCourseProgress(id, process: string) {

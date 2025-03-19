@@ -150,12 +150,25 @@ const router = createRouter({
 
     // post
     {
+      path: '/post/new',
+      name: 'postNew',
+      component: () => import('@/views/posts/edit.vue'),
+    },
+    {
       path: '/post/:postId(\\d+)',
       name: 'post',
       component: () => import('@/views/posts/post.vue'),
       props: route => ({
         postId: route.params.postId,
         commentId: route.query.commentId
+      })
+    },
+    {
+      path: '/post/:id(\\d+)/edit',
+      name: 'postEdit',
+      component: () => import('@/views/posts/edit.vue'),
+      props: route => ({
+        postId: route.params.id,
       })
     },
 
