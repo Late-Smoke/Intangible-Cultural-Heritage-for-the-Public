@@ -7,7 +7,7 @@
 
             <div class="main">
                 <div>{{ course.title }}</div>
-                <div class="subtitle">{{ course.introduction }}</div>
+                <div class="subtitle">{{ course.introduction || html2txt(course.classContent) }}</div>
             </div>
 
             <div v-if="action == 'progress'" class="progress">
@@ -19,7 +19,7 @@
                 <mdiLockOutline v-else class="locked" />
             </template>
 
-            <div v-if="action == 'edit'" class="btn-outline" @click.stop="router.push({ name: 'courseEdit', params: { id: course.id } })">编辑</div>
+            <div v-if="action == 'edit'" class="btn-outline" @click.stop="router.push({ name: 'courseEdit', params: { userId: computedUserId, courseId: course.id } })">编辑</div>
 
             <mdiCheck v-if="course.selected" class="selected-icon" />
         </template>
@@ -33,7 +33,10 @@
 
 <script setup lang="ts">
 import * as Courses from '@/axios/api/courses';
+import * as User from '@/axios/api/user';
 import router from '@/router';
+import { html2txt } from '@/utils';
+import { computed } from 'vue';
 
 const { course, action, userId, selectable } = defineProps<{
     course?: Courses.Course
@@ -41,6 +44,9 @@ const { course, action, userId, selectable } = defineProps<{
     userId?: string | number
     selectable?: boolean
 }>()
+
+const computedUserId = computed(() => userId || course.userId)
+const isSelfViewing = computed(() => User.isSelf(computedUserId.value))
 
 function handleClick() {
     if (action == 'add') {
@@ -54,10 +60,8 @@ function handleClick() {
     }
 
     if (action == 'unlock' && !course.unLock) {
-        if (userId) {
-            course.selected = true
-            router.push({ name: 'userCourses', params: { id: userId }, query: { unlock: null } })
-        }
+        course.selected = true
+        router.push({ name: 'userCourses', params: { id: computedUserId.value }, query: { unlock: null } })
         return
     }
 
@@ -65,7 +69,9 @@ function handleClick() {
 }
 
 function gotoCourse() {
-    console.log('gotoCourse')
+    isSelfViewing
+        ? router.push({ name: 'courseSelfView', params: { userId: computedUserId.value, courseId: course.id } })
+        : router.push({ name: 'course', params: { courseId: course.id } })
 }
 
 </script>
@@ -77,7 +83,7 @@ function gotoCourse() {
     gap: 8px;
     padding-right: 8px;
     border: 1px solid #ddd;
-    margin: 8px 20px 14px;
+    margin: 14px 20px;
     min-height: 68px;
     box-shadow: 0 1px 8px -3px #aaa;
     background-color: rgba(255, 255, 255, 0.3);

@@ -5,11 +5,6 @@
 @import "./components.css";
 /* @import "tailwindcss"; */
 
-:root {
-    --font-size-h1: 1.1em;
-    --font-size-h2: 1em
-}
-
 
 /*login*/
 .custom-message {

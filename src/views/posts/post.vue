@@ -31,7 +31,7 @@
 
         <!-- Main content -->
         <div class="title">{{ post.title }}</div>
-        <div class="body" v-html="post.content"></div>
+        <div class="body rich-text-content" v-html="post.content"></div>
 
 
         <div v-if="typeof post.tag == 'string'" class="tags">
@@ -390,22 +390,6 @@ onMounted(() => {
 
 .body {
     margin: 8px;
-
-    :deep(*) {
-        font-size: 1em !important;
-        background: none !important;
-        margin: 0 0 0.5em 0 !important;
-        padding: 0 !important;
-        line-height: 1.5em !important;
-    }
-
-    :deep(h1) {
-        font-size: var(--font-size-h1) !important;
-    }
-
-    :deep(h2) {
-        font-size: var(--font-size-h2) !important;
-    }
 }
 
 .tags {

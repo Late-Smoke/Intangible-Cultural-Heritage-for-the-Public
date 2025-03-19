@@ -247,11 +247,6 @@ const router = createRouter({
 
     // courses
     {
-      path: '/course/mine',
-      name: 'myCourses',
-      component: () => import('@/views/courses/mine.vue'),
-    },
-    {
       path: '/user/:id(\\d+)/courses',
       name: 'userCourses',
       props: route => ({
@@ -261,17 +256,32 @@ const router = createRouter({
       component: () => import('@/views/courses/user.vue'),
     },
     {
+      path: '/user/:userId(\\d+)/courses/:courseId(\\d+)',
+      name: 'courseSelfView',
+      props: route => ({
+        userId: route.params.userId,
+        courseId: route.params.courseId,
+      }),
+      component: () => import('@/views/courses/course.vue'),
+    },
+    {
+      path: '/user/:userId(\\d+)/courses/:courseId(\\d+)/edit',
+      name: 'courseEdit',
+      props: route => ({
+        userId: route.params.userId,
+        courseId: route.params.courseId,
+      }),
+      component: () => import('@/views/courses/edit.vue'),
+    },
+    {
       path: '/course/add',
       name: 'courseAdd',
       component: () => import('@/views/courses/edit.vue'),
     },
     {
-      path: '/course/:id(\\d+)/edit',
-      name: 'courseEdit',
-      props: route => ({
-        courseId: route.params.id,
-      }),
-      component: () => import('@/views/courses/edit.vue'),
+      path: '/course/mine',
+      name: 'myCourses',
+      component: () => import('@/views/courses/mine.vue'),
     },
     {
       path: '/course/:id(\\d+)',

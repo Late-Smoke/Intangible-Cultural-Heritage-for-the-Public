@@ -1,5 +1,5 @@
 <template>
-    <div class="rich-editor" ref="editorRoot">
+    <div class="rich-editor" ref="editorRoot" :style="{ '--editor-height': height }">
         <div ref="editorContainer"></div>
     </div>
 </template>
@@ -12,13 +12,19 @@ import { onUnmounted } from 'vue';
 import { onMounted } from 'vue';
 import { ref } from 'vue';
 import { selectAndUploadFiles } from '@/axios/api/upload'
+import { watch } from 'vue';
 
 const text = defineModel<string>('text')
 const html = defineModel<string>('html')
 
-const { toolbar = true, placeholder } = defineProps<{
+const {
+    toolbar = true,
+    placeholder,
+    height = '6em',
+} = defineProps<{
     toolbar?: boolean
     placeholder?: string
+    height?: string
 }>()
 
 const editorRoot = ref<HTMLDivElement>()
@@ -54,15 +60,42 @@ onMounted(() => {
     })
     console.log(editor)
 
+    editorToolbar = editorRoot.value.querySelector<HTMLDivElement>('.ql-toolbar')
+    editorInput = editorRoot.value.querySelector<HTMLDivElement>('.ql-editor')
+
+    editorInput?.classList.add('rich-text-content')
+
+
+    // watch quill change
     editor.on('text-change', () => {
         text.value = editor.getText()
         html.value = editor.getSemanticHTML()
     })
 
-    // toolbar configuration
-    editorToolbar = editorRoot.value.querySelector<HTMLDivElement>('.ql-toolbar')
-    editorInput = editorRoot.value.querySelector<HTMLDivElement>('.ql-editor')
+    // watch model change
+    watch(html, () => {
+        if (html.value) {
+            if (html.value != editor.getSemanticHTML()) {
+                editor.root.innerHTML = ''
+                editor.clipboard.dangerouslyPasteHTML(html.value)
+            }
+        } else {
+            editor.root.innerHTML = ''
+        }
+    }, { immediate: true })
 
+    watch(text, () => {
+        if (text.value) {
+            if (text.value != editor.getText()) {
+                editor.setText(text.value)
+            }
+        } else {
+            editor.setText('')
+        }
+    }, { immediate: true })
+
+
+    // toolbar configuration
     if (editorToolbar) {
         editorToolbar.style.display = 'none'
         editorToolbar.tabIndex = -1
@@ -72,7 +105,7 @@ onMounted(() => {
         })
         editorRoot.value.addEventListener('focusout', () => {
             setTimeout(() => {
-                if (!editorRoot.value.contains(document.activeElement)) editorToolbar.style.display = 'none'
+                if (!editorRoot.value?.contains(document.activeElement)) editorToolbar.style.display = 'none'
             }, 35);
         })
 
@@ -146,27 +179,12 @@ onUnmounted(() => {
 
         :deep(.ql-editor) {
             padding: 0;
-            min-height: 6em;
-            line-height: 1.5;
+            min-height: var(--editor-height);
 
             &.ql-blank::before {
                 left: 0;
                 font-style: normal;
                 color: #888;
-            }
-
-            h1 {
-                font-size: var(--font-size-h1);
-            }
-
-            h2 {
-                font-size: var(--font-size-h2);
-            }
-
-            img {
-                max-width: calc(100% - 24px);
-                display: block;
-                margin: 4px auto;
             }
         }
     }

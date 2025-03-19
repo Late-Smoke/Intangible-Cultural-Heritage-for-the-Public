@@ -23,7 +23,7 @@ import { ElDialog, ElMessage, ElButton } from 'element-plus';
 import * as Self from '@/axios/api/self'
 import { selectAndUploadFile } from '@/axios/api/upload';
 
-const show = true
+const show = ref(true)
 
 const { oldAvatar } = defineProps<{
     oldAvatar?: string
