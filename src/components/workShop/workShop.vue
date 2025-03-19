@@ -143,7 +143,7 @@
                 </div>
             </div>
         </div>
-        <div class="tip">
+        <div class="tip" style="color:darkgray">
             <span v-if="goodsData.length != 0">已展示全部商品</span>
             <span v-else>暂无商品</span>
         </div>

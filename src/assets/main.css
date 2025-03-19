@@ -241,3 +241,20 @@
   box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.1);
   background-color: #fff;
 }
+
+/*activity-detail*/
+.message {
+  border: solid 2px rgba(185, 161, 131, 1);
+  background-color: #fff;
+  border-radius: 10px;
+
+  .el-message-icon--success {
+    padding-top: 3px;
+    color: rgba(152, 123, 91, 1);
+  }
+
+  .el-message__content {
+    font-size: 18px;
+    color: rgba(152, 123, 91, 1);
+  }
+}
