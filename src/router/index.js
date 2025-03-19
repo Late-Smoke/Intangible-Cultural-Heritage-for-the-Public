@@ -175,6 +175,11 @@ const router = createRouter({
       name: 'activityParticipate',
       component: () => import('@/views/activity/participate.vue'),
     },
+    {
+      path: '/activity/:id(\\d+)/participate/detail',
+      name: 'activityParticipateDetail',
+      component: () => import('@/views/activity/participateDetail.vue'),
+    },
 
     // user
     {
