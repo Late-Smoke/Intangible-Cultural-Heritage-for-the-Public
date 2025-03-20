@@ -299,6 +299,7 @@ onMounted(() => {
                     height: 6,
                     content: 'circle',
                     fillStyle: '#FADBBF',
+                    strokeStyle: 'rgba(140, 68, 32, 0.65)',
                     strokeWeight: 1,
                 },
                 pointHardcoreStyle: {
@@ -404,7 +405,7 @@ onMounted(() => {
                         strokeOpacity: 1,
                         strokeWeight: 1,
                         fillColor: fillColor,
-                        fillOpacity: 0.35
+                        fillOpacity: 0.35,
                     };
                 });
                 districtExplorer.renderParentFeature(areaNode, {
@@ -428,24 +429,6 @@ onMounted(() => {
             getFromAdcodeApi(positionStore.cityCode).then(res => {
                 heritageData.value = res.data.data.filter(item => item.lng != null && item.lat != null).map(item => [item.lng, item.lat]);
                 pointSimplifierIns.setData(heritageData.value);
-                // heritageData.value.forEach((position, index) => {
-                //     var text = new AMap.Text({
-                //         text: index.toString(), // 显示索引
-                //         position: position, // 设置位置
-                //         offset: new AMap.Pixel(0, -10), // 调整偏移量
-                //         style: {
-                //             fontSize: '12px',
-                //             fontWeight: 'bold',
-                //             fillColor: 'black',
-                //             strokeColor: 'white',
-                //             strokeWidth: 2,
-                //             padding: '2px',
-                //             backgroundColor: 'rgba(255,255,255,0.5)',
-                //             textAlign: 'center'
-                //         }
-                //     });
-                //     text.setMap(map);
-                // });
             });
         })
 
@@ -494,6 +477,10 @@ onMounted(() => {
 #container {
     width: 100%;
     aspect-ratio: 1 / 1;
+}
+
+:deep(.amap-e) {
+    z-index: 999 !important;
 }
 
 :deep(.el-dialog) {

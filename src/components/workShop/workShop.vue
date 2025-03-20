@@ -28,11 +28,11 @@
                     <ImageUpload v-model="fileList" />
                 </el-form-item>
                 <el-form-item class="small-form" label="" prop="name">
-                    <el-input class="small-input" v-model="ruleForm.name" placeholder="此处填写商品名称(必填)"
+                    <el-input class="small-input" v-model="ruleForm.name" placeholder="此处填写商品名称 ( 必填 )"
                         autocomplete="off" />
                 </el-form-item>
                 <el-form-item class="small-form" label="" prop="link">
-                    <el-input class="small-input" v-model="ruleForm.link" placeholder="在此输入商品链接(必填)"
+                    <el-input class="small-input" v-model="ruleForm.link" placeholder="在此输入商品链接 ( 必填 )"
                         autocomplete="off" />
                 </el-form-item>
                 <el-form-item class="big-form" label="" prop="describe">

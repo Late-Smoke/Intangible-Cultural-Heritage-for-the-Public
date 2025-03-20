@@ -312,6 +312,18 @@ const router = createRouter({
       component: () => import('../components/workShop/workShop.vue'),
     },
 
+    //management
+    {
+      path: '/management',
+      name: 'management',
+      component: () => import('../views/management/management.vue'), 
+    },
+    {
+      path: '/management/appealDetail',
+      name:'appealDetail',
+      component: () => import('../views/management/appealDetail.vue'),
+    },
+    
     // 404
     {
       path: '/:pathMatch(.*)*',
