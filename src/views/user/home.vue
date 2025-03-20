@@ -324,6 +324,7 @@ onActivated(() => {
     } else if (isSelf.value) {
         loadUser()
         loadUnreads()
+        tabs.loadTab()
     } else {
         Self.FollowController.loadBoth()
     }

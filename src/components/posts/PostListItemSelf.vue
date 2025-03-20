@@ -8,11 +8,11 @@
                 </div>
                 <template #dropdown>
                     <el-dropdown-menu>
-                        <el-dropdown-item v-if="!post.pinned" @click="Posts.pinPost(post.id).then(reloadAction)">置顶</el-dropdown-item>
-                        <el-dropdown-item v-else @click="Posts.unpinPost(post.id).then(reloadAction)">取消置顶</el-dropdown-item>
+                        <el-dropdown-item v-if="!post.pinned" @click="Posts.pinPost(post.id).then(reloadAction)" icon="mdiPublish">置顶</el-dropdown-item>
+                        <el-dropdown-item v-else @click="Posts.unpinPost(post.id).then(reloadAction)" icon="mdiPublishOff">取消置顶</el-dropdown-item>
 
-                        <el-dropdown-item @click="">编辑</el-dropdown-item>
-                        <el-dropdown-item @click="">删除</el-dropdown-item>
+                        <el-dropdown-item @click="gotoPostEdit(post.id)" icon="Edit">编辑</el-dropdown-item>
+                        <el-dropdown-item @click="confirmDeletePost" icon="Delete">删除</el-dropdown-item>
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
@@ -55,14 +55,25 @@
 
 <script setup lang="ts">
 import * as Posts from '@/axios/api/posts'
-import { formatDate, gotoPost } from '@/utils'
+import { formatDate, gotoPostEdit, gotoPost } from '@/utils'
 import { html2txt } from '@/utils'
+import { ElMessage, ElMessageBox } from 'element-plus';
 
-const { self = true } = defineProps<{
+const { post, self = true, reloadAction } = defineProps<{
     post: Posts.Post
     self?: boolean
     reloadAction?: () => any
 }>()
+
+function confirmDeletePost() {
+    ElMessageBox.confirm('确定要删除帖子吗?', '删除帖子', { type: 'warning' }).then(() => {
+        Posts.deletePost(post.id).then(r => {
+            r.data.success ? ElMessage.success(r.data.data) : ElMessage.error(r.data.errorMsg)
+            reloadAction()
+        })
+    }).catch(() => { })
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -131,6 +142,7 @@ const { self = true } = defineProps<{
             font-size: 0.9em;
             color: #333;
             margin-top: 6px;
+            word-break: break-word;
         }
 
         .img {

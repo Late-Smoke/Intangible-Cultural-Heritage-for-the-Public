@@ -2,23 +2,38 @@ import apiClient from "../axios";
 import { Response } from "./common";
 import { ElMessage } from 'element-plus';
 
-export interface HotPost {
+export interface BasePost {
+    /**
+     * 帖子类型, 要么是”帖子“，要么是”资讯“ 再无其他
+     */
+    category: '帖子' | '资讯';
+    /**
+     * 帖子标题
+     */
+    title: string;
+    /**
+     * 内容, 纯文字
+     */
+    content: string;
+    /**
+     * 标签
+     */
+    tag: string | null;
+    /**
+     * 图片视频集合
+     */
+    urls: Url[] | null;
+}
+
+export interface HotPost extends BasePost {
     /**
      * 头像url
      */
     avatarUrl: string;
     /**
-     * 类型, 要么“普通帖子”要么“新闻资讯”
-     */
-    category: string;
-    /**
      * 评论数
      */
     comments: number;
-    /**
-     * 内容（无图片富文本）
-     */
-    content: string;
     /**
      * 当前用户是否点赞过的标识
      */
@@ -47,15 +62,6 @@ export interface HotPost {
      */
     sex: number;
     /**
-     * 帖主的tag标签
-     */
-    tag: string;
-    /**
-     * 帖子标题
-     */
-    title: string;
-    urls: Url[];
-    /**
      * 贴主id
      */
     userId: number;
@@ -74,35 +80,27 @@ export interface Url {
     /**
      * 创建时间
      */
-    createdTime: string;
+    createdTime?: string;
     /**
      * 帖子id
      */
-    postId: number;
+    postId?: number;
     /**
      * 文件类型, 0为图片1为视频
      */
-    type: number;
+    type: 0 | 1;
     url: string;
 }
 
-export interface Post {
+export interface Post extends BasePost {
     /**
      * 发布者头像
      */
     avatarUrl: string;
     /**
-     * 帖子类型, 要么是”帖子“，要么是”资讯“ 再无其他
-     */
-    category: string;
-    /**
      * 评论量
      */
     comments: number;
-    /**
-     * 内容, 纯文字
-     */
-    content: string;
     /**
      * 是否点赞, 当前用户是否点过赞
      */
@@ -131,18 +129,6 @@ export interface Post {
      */
     sex: number;
     /**
-     * 标签
-     */
-    tag: string | null;
-    /**
-     * 帖子标题
-     */
-    title: string;
-    /**
-     * 图片视频集合
-     */
-    urls: Url[] | null;
-    /**
      * 发布者id
      */
     userId: number;
@@ -162,6 +148,9 @@ export interface Post {
     beFan: boolean
 }
 
+export interface PostUpdateDTO extends BasePost {
+    id: number
+}
 
 export function getHotPosts() {
     return apiClient.get<HotPost>('/postnews/hot')
@@ -205,4 +194,16 @@ export function unpinPost(id) {
         } catch { }
     })
     return r
+}
+
+export function postPost(post: BasePost) {
+    return apiClient.post<Response<string>>('/postnews/one', post)
+}
+
+export function updatePost(post: PostUpdateDTO) {
+    return apiClient.put<Response<string>>('/postnews/update', post)
+}
+
+export function deletePost(id) {
+    return apiClient.delete<Response<string>>(`/postnews/${id}`)
 }
