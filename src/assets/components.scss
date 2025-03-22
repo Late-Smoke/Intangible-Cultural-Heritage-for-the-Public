@@ -13,13 +13,18 @@
 }
 
 .rich-text-content {
+
+    &,
     * {
         font-size: 1em !important;
+        line-height: 1.4em !important;
+        word-break: break-word !important;
+    }
+
+    * {
         background: none !important;
         margin: 0 0 0.5em 0 !important;
         padding: 0 !important;
-        line-height: 1.4em !important;
-        word-break: break-word !important;
     }
 
     h1 {
@@ -30,7 +35,8 @@
         font-size: var(--font-size-h2) !important;
     }
 
-    img {
+    img,
+    .ql-snow &.ql-editor img {
         max-width: calc(100% - 24px);
         display: block;
         margin: 4px auto !important;

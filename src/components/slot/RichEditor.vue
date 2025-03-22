@@ -77,7 +77,9 @@ onMounted(() => {
         if (html.value) {
             if (html.value != editor.getSemanticHTML()) {
                 editor.root.innerHTML = ''
+                editor.root.contentEditable = 'false'
                 editor.clipboard.dangerouslyPasteHTML(html.value)
+                editor.root.contentEditable = 'true'
             }
         } else {
             editor.root.innerHTML = ''
