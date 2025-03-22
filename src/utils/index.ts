@@ -111,6 +111,20 @@ export function gotoPostEdit(id) {
     })
 }
 
+export function gotoActivity(id) {
+    router.push({
+        name: 'activityParticipate',
+        params: { id }
+    })
+}
+
+export function gotoActivityParticipateDetail(id) {
+    router.push({
+        name: 'activityParticipateDetail',
+        params: { id }
+    })
+}
+
 
 // API
 export function promiseSuccess<T>(axiosPromise: Promise<AxiosResponse<Response<T>, any>>): Promise<AxiosResponse<Response<T>, any>> {
@@ -120,6 +134,12 @@ export function promiseSuccess<T>(axiosPromise: Promise<AxiosResponse<Response<T
             else reject(r)
         }).catch(e => reject(e))
     })
+}
+
+export function tryShowErrorMsg(r: AxiosResponse<Response<any>>) {
+    if (r?.data?.errorMsg) {
+        ElMessage.error(r.data.errorMsg)
+    }
 }
 
 const debounceMap = new Map<() => Promise<any>, Promise<any>>()

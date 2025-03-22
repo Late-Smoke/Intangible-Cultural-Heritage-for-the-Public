@@ -191,6 +191,9 @@ const router = createRouter({
     {
       path: '/activity/:id(\\d+)/participate/detail',
       name: 'activityParticipateDetail',
+      props: route => ({
+        activityId: route.params.id,
+      }),
       component: () => import('@/views/activity/participateDetail.vue'),
     },
 
@@ -329,14 +332,14 @@ const router = createRouter({
     {
       path: '/management',
       name: 'management',
-      component: () => import('../views/management/management.vue'), 
+      component: () => import('../views/management/management.vue'),
     },
     {
       path: '/management/appealDetail',
-      name:'appealDetail',
+      name: 'appealDetail',
       component: () => import('../views/management/appealDetail.vue'),
     },
-    
+
     // 404
     {
       path: '/:pathMatch(.*)*',

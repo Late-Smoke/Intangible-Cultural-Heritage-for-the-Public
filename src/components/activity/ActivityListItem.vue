@@ -55,7 +55,7 @@
 
                 <template v-if="bottom == 'detail'">
                     <div></div>
-                    <div class="btn-goto-detail" @click.stop="">查看参与详情</div>
+                    <div class="btn-goto-detail" @click.stop="gotoActivityParticipateDetail(activity.id)">查看参与详情</div>
                 </template>
             </div>
         </div>
@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import router from '@/router'
 import * as Activity from '@/axios/api/activity'
-import { parseDate, promiseSuccess } from '@/utils';
+import { gotoActivityParticipateDetail, parseDate, promiseSuccess } from '@/utils';
 
 const { bottom = 'price', activity } = defineProps<{
     activity: Activity.Activity
