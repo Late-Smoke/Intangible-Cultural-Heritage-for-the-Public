@@ -82,32 +82,11 @@
 
                         <template v-if="bottom == 'detail'">
                             <div></div>
-                            <div class="btn-goto-detail" @click.stop="">查看参与详情</div>
+                            <div class="btn-goto-detail" @click.stop="gotoActivityParticipateDetail(activity.id)">查看参与详情
+                            </div>
                         </template>
                     </div>
                 </div>
-            </div>
-            <div class="bottom">
-                <template v-if="bottom == 'price'">
-                    <div class="price">￥ {{ activity.chargeAmount }}</div>
-                    <div class="favs" @click.stop="setFav(!activity.currentUserFavorite)">
-                        <mdiStar v-if="activity.currentUserFavorite" color="gold" />
-                        <mdiStarOutline v-else />
-                        {{ activity.favoritesNumber }}
-                    </div>
-                </template>
-
-                <template v-if="bottom == 'address' && activity.activityAddresses">
-                    <div class="address">
-                        <mdiMapMarkerOutline /> {{ activity.activityAddresses.addressDetail }}
-                    </div>
-                </template>
-
-                <template v-if="bottom == 'detail'">
-                    <div></div>
-                    <div class="btn-goto-detail" @click.stop="gotoActivityParticipateDetail(activity.id)">查看参与详情</div>
-                </template>
->>>>>>> 42329804b96d6f2875a07881d3e2a4308c3f641d
             </div>
         </template>
         <template #template>
@@ -120,14 +99,14 @@
                     <el-skeleton-item variant="text" style="width: 200px" />
                     <el-skeleton-item variant="text" style="width: 200px" />
                 </div>
+                <el-skeleton-item variant="text" style="width: 100%;opacity: 0;" />
             </div>
-            <el-skeleton-item variant="text" style="width: 100%;opacity: 0;" />
         </template>
     </el-skeleton>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 import router from '@/router'
 import * as Activity from '@/axios/api/activity'
 import { gotoActivityParticipateDetail, parseDate, promiseSuccess } from '@/utils';
