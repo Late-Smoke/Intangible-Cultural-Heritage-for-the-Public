@@ -40,6 +40,7 @@ export interface User extends BaseUser {
     userType: number;
 
     id: number
+    phoneNumber: number
 }
 
 export interface Comment {

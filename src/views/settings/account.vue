@@ -5,7 +5,7 @@
     <SettingItem name="头像" type="image" :value="settings.avatar" :action="() => showChangeAvatar(settings.avatar, loadSettings)" rounded-image />
     <SettingItem name="昵称" type="input" :value="settings.nickname" :input-action="() => showChangeNickname(settings.nickname, loadSettings)" />
     <SettingItem name="个性签名" type="input" :value="settings.signature" :action="updateSignature" input-tips="修改个性签名" />
-    <SettingItem name="手机号码" type="input" :value="settings.phone" input-tips="修改手机号码" />
+    <SettingItem name="手机号码" type="input" :value="settings.phone" :input-action="() => { }" />
     <SettingItem name="修改密码" type="input" :input-action="showChangePassword" />
 
     <div ref="overlay"></div>
@@ -27,7 +27,7 @@ const settings = reactive({
     avatar: undefined as string,
     nickname: '',
     signature: '',
-    phone: '暂不支持修改',
+    phone: '',
 })
 
 function updateSignature(value: string) {
@@ -39,6 +39,7 @@ function loadSettings() {
         settings.avatar = r.data.data.avatarUrl
         settings.nickname = r.data.data.nickName
         settings.signature = r.data.data.signature
+        settings.phone = r.data.data.phoneNumber.toString()
     })
 }
 

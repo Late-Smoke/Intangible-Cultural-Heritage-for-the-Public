@@ -1,28 +1,31 @@
 <template>
-    <div class="detail">
+    <div class="detail" v-if="activity && activityParticipateDetail">
         <div class="top">
-            <el-icon size="24" @click="">
+            <el-icon size="24" @click="router.back()">
                 <ArrowLeft />
             </el-icon>
             <div class="title">参与详情</div>
         </div>
+
         <div class="activity-detail">
             <div class="activity-detail-box">
-                <el-image class="detail-img" :src="imgUrl" fit="cover"></el-image>
+                <el-image class="detail-img" :src="activity.acmedias?.at(0)?.url" fit="cover" @click="gotoActivity(activity.id)"></el-image>
+
                 <div class="activity-info">
-                    <div class="activity-title">{{ 1 }}</div>
+                    <div class="activity-title" @click="gotoActivity(activity.id)">{{ activity.title }}</div>
                     <div>
                         <div class="activity-time">预约日期</div>
-                        <span>{{ 1 }}</span>
+                        <span>{{activityParticipateDetail.map(x => x.participationTime).join(', ')}}</span>
                     </div>
-                    <div class="money">￥{{ 1 }}</div>
+                    <div class="money">￥{{ activity.chargeAmount }}</div>
                 </div>
             </div>
-            <div class="time">预约时间 : {{ 1 }}</div>
+            <div class="time">预约时间 : {{activityParticipateDetail.map(x => parseDate(x.createdTime).toLocaleString()).join(', ')}}</div>
         </div>
+
         <div class="participator-info">
             <div class="info-title">参与人信息</div>
-            <div class="info-item" v-for="item in personList" key="item.index">
+            <div class="info-item" v-for="item in activityParticipateDetail.map(x => x.eventDetailList).flat()" key="item.index">
                 <div class="info-left">
                     <div>姓名</div>
                     <div>手机号码</div>
@@ -35,20 +38,21 @@
                 </div>
             </div>
         </div>
+
         <div class="order-info">
             <div class="info-title">订单信息</div>
             <div class="info-item order">
                 <div class="info-left">
                     <div>订单编号 : </div>
-                    <div>付款时间 : </div>
+                    <!-- <div>付款时间 : </div>
                     <div>发货时间 : </div>
-                    <div>完成时间 : </div>
+                    <div>完成时间 : </div> -->
                 </div>
                 <div class="info-right">
-                    <div>{{ 1111 }}</div>
-                    <div>{{ 2222 }}</div>
+                    <div>{{activityParticipateDetail.map(x => x.id).join(', ')}}</div>
+                    <!-- <div>{{ 2222 }}</div>
                     <div>{{ 3333 }}</div>
-                    <div>{{ 4444 }}</div>
+                    <div>{{ 4444 }}</div> -->
                 </div>
             </div>
         </div>
@@ -64,22 +68,18 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed, reactive } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus'
+import router from '@/router';
+import * as Activity from '@/axios/api/activity'
+import { gotoActivity, parseDate, promiseSuccess, tryShowErrorMsg } from '@/utils';
 
-const imgUrl = ref('');// 测试用
-const personList = ref([
-    {
-        name: "1",
-        phoneNumber: "1",
-        idNumber: "1"
-    },
-    {
-        name: "2",
-        phoneNumber: "2",
-        idNumber: "2"
-    }
-]);//测试用
+const { activityId } = defineProps<{
+    activityId: string
+}>()
 
-const isCancel = ref(false);
+const isCancel = computed(() => activityParticipateDetail.value?.every(x => x.status == '已取消'));
+
+const activity = ref<Activity.Activity>()
+const activityParticipateDetail = ref<Activity.ActivityParticipateDetail[]>()
 
 function handleCancel() {
     ElMessageBox.confirm(
@@ -93,22 +93,32 @@ function handleCancel() {
             showClose: false,
             customClass: 'confirm-addGoods'
         }).then(() => {
-            isCancel.value = true;
-            ElMessage({
-                type: 'success',
-                message: '取消成功!',
-                customClass: 'message'
-            });
+            activityParticipateDetail.value.forEach(x => {
+                promiseSuccess(Activity.cancelParticipateActivity(x.id)).then(() => {
+                    ElMessage({
+                        type: 'success',
+                        message: '取消成功!',
+                        customClass: 'message'
+                    });
+                    loadActivity()
+                }).catch(tryShowErrorMsg)
+            })
         })
+}
 
+function loadActivity() {
+    Activity.getActicity(activityId).then(r => activity.value = r.data.data)
+    Activity.getParticipateDetails(activityId).then(r => activityParticipateDetail.value = r)
 }
 
 onMounted(() => {
-    ElMessage({
-        type: 'success',
-        message: '预约成功 !',
-        customClass: 'message'
-    });
+    // ElMessage({
+    //     type: 'success',
+    //     message: '预约成功 !',
+    //     customClass: 'message'
+    // });
+
+    loadActivity()
 })
 </script>
 
@@ -151,6 +161,7 @@ onMounted(() => {
         .detail-img {
             width: 113px;
             height: 155px;
+            flex-shrink: 0;
         }
 
         .activity-info {

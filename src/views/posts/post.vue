@@ -393,6 +393,7 @@ onMounted(() => {
 
 .body {
     margin: 8px 12px;
+    white-space: pre-line;
 }
 
 .tags {

@@ -87,6 +87,28 @@
                     </div>
                 </div>
             </div>
+            <div class="bottom">
+                <template v-if="bottom == 'price'">
+                    <div class="price">￥ {{ activity.chargeAmount }}</div>
+                    <div class="favs" @click.stop="setFav(!activity.currentUserFavorite)">
+                        <mdiStar v-if="activity.currentUserFavorite" color="gold" />
+                        <mdiStarOutline v-else />
+                        {{ activity.favoritesNumber }}
+                    </div>
+                </template>
+
+                <template v-if="bottom == 'address' && activity.activityAddresses">
+                    <div class="address">
+                        <mdiMapMarkerOutline /> {{ activity.activityAddresses.addressDetail }}
+                    </div>
+                </template>
+
+                <template v-if="bottom == 'detail'">
+                    <div></div>
+                    <div class="btn-goto-detail" @click.stop="gotoActivityParticipateDetail(activity.id)">查看参与详情</div>
+                </template>
+>>>>>>> 42329804b96d6f2875a07881d3e2a4308c3f641d
+            </div>
         </template>
         <template #template>
             <div style="display: flex;gap:10px;padding: 10px 15px;">
@@ -108,7 +130,7 @@
 import { ref } from 'vue';
 import router from '@/router'
 import * as Activity from '@/axios/api/activity'
-import { parseDate, promiseSuccess } from '@/utils';
+import { gotoActivityParticipateDetail, parseDate, promiseSuccess } from '@/utils';
 
 const loading = ref(true);
 
