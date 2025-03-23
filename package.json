@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
+    "@types/amap-js-api": "^1.4.16",
     "@vitejs/plugin-vue": "^5.2.1",
     "eslint": "^9.14.0",
     "eslint-plugin-vue": "^9.30.0",

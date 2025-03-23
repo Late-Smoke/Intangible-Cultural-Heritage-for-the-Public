@@ -6,6 +6,12 @@ import { ElMessageBox } from 'element-plus'
 import { getHotCultureApi } from '@/axios/api/search.js';
 import { useHistoryStore, useSearchStore } from '@/stores/user';
 
+const loading = ref(true);
+
+setTimeout(() => {
+    loading.value = false;
+}, 500);
+
 const route = useRoute();
 const historyShow = ref(false);
 const historyDelete = ref(false);
@@ -199,6 +205,8 @@ onMounted(() => {
             </div>
         </div>
         <div v-for="(text, index) in hotText.slice(0, 10)" :key="index">
+            <el-skeleton :loading="loading" animated>
+                <template #default>
             <div class="hot-box">
                 <div class="text-box">
                     <div class="hot-index">{{ index + 1 }}</div>
@@ -206,6 +214,12 @@ onMounted(() => {
                 </div>
                 <div class="hot-view">{{ hotView[index] }} w</div>
             </div>
+        </template>
+        <template #template>
+            <el-skeleton-item variant="text" style="width: 100%" />
+            <div style="margin-bottom: 20px;"></div>
+        </template>
+            </el-skeleton>
         </div>
         <div class="rule">
             <el-button type="text" class="rule-btn">

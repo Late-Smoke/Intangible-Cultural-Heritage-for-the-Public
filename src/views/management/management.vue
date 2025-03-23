@@ -88,28 +88,39 @@
                                 <ImageUpload v-model="fileList" />
                             </el-form-item>
                             <el-form-item class="small-form" label="" prop="name">
-                                <el-input class="small-input" v-model="ruleForm.name" placeholder="此处填写活动名称 ( 必填 )"
+                                <el-input class="small-input" v-model="ruleForm.name" placeholder="此处填写活动名称"
                                     autocomplete="off" />
                             </el-form-item>
-                            <el-form-item class="small-form" label="" prop="time">
-                                <el-input class="small-input" v-model="ruleForm.time" placeholder="此处填写活动时间 ( 必填 )"
-                                    autocomplete="off" />
+                            <el-form-item class="small-form" label="" prop="type">
+                                <el-segmented v-model="ruleForm.sort" :options="['线下', '线上']"
+                                    style="margin-top: 5px;" />
                             </el-form-item>
-                            <el-form-item class="small-form" label="">
-                                <el-input class="small-input" v-model="ruleForm.money" placeholder="此处填写活动金额"
-                                    autocomplete="off" />
+                            <el-form-item class="small-form" label="" prop="startTime">
+                                <el-date-picker v-model="ruleForm.startTime" type="datetime" placeholder="此处填写开始日期" />
                             </el-form-item>
-                            <el-form-item class="small-form" label="">
-                                <el-input-tag v-model="ruleForm.tag" placeholder="此处填写活动标签"
-                                    aria-label="" />
+                            <el-form-item class="small-form" label="" prop="endTime">
+                                <el-date-picker v-model="ruleForm.endTime" type="datetime" placeholder="此处填写结束日期" />
                             </el-form-item>
-                            <el-form-item class="small-form" label="" prop="address">
-                                <el-input class="small-input" v-model="ruleForm.address" placeholder="在此输入活动地址 ( 必填 )"
-                                    autocomplete="off" />
+                            <el-form-item class="small-form" label="" prop="money">
+                                <PriceInput v-model="ruleForm.money" placeholder="此处填写活动金额" class="simple-input" />
+                            </el-form-item>
+                            <el-form-item class="small-form" label="" prop="tag">
+                                <el-input-tag v-model="ruleForm.tag" placeholder="此处填写活动标签 ( 回车 )" aria-label="" />
+                            </el-form-item>
+                            <el-form-item class="small-form" label="" prop="address" v-show="ruleForm.sort === '线下'">
+                                <!-- <Map @update:data="handleChildData" /> -->
                             </el-form-item>
                             <el-form-item class="big-form" label="" prop="info">
                                 <el-input class="big-input" v-model="ruleForm.info" type="textarea" :rows="7"
-                                    placeholder="活动详情 ( 必填 )" autocomplete="off" />
+                                    placeholder="活动详情" autocomplete="off" />
+                            </el-form-item>
+                            <el-form-item class="small-form" label="" prop="message">
+                                <el-input class="small-input" v-model="ruleForm.message" placeholder="此处填写预约须知"
+                                    aria-label="" />
+                            </el-form-item>
+                            <el-form-item class="small-form" label="" prop="uid">
+                                <el-input class="small-input" v-model="ruleForm.uid" placeholder="此处填写关联非遗传承人uid"
+                                    aria-label="" />
                             </el-form-item>
                             <el-form-item class="submit-btn-box">
                                 <el-button class="form-submit-btn" type="primary" @click="submitForm(ruleFormRef)">
@@ -137,7 +148,7 @@
                 <div class="activity-list">
                     <div class="activity-item" v-for="(item, index) in currentActivity" :key="index">
                         <div class="activity-left">
-                            <el-image class="activity-img" :src="item.url" />
+                            <el-image class="activity-img" :src="item.url" fit="cover" />
                         </div>
                         <div class="activity-right">
                             <div class="activity-name">{{ item.name }}</div>
@@ -156,7 +167,21 @@
                 </div>
             </div>
             <div v-else>
-
+                <div class="bill-title">全部账单</div>
+                <div class="bill-tip">
+                    平台分成比例说明 : 平台分成创作者投稿所获收益的20% , 与非遗传承人共同举办的活动 , 平台分成活动收益70%
+                </div>
+                <div class="bill-form">
+                    <el-table :data="tableData" height="60vh" :stripe="true" :border = 'true' style="width: 100%">
+                        <el-table-column prop="userId" label="创作者ID" />
+                        <el-table-column prop="payAmount" label="用户支付金额" />
+                        <el-table-column prop="adminIncome" label="平台分成金额" />
+                        <el-table-column prop="createdUserIncome" label="创作者分成金额" />
+                        <el-table-column prop="type" label="收益来源" width="90px" />
+                        <el-table-column prop="status" label="分账状态" />
+                        <el-table-column prop="updatedTime" label="分账时间" width="110px"/>
+                    </el-table>
+                </div>
             </div>
         </el-main>
     </el-container>
@@ -164,10 +189,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed, reactive } from 'vue';
-import { ElMessageBox , ElMessage } from 'element-plus';
+import { ref, watch, onMounted, computed, reactive, nextTick } from 'vue';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import ImageUpload from '@/components/slot/ImageUpload.vue';
 import type { FormInstance, FormRules } from 'element-plus'
+import PriceInput from '@/components/slot/PriceInput.vue';
+import Map from '@/views/map.vue';
+import * as management from '@/axios/api/management';
+import { RefSymbol } from '@vue/reactivity';
 
 const title = ref('申诉和反馈处理');
 const menu = ref(false);
@@ -237,6 +266,7 @@ watch(activityData, () => {
     currentActivity.value = activityData.value;
 });
 
+// 添加活动
 const dialogAddActivity = ref(false);
 const ruleFormRef = ref<FormInstance>();
 const nameRule = (rule: any, value: any, callback: any) => {
@@ -244,53 +274,83 @@ const nameRule = (rule: any, value: any, callback: any) => {
         callback(new Error('请填写活动名称'))
     } else callback();
 }
-
 const infoRule = (rule: any, value: any, callback: any) => {
     if (value === '') {
         callback(new Error('请填写活动详情'))
     } else callback();
 }
-
 const addressRule = (rule: any, value: any, callback: any) => {
     if (value === '') {
         callback(new Error('请填写活动地址'))
     } else callback();
 }
-
-const timeRule = (rule: any, value: any, callback: any) => {
+const startTimeRule = (rule: any, value: any, callback: any) => {
     if (value === '') {
-        callback(new Error('请填写活动时间'))
+        callback(new Error('请填写活动开始时间'))
     } else callback();
 }
-
+const endTimeRule = (rule: any, value: any, callback: any) => {
+    if (value.length === 0) {
+        callback(new Error('请填写活动结束时间'))
+    } else callback();
+}
 const imgRule = (rule: any, value: any, callback: any) => {
     if (value.length === 0) {
         callback(new Error('请上传活动图片'))
     } else callback();
 }
-
+const tagRule = (rule: any, value: any, callback: any) => {
+    if (value.length === 0) {
+        callback(new Error('请填写活动标签'))
+    } else if (value.length > 3) {
+        callback(new Error('标签不能超过3个'))
+    } else if (value.length < 1) {
+        callback(new Error('标签至少需要1个'))
+    } else callback();
+}
+const uidRule = (rule: any, value: any, callback: any) => {
+    if (!value) {
+        callback(new Error('请填写关联非遗传承人uid'))
+    } else callback();
+}
+const messageRule = (rule: any, value: any, callback: any) => {
+    if (value === '') {
+        callback(new Error('请填写预约须知'))
+    } else callback();
+}
+const moneyRule = (rule: any, value: any, callback: any) => {
+    if (!value) {
+        callback(new Error('请填写活动金额'))
+    } else callback();
+}
 const ruleForm = reactive({
     img: [],
     name: '',
     info: '',
     address: '',
-    time: '',
-    money: '',
+    startTime: '',
+    endTime: '',
+    money: null,
     tag: [],
+    sort: '线下',
+    uid: null,
+    message: ''
 })
-
+const link = ref('');
 const fileList = ref<string[]>([]);
-
 watch(fileList, () => ruleForm.img = fileList.value)
-
 const rules = reactive<FormRules<typeof ruleForm>>({
     name: [{ validator: nameRule, trigger: 'blur' }],
     info: [{ validator: infoRule, trigger: 'blur' }],
     address: [{ validator: addressRule, trigger: 'blur' }],
     img: [{ validator: imgRule, trigger: 'blur' }],
-    time: [{ validator: timeRule, trigger: 'blur' }],
+    startTime: [{ validator: startTimeRule, trigger: 'blur' }],
+    endTime: [{ validator: endTimeRule, trigger: 'blur' }],
+    tag: [{ validator: tagRule, trigger: 'blur' }],
+    uid: [{ validator: uidRule, trigger: 'blur' }],
+    message: [{ validator: messageRule, trigger: 'blur' }],
+    money: [{ validator: moneyRule, trigger: 'blur' }]
 })
-
 function handleCloseAddActivity() { // 关闭添加活动弹窗
     if (ruleForm.address === '' && ruleForm.info === '' && ruleForm.address === '' && ruleForm.name === '' && fileList.value.length === 0) {
         dialogAddActivity.value = false;
@@ -316,7 +376,6 @@ function handleCloseAddActivity() { // 关闭添加活动弹窗
     })
 
 }
-
 const submitForm = (formEl: FormInstance | undefined) => { // 发布活动
     if (!formEl) return
     formEl.validate((valid) => {
@@ -355,6 +414,20 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布活动
         }
     })
 }
+
+const tableData = ref([]);
+
+watch(title, () => {
+    if (title.value === '运营管理') {
+        if(tableData.value.length !== 0) return;
+        management.getBillApi().then(res => {
+            tableData.value = res.data.data; 
+            tableData.value.forEach((item: any) => {
+                item.updatedTime = item.updatedTime.replace('T', ' ');
+            })
+        })
+    } 
+},{ immediate: true})
 </script>
 
 <style scoped>
@@ -383,10 +456,12 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布活动
     justify-content: center;
     flex-direction: column;
     gap: 10px;
+    margin-top: 20px;
 
     .avatar {
         margin-bottom: 10px;
-        box-shadow: 2px 2px 25px 13px rgba(194, 128, 63, 0.25);
+        /* box-shadow: 2px 2px 25px 13px rgba(194, 128, 63, 0.25); */
+        animation: breathe-shadow 2s infinite alternate;
     }
 
     .name {
@@ -397,6 +472,16 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布活动
         color: darkgray;
     }
 
+}
+
+@keyframes breathe-shadow {
+    from {
+        box-shadow: 2px 2px 25px 10px rgba(194, 128, 63, 0.25);
+    }
+
+    to {
+        box-shadow: 2px 2px 25px 20px rgba(194, 128, 63, 0.35);
+    }
 }
 
 .menu-list {
@@ -432,7 +517,9 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布活动
 }
 
 /*appeal*/
-.appeal-title {
+.appeal-title,
+.activity-title,
+.bill-title {
     color: rgba(178, 178, 178, 1);
 }
 
@@ -496,9 +583,6 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布活动
 }
 
 /*activity*/
-.activity-title {
-    color: rgba(178, 178, 178, 1);
-}
 
 .activity-top {
     display: flex;
@@ -646,14 +730,50 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布活动
     border-radius: 0;
 }
 
+:deep(.el-form-item.is-error .el-input-tag__wrapper) {
+    box-shadow: none;
+}
+
+.simple-input {
+    width: 100%;
+    box-shadow: none;
+    border: none;
+    border-bottom: solid 1px rgba(177, 151, 128, 0.5);
+    border-radius: 0;
+    padding: 5px 10px;
+    margin-top: 5px;
+    color: #606266;
+}
+
+.simple-input:focus {
+    outline: none;
+}
+
+.simple-input::placeholder {
+    color: #a8abb2;
+    font-size: 14px;
+}
+
 :deep(.el-input-tag) {
     box-shadow: none;
     border-bottom: solid 1px rgba(177, 151, 128, 0.5);
     border-radius: 0;
 }
 
+.el-input-tag.is-hovering:not(.is-focused) {
+    box-shadow: none;
+}
+
 .small-form {
     margin-bottom: 15px;
+}
+
+.el-segmented {
+    border-radius: 15px;
+}
+
+:deep(.el-segmented__item-selected) {
+    border-radius: 15px !important;
 }
 
 .big-form {
@@ -701,5 +821,16 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布活动
     width: 103px;
     height: 45px;
     font-size: 24px;
+}
+
+.map {
+    width: 100%;
+    height: 150px;
+}
+
+/*bill*/
+.bill-tip {
+    margin: 10px 0;
+    line-height: 25px;
 }
 </style>

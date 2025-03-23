@@ -49,7 +49,8 @@ watch(params.value, () => {
         <div class="head">
             <div class="btn-box">
                 <div v-show="!isOnline" class="btn">
-                    <el-button class="position-btn" text @click="handleCity">{{ activityStore.position }}</el-button>
+                    <el-button class="position-btn" text @click="handleCity">{{ activityStore.position
+                    }}</el-button>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M7 10L12.0008 14.58L17 10" stroke="#0A090B" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round" />
@@ -81,9 +82,7 @@ watch(params.value, () => {
             <span v-else>到底了</span>
         </div>
     </div>
-
 </template>
-
 
 <style scoped>
 .container {

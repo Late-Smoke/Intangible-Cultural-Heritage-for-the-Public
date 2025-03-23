@@ -10,6 +10,9 @@ import ActivityListItem from '@/components/activity/ActivityListItem.vue';
 import Map from '@/components/slot/gaode.vue';
 import { ArrowDownBold } from '@element-plus/icons-vue';
 
+const loading1 = ref(true);
+const loading2 = ref(true);
+
 const positionStore = usePositionStore();
 const TabName = ref('related-post');
 const route = useRoute()
@@ -248,6 +251,7 @@ watch(TabName, () => {
     })
   } else if (TabName.value === 'heritage') {
     watch(() => [heritageArea.value, heritageOptions.value.map(item => item.value)], () => { //选项发生变化-非遗项目
+      loading1.value = true;
       getFromAdcodeApi(concatADCode(heritageArea.value)).then(res => {
         heritageData.value = res.data.data;
         if (!heritageData.value) return;
@@ -256,15 +260,18 @@ watch(TabName, () => {
             (item.type === heritageOptions.value[1].value || !heritageOptions.value[1].value) &&
             (item.secondType === heritageOptions.value[2].value || !heritageOptions.value[2].value);
         })
+        loading1.value = false;
       })
     }, { immediate: true })
   } else
     watch(() => [artistArea.value, artistOptions.value.map(item => item.value)], () => { //选项发生变化-非遗传承人
       if (!artistArea.value) return;
+      loading2.value = true;
       getArtistApi(concatADCode(artistArea.value), artistOptions.value[0].value,
         artistOptions.value[1].value, artistOptions.value[2].value).then(res => {
           artistData.value = res.data.data;
-        })
+        });
+      loading2.value = false;
     }, { immediate: true })
 }, { immediate: true })
 </script>
@@ -349,8 +356,9 @@ watch(TabName, () => {
         <div class="sum">
           共<span style="color:#D90000;padding:0 5px">{{ heritageData?.length ? heritageData.length : 0 }}</span>个项目
         </div>
-        <el-table :data="heritageData" height="400" :header-cell-style="{ borderColor: '#D1C4B6CC' }"
-          :cell-style="{ borderColor: '#D1C4B6CC' }" style="width: 100%">
+        <el-table v-loading="loading1" :data="heritageData" height="400"
+          :header-cell-style="{ borderColor: '#D1C4B6CC' }" :cell-style="{ borderColor: '#D1C4B6CC' }"
+          style="width: 100%">
           <el-table-column prop="num" label="序号" width="50px" />
           <el-table-column prop="projectNum" label="项目序号" />
           <el-table-column prop="num" label="编号" width="50px" />
@@ -399,7 +407,7 @@ watch(TabName, () => {
         <div class="sum">
           共<span style="color:#D90000;padding:0 5px;">{{ artistData?.length ? artistData.length : 0 }}</span>个人
         </div>
-        <el-table :data="artistData" height="250" :header-cell-style="{ borderColor: '#D1C4B6CC' }"
+        <el-table v-loading="loading2" :data="artistData" height="250" :header-cell-style="{ borderColor: '#D1C4B6CC' }"
           :cell-style="{ borderColor: '#D1C4B6CC' }" style="width: 100%">
           <el-table-column prop="id" label="序号" />
           <el-table-column prop="name" label="姓名" width="50px">

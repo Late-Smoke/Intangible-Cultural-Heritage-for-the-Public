@@ -116,7 +116,7 @@
                 <div class="img-box">
                     <el-image v-if="data.stock && !isManage" class="img" :src="data.mediaList[0].url"
                         :preview-src-list="data.mediaList.map(item => item.url)" fit="cover" @click.stop="" />
-                    <el-image v-else class="img" :src="data.mediaList[0].url" fit="cover"/>
+                    <el-image v-else class="img" :src="data.mediaList[0].url" fit="cover" />
                     <svg class="down-svg" v-if="isManage && data.stock" @click="handleDownGoods(index)" @click.stop=""
                         width="67" height="23" viewBox="0 0 67 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4.57377 0H67V23H0L4.57377 0Z" fill="#B35C5C" />
@@ -312,8 +312,9 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布商品
                     shop.getMyGoodsApi().then(res => {
                         goodsData.value = res.data.data;
                     })
+                    ruleFormRef?.value.resetFields();
+                    fileList.value = [];
                 })
-                console.log(ruleForm.img);
             }).catch(() => {
                 return;
             })
@@ -330,7 +331,7 @@ const detailData = ref();
 function handleDetailProject(index, id) {
     if (!isManage.value)
         dialogShowGoods.value = true;
-        detailData.value = goodsData.value[index];
+    detailData.value = goodsData.value[index];
     if (!isSelf.value) {
         shop.putLookApi(id).then(res => {
             detailData.value.views++;

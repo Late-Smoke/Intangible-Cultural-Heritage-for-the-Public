@@ -96,7 +96,7 @@
                     <div class="text-secondary" v-else>查看在售商品</div>
                 </div>
 
-                <div v-if="isSelf" @click="">
+                <div v-if="isSelf" @click="router.push({ name: 'createCenter' })">
                     <div class="text-main">
                         <mdiLightbulbOutline />创作中心
                     </div>

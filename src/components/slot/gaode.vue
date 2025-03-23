@@ -1,6 +1,6 @@
 <template>
     <div id="outer-box" style="width:100%;height:100%">
-        <el-dialog class="dialog" append-to-body="true" width="100%" style="margin:115px 0 0;aspect-ratio: 1 / 1;box-shadow: none;
+        <el-dialog class="dialog" :append-to-body="true" width="100%" style="margin:115px 0 0;aspect-ratio: 1 / 1;box-shadow: none;
         border: 2px solid rgba(230, 219, 205, 1);" :modal="false" v-model="dialogVisible"
             :before-close="closeDialog()">
             <template #header="{ close, titleId }">
@@ -15,7 +15,7 @@
                     <el-scrollbar height="270px">
                         <el-collapse class="collapse-box" accordion v-model="activeNames" @change="handleChange">
                             <el-collapse-item v-for="(secondType, index) in firstType.children" :name="secondType"
-                                icon="" @click="handleSecondLevel(firstType, secondType, index)">
+                                icon="" @click="handleSecondLevel(firstType, secondType, index); startLoading();">
                                 <template #title>
                                     <div class="custom-collapse-title" :style="{ borderColor: borderColor[index] }">
                                         <span :style="{ color: borderColor[index] }">{{ secondType }}</span>
@@ -25,17 +25,25 @@
                                     <el-checkbox-group v-model="selectHeritage" size="small">
                                         <el-checkbox-button v-for="(detail, key) in firstType.data[index]" :key="key"
                                             :value="detail">
-                                            <el-badge
-                                                @click="firstType.visible[index][key] = !firstType.visible[index][key];"
-                                                :hidden="!firstType.visible[index][key]" :offset="[10, 0]"
-                                                :value="clickHeritage(firstType, index, key, detail)" class="item-badge"
-                                                type="warning">
-                                                {{ detail.title.length > 8 ? detail.title.slice(0, 8) + '...' :
-                                                    detail.title
-                                                }}【{{
-                                                    detail.unit.length > 5 ? detail.unit.slice(0, 5) + '...' : detail.unit
-                                                }}】
-                                            </el-badge>
+                                            <el-skeleton :loading="pointLoading" animated>
+                                                <template #default>
+                                                    <el-badge
+                                                        @click="firstType.visible[index][key] = !firstType.visible[index][key];"
+                                                        :hidden="!firstType.visible[index][key]" :offset="[10, 0]"
+                                                        :value="clickHeritage(firstType, index, key, detail)"
+                                                        class="item-badge" type="warning">
+                                                        {{ detail.title.length > 8 ? detail.title.slice(0, 8) + '...' :
+                                                            detail.title
+                                                        }}【{{
+                                                            detail.unit.length > 5 ? detail.unit.slice(0, 5) + '...' :
+                                                        detail.unit
+                                                        }}】
+                                                    </el-badge>
+                                                </template>
+                                                <template #template>
+                                                    <el-skeleton-item variant="text" style="width: 250px;" />
+                                                </template>
+                                            </el-skeleton>
                                         </el-checkbox-button>
                                     </el-checkbox-group>
                                 </el-scrollbar>
@@ -64,7 +72,7 @@
                 </div>
             </div>
         </el-dialog>
-        <div id="container" tabindex="0">
+        <div id="container" v-loading="loading" tabindex="0">
         </div>
         <div class="btn-position">
             <button class="btn">
@@ -98,6 +106,18 @@ import { ref, onMounted, watch, nextTick } from 'vue';
 import { ElMessage, skeletonItemProps } from 'element-plus';
 import { usePositionStore } from '@/stores/user';
 import { getFromAdcodeApi, postHeritageApi } from '@/axios/api/mainPage';
+import { pinPost } from '@/axios/api/posts';
+
+const loading = ref(true);
+const pointLoading = ref(true);
+const oldIndex = ref(null);
+
+function startLoading() {
+    pointLoading.value = true;
+    setTimeout(() => {
+        pointLoading.value = false;
+    }, 300);
+}
 
 const dialogVisible = ref(false);
 const tabsName = ref('民间文学');
@@ -342,6 +362,9 @@ onMounted(() => {
                                     positionStore.cityCode = cityResult.adcode;
                                 } else {
                                     console.error('获取城市信息失败', cityResult.info);
+                                    ElMessage.error('定位失败');
+                                    switch2AreaNode('110000');
+                                    positionStore.cityCode = '110000';
                                 }
                             });
                             positionStore.changeLatitude(result.position.lat);
@@ -383,6 +406,8 @@ onMounted(() => {
                     districtExplorer.setAreaNodesForLocating([currentAreaNode]);
                     renderAreaPolygons(areaNode);
                 });
+
+                loading.value = false;
             }
 
             function loadAreaNode(adcode, callback) {
@@ -420,8 +445,8 @@ onMounted(() => {
             }// 加载全国地图
 
             watch(() => positionStore.firstPoint, () => { // 筛选标点后调整视野
-            if (positionStore.firstPoint != {}) switch2AreaNode(positionStore.firstPoint.area);
-        })
+                if (positionStore.firstPoint != {}) switch2AreaNode(positionStore.firstPoint.area);
+            })
         });
 
         watch(() => positionStore.cityCode, () => { // 用户所在城市的非遗项目标点

@@ -325,6 +325,13 @@ const router = createRouter({
       component: () => import('../components/workShop/workShop.vue'),
     },
 
+    // createCenter
+    {
+      path: '/self/createCenter',
+      name:'createCenter',
+      component: () => import('../components/createCenter/createCenter.vue'),
+    },
+
     //management
     {
       path: '/management',
@@ -335,6 +342,11 @@ const router = createRouter({
       path: '/management/appealDetail',
       name:'appealDetail',
       component: () => import('../views/management/appealDetail.vue'),
+    },
+    {
+      path:'/map',
+      name:'map',
+      component: () => import('@/views/map.vue'),
     },
     
     // 404
