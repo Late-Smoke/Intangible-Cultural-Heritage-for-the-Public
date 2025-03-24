@@ -108,7 +108,9 @@ function handleCancel() {
 
 function loadActivity() {
     Activity.getActicity(activityId).then(r => activity.value = r.data.data)
-    Activity.getParticipateDetails(activityId).then(r => activityParticipateDetail.value = r)
+    Activity.getParticipateDetails(activityId).then(
+        r => activityParticipateDetail.value = r.filter(x => x.status === '已确认')
+    )
 }
 
 onMounted(() => {

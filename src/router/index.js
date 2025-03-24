@@ -349,9 +349,18 @@ const router = createRouter({
     {
       path:'/map',
       name:'map',
-      component: () => import('@/views/map.vue'),
+      component: () => import('@/views/management/map.vue'),
     },
-    
+
+    //achievement
+    {
+      path: '/self/:id/achievement',
+      name: 'achievement',
+      props: route => ({
+        userId: route.params.id,
+      }),
+      component: () => import('@/views/user/achievement.vue'), 
+    },
 
     // 404
     {
