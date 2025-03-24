@@ -6,7 +6,7 @@ const route = useRoute()
 
 watch(() => route.name, () => {
   if (!history.state.forward) {
-    console.log('Scroll to top:', route)
+    // console.log('Scroll to top:', route)
     scrollTo({ top: 0 })
   }
 })

@@ -18,12 +18,18 @@
             <div class="text">{{ response.data || response.errorMsg }}</div>
         </div>
     </template>
+
+    <template v-else>
+        <slot></slot>
+    </template>
 </template>
 
 <script setup lang="ts">
 import { Response } from "@/axios/api/common";
 
-const response = defineModel<Response<any>>({ required: true })
+const { response } = defineProps<{
+    response: Response<any>
+}>()
 </script>
 
 <style scoped lang="scss">

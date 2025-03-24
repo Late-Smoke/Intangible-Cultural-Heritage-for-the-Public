@@ -63,9 +63,7 @@
         <div :class="{ selected: searchOptions.firstType == '线下' }" @click="searchOptions.firstType = '线下'">仅看线下</div>
     </div> -->
 
-    <template v-if="activities">
-        <ActivityListItem v-for="activity in activities" :activity="activity"/>
-    </template>
+    <ActivityListItem v-for="activity in activities || [null, null, null, null, null]" :activity="activity" />
 </template>
 
 <script setup lang="ts">

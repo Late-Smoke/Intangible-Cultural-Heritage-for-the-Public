@@ -114,19 +114,19 @@
 
             <el-tabs class="tabs outline sticky" v-model="tabs.current">
                 <el-tab-pane v-for="tab in tabs.tabs" :label="tab.name" :name="tab.name">
-                    <ResponseListContainer v-if="tab.data" v-model="tab.data.response">
+                    <ResponseListContainer v-if="tab.data" :response="tab.data?.response">
 
-                        <PostListItemSelf v-if="tab.name == tabNames.posts" v-for="post in tab.data.response.data" :post="post" :reload-action="() => tabs.loadTab()" :self="isSelf" />
-                        <CommentQuoteReply v-if="tab.name == tabNames.comments" v-for="comment in tab.data.response.data" :comment="comment" />
-                        <PostListItem class="post" v-if="tab.name == tabNames.favorites" v-for="post in tab.data.response.data" :post="post" />
+                        <PostListItemSelf v-if="tab.name == tabNames.posts" v-for="post in tab.data.response?.data" :post="post" :reload-action="() => tabs.loadTab()" :self="isSelf" />
+                        <CommentQuoteReply v-if="tab.name == tabNames.comments" v-for="comment in tab.data.response?.data" :comment="comment" />
+                        <PostListItem class="post" v-if="tab.name == tabNames.favorites" v-for="post in tab.data.response?.data || [null, null, null]" :post="post" />
 
                     </ResponseListContainer>
 
                     <el-tabs v-else v-model="activityTabs.current" class="solid border" style="margin-top: 4px;">
                         <el-tab-pane v-for="activityTab in activityTabs.tabs" :label="activityTab.name" :name="activityTab.name">
-                            <ResponseListContainer v-model="activityTab.data.response">
+                            <ResponseListContainer :response="activityTab.data.response">
 
-                                <ActivityListItem v-for="a in activityTab.data.response.data" :activity="a" :bottom="activityTab.name == activityTabNames.joined ? 'detail' : undefined" />
+                                <ActivityListItem v-for="a in activityTab.data.response?.data || []" :activity="a" :bottom="activityTab.name == activityTabNames.joined ? 'detail' : undefined" />
                             </ResponseListContainer>
                         </el-tab-pane>
                     </el-tabs>
@@ -550,7 +550,8 @@ onActivated(() => {
         }
 
         .post {
-            margin: 8px 12px 12px;
+            margin: 8px 0 12px;
+            padding: 0 8px;
         }
     }
 }

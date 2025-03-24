@@ -58,7 +58,7 @@ onMounted(() => {
         placeholder,
         theme: 'snow',
     })
-    console.log(editor)
+    // console.log(editor)
 
     editorToolbar = editorRoot.value.querySelector<HTMLDivElement>('.ql-toolbar')
     editorInput = editorRoot.value.querySelector<HTMLDivElement>('.ql-editor')

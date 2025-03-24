@@ -2,7 +2,7 @@
     <SvgBackgroundLion />
     <PageHeader :title='userId ? `"${username}" 的关注列表` : listType' />
 
-    <ResponseListContainer v-if="userRenponse" v-model="userRenponse">
+    <ResponseListContainer v-if="userRenponse" :response="userRenponse">
         <UserListItem v-for="user in [...userRenponse.data].reverse()" :user="user" />
     </ResponseListContainer>
 </template>
