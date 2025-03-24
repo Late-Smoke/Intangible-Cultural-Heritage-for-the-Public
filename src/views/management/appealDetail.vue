@@ -1,7 +1,7 @@
 <template>
     <el-container>
         <el-header>
-            <el-icon size="20">
+            <el-icon size="20" @click="router.back()">
                 <ArrowLeft />
             </el-icon>
             <div class="title">申诉和反馈处理</div>
@@ -9,14 +9,14 @@
         <el-main>
             <div class="user">
                 <div class="user-top">
-                    <el-avatar class="avatar" :size="40" :src="url" />
+                    <el-avatar class="avatar" :size="40" :src="data.avatarUrl" />
                     <div class="user-detail">
-                        <div class="user-name">张三</div>
-                        <div class="user-time">03-05</div>
+                        <div class="user-nickName">{{ data.nickName }}</div>
+                        <div class="user-complaintDate">{{ data.complaintDate }}</div>
                     </div>
                 </div>
                 <div class="content">
-                    我是一个测试的内容
+                    {{ data.complaintContent }}
                 </div>
             </div>
             <div class="answer">
@@ -24,20 +24,40 @@
                     autocomplete="off" />
             </div>
             <div class="post">
-                <el-button class="post-btn" type="primary">发布回复</el-button>
+                <el-button class="post-btn" type="primary" @click="handleApply()">发布回复</el-button>
             </div>
         </el-main>
+        <img class="blueCloud" src="/icon/blueCloud.png" />
     </el-container>
 </template>
 
-<script setup lang="ts">
-import { ref, watch, onMounted, computed, reactive } from 'vue';
+<script setup>
+import { ref } from 'vue';
+import { ElMessage } from 'element-plus';
+import router from '@/router';
+import * as management from '@/axios/api/management';
+import { useAdminStore } from '@/stores/user';
 
-const url = ref('');//测试
+const adminStore = useAdminStore();
+const data = adminStore.userData;
 const answer = ref('');
+
+function handleApply() {
+    management.dealAppealApi(data.id, answer.value).then((res) => {
+        router.back();
+        ElMessage({
+            type: 'success',
+            message: '处理成功',
+        })
+    });
+}
 </script>
 
 <style scoped>
+.el-container {
+    overflow: hidden;
+}
+
 .el-header {
     display: flex;
     align-items: center;
@@ -65,7 +85,7 @@ const answer = ref('');
             justify-content: space-between;
             color: rgba(178, 178, 178, 1);
 
-            .user-name {
+            .user-nickName {
                 font-size: 20px;
                 color: #000;
             }
@@ -96,6 +116,19 @@ const answer = ref('');
         height: 45px;
         font-size: 24px;
         padding: 5px 10px;
+        opacity: 0.9;
     }
+}
+
+.blueCloud {
+    z-index: -1;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-size: cover;
+    background-size: 100% 100%;
+    height: 70vh;
+    background-repeat: no-repeat;
+    opacity: 0.5;
 }
 </style>

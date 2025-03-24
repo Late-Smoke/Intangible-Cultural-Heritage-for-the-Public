@@ -59,8 +59,8 @@
                     <div>
                         <TagsEditor v-model="userTags" :editable="isSelf"></TagsEditor>
 
-                        <div class="user-type">
-                            <span :class="['gray', 'purple', 'gold', 'green'].at(user.userType)">{{ user.userType ? '身份认证: ' : '' }}{{ ['普通用户', '媒体', '非遗传承人', '管理员'].at(user.userType) }}</span>
+                        <div class="user-type" @click="user.userType === 0 ? router.push({ name: 'achievement', params: { id: user.id } }) : null">
+                            <span :class="['purple', 'gold', 'gold', 'gold'].at(user.userType)">{{ user.userType===0 ? '个人称号 :  ' : '身份认证 : ' }}{{ [achievement, '非遗传承人', '非遗传承人', '非遗传承人'].at(user.userType) }}</span>
                         </div>
                     </div>
 
@@ -154,6 +154,7 @@ import ActivityListItem from '@/components/activity/ActivityListItem.vue';
 import DrawerMenu from '@/components/menu/DrawerMenu.vue';
 import * as Notifications from '@/axios/api/notifications'
 import router from '@/router';
+import { useRoute } from 'vue-router';
 import * as User from '@/axios/api/user'
 import { Response } from '@/axios/api/common';
 import ResponseListContainer from '@/components/slot/ResponseListContainer.vue';
@@ -168,6 +169,12 @@ const { userId } = defineProps<{
 
 const user = ref<Self.Self | null>()
 const userTags = ref<string[]>([])  // 不能用 computed 从 user.tags 里面计算, 因为需要本地编辑
+const achievement = ref(localStorage.getItem('tag')?localStorage.getItem('tag'):'未佩戴')
+
+const route = useRoute()
+watch(route, () => {
+    achievement.value = localStorage.getItem('tag')?localStorage.getItem('tag'):'未佩戴'  
+},{ immediate: true })
 
 const userExists = computed(() => !(user.value && user.value.id == null))
 

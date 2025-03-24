@@ -258,3 +258,7 @@
     color: rgba(152, 123, 91, 1);
   }
 }
+
+.vue-devtools__anchor {
+  opacity: 0;
+}

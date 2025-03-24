@@ -78,17 +78,6 @@ onMounted(() => {
     height: 150px;
 }
 
-/* .search-input {
-    position: relative;
-    top: 10px;
-    left: 10px;
-    z-index: 10;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    width: 250px;
-} */
 
 :deep(.search-input .el-input__wrapper) {
     box-shadow: none;

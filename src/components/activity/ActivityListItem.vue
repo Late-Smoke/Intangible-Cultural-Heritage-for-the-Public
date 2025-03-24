@@ -99,7 +99,6 @@
                     <el-skeleton-item variant="text" style="width: 200px" />
                     <el-skeleton-item variant="text" style="width: 200px" />
                 </div>
-                <el-skeleton-item variant="text" style="width: 100%;opacity: 0;" />
             </div>
         </template>
     </el-skeleton>
@@ -115,7 +114,7 @@ const loading = ref(true);
 
 setTimeout(() => {
     loading.value = false;
-}, 500);
+}, 300);
 
 const { bottom = 'price', activity } = defineProps<{
     activity: Activity.Activity

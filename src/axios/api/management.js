@@ -20,3 +20,13 @@ export function dealAppealApi(id, handlingContent) {
         id,handlingContent
     });  
 }
+
+//新增活动
+export function addActivityApi(data) {
+    return apiClient.post("/activities", data);
+}
+
+//删除活动
+export function deleteActivityApi(id) {
+    return apiClient.post(`/activities/${id}`); 
+}

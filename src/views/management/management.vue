@@ -4,7 +4,7 @@
             <div class="user">
                 <el-avatar class="avatar" :size="60" :src="url" />
                 <div class="name">管理员</div>
-                <div class="uid">123456</div>
+                <div class="uid">25616</div>
             </div>
             <div class="menu-list">
                 <div class="item" @click="title = '申诉和反馈处理'; menu = false;"
@@ -45,6 +45,7 @@
                     <span>退出登录</span>
                 </el-button>
             </div>
+            <img class="blueCloud" src="/icon/blueCloud.png" />
         </el-drawer>
         <el-header>
             <svg @click="menu = true" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -57,21 +58,23 @@
             <div v-if="title === '申诉和反馈处理'">
                 <div class="appeal-title">全部申诉和反馈</div>
                 <div class="appeal-list">
-                    <div class="appeal-item" v-for="(item, index) in appealData" :key="index">
+                    <div class="appeal-item" v-for="(item, index) in appealData" :key="index"
+                        @click="handleApply(item);">
                         <div class="appeal-left">
-                            <el-avatar class="appeal-avatar" :size="40" :src="item.url" />
+                            <el-avatar class="appeal-avatar" :size="40" :src="item.avatarUrl" />
                         </div>
                         <div class="appeal-right">
                             <div class="appeal-top">
-                                <div class="appeal-name">{{ item.name }}</div>
-                                <div class="appeal-time">{{ item.time }}</div>
+                                <div class="appeal-name">{{ item.nickName }}</div>
+                                <div class="appeal-time">{{ item.complaintDate }}</div>
                             </div>
                             <div class="appeal-bottom">
                                 <div class="appeal-content">
-                                    {{ item.content }}
+                                    {{ item.complaintContent }}
                                 </div>
-                                <div class="appeal-sort" :class="{ unAppeal: item.sort === '未处理' }">{{ item.sort }}
+                                <div class="appeal-sort" :class="{ unAppeal: item.status === '未处理' }">{{ item.status }}
                                 </div>
+                                <img class="fish" src="/icon/fish.png" />
                             </div>
                         </div>
                     </div>
@@ -81,7 +84,8 @@
                 <div class="activity-title">全部活动</div>
                 <div class="activity-top">
                     <el-dialog v-model="dialogAddActivity" fullscreen draggable custom-class="dialog-addGoods"
-                        title="发布活动" :before-close="handleCloseAddActivity">
+                        title="发布活动" :before-close="handleCloseAddActivity"
+                        style="background-image: url('/icon/dialogBackground.svg');background-size: cover;">
                         <el-form ref="ruleFormRef" style="max-width: 600px" :model="ruleForm" status-icon :rules="rules"
                             label-width="auto" class="goods-form">
                             <el-form-item label="" prop="img">
@@ -96,19 +100,19 @@
                                     style="margin-top: 5px;" />
                             </el-form-item>
                             <el-form-item class="small-form" label="" prop="startTime">
-                                <el-date-picker v-model="ruleForm.startTime" type="datetime" placeholder="此处填写开始日期" />
+                                <el-date-picker v-model="ruleForm.startTime" type="datetime" placeholder="此处填写开始日期" value-format="YYYY-MM-DD hh:mm:ss"/>
                             </el-form-item>
                             <el-form-item class="small-form" label="" prop="endTime">
-                                <el-date-picker v-model="ruleForm.endTime" type="datetime" placeholder="此处填写结束日期" />
+                                <el-date-picker v-model="ruleForm.endTime" type="datetime" placeholder="此处填写结束日期" value-format="YYYY-MM-DD hh:mm:ss"/>
                             </el-form-item>
                             <el-form-item class="small-form" label="" prop="money">
                                 <PriceInput v-model="ruleForm.money" placeholder="此处填写活动金额" class="simple-input" />
                             </el-form-item>
                             <el-form-item class="small-form" label="" prop="tag">
-                                <el-input-tag v-model="ruleForm.tag" placeholder="此处填写活动标签 ( 回车 )" aria-label="" />
+                                <el-input-tag v-model="tag" placeholder="此处填写活动标签 ( 回车 )" aria-label="" />
                             </el-form-item>
                             <el-form-item class="small-form" label="" prop="address" v-show="ruleForm.sort === '线下'">
-                                <!-- <Map @update:data="handleChildData" /> -->
+                                <Map @update:data="handleChildData" />
                             </el-form-item>
                             <el-form-item class="big-form" label="" prop="info">
                                 <el-input class="big-input" v-model="ruleForm.info" type="textarea" :rows="7"
@@ -148,38 +152,39 @@
                 <div class="activity-list">
                     <div class="activity-item" v-for="(item, index) in currentActivity" :key="index">
                         <div class="activity-left">
-                            <el-image class="activity-img" :src="item.url" fit="cover" />
+                            <el-image class="activity-img" :src="item.acmedias[0].url" fit="cover" />
                         </div>
                         <div class="activity-right">
-                            <div class="activity-name">{{ item.name }}</div>
-                            <div class="activity-time">活动时间 : {{ item.time }}</div>
+                            <img class="goldCloud" src="/icon/goldCloud.png" />
+                            <div class="activity-name">{{ item.title }}</div>
+                            <div class="activity-time">活动时间 : {{ item.startTime }}-{{ item.endTime }}</div>
                             <div class="activity-tag">
-                                <el-tag v-for="tag in item.tag">{{ tag }}</el-tag>
+                                <el-tag v-for="tag in item.tag?.split(' ')">{{ tag }}</el-tag>
                             </div>
                             <div class="activity-bottom">
                                 <div class="money">
-                                    <span v-if="item.money">￥{{ item.money }}</span>
+                                    <span v-if="item?.money">￥{{ item?.money }}</span>
                                 </div>
-                                <div class="status" @click="cancelActivity(index)">取消活动</div>
+                                <div class="status" @click="cancelActivity(index, item.id)">取消活动</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div v-else>
+            <div v-else style="height:85vh;background-image: url('/icon/artistBackground.svg');">
                 <div class="bill-title">全部账单</div>
                 <div class="bill-tip">
                     平台分成比例说明 : 平台分成创作者投稿所获收益的20% , 与非遗传承人共同举办的活动 , 平台分成活动收益70%
                 </div>
                 <div class="bill-form">
-                    <el-table :data="tableData" height="60vh" :stripe="true" :border = 'true' style="width: 100%">
+                    <el-table :data="tableData" height="60vh" :border='true' style="width: 100%">
                         <el-table-column prop="userId" label="创作者ID" />
                         <el-table-column prop="payAmount" label="用户支付金额" />
                         <el-table-column prop="adminIncome" label="平台分成金额" />
                         <el-table-column prop="createdUserIncome" label="创作者分成金额" />
                         <el-table-column prop="type" label="收益来源" width="90px" />
                         <el-table-column prop="status" label="分账状态" />
-                        <el-table-column prop="updatedTime" label="分账时间" width="110px"/>
+                        <el-table-column prop="updatedTime" label="分账时间" width="110px" />
                     </el-table>
                 </div>
             </div>
@@ -189,56 +194,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed, reactive, nextTick } from 'vue';
+import { ref, watch, reactive } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import ImageUpload from '@/components/slot/ImageUpload.vue';
 import type { FormInstance, FormRules } from 'element-plus'
 import PriceInput from '@/components/slot/PriceInput.vue';
-import Map from '@/views/map.vue';
+import Map from '@/views/management/map.vue';
 import * as management from '@/axios/api/management';
-import { RefSymbol } from '@vue/reactivity';
+import { getLocationActivityApi } from '@/axios/api/mainPage';
+import router from '@/router';
+import { useAdminStore } from '@/stores/user';
 
+const url = ref('https://hmleadnewshaha.oss-cn-beijing.aliyuncs.com/ff0fd7c7-6cb0-454a-9f12-e8d30087ee0a.jpg');
+
+const adminStores = useAdminStore();
 const title = ref('申诉和反馈处理');
 const menu = ref(false);
 
-const url = ref('');//测试
+const appealData = ref([]);
 
-const appealData = [{
-    url: '',
-    name: '张三',
-    time: '03-05',
-    content: '我是一个测试的内容',
-    sort: '未处理'
-},
-{
-    url: '',
-    name: '李四',
-    time: '03-05',
-    content: '我是一个测试的内容',
-    sort: '已处理'
-}]
-
-const activityData = ref([
-    {
-        url: '',
-        name: '活动01',
-        time: '2024.08.06 - 08.08',
-        tag: ['tag1', 'tag2', 'tag3'],
-        money: '99'
-    },
-    {
-        url: '',
-        name: '活动02',
-        time: '2024.08.06 - 08.08',
-        tag: ['tag1', 'tag2', 'tag3'],
-        money: '99'
-    }
-]);
+const activityData = ref([]);
 const currentActivity = ref(activityData.value);
 const activitySearch = ref('');
-function cancelActivity(index) {
+function cancelActivity(index, id) {
     ElMessageBox.confirm(
-        '<span style="color: rgba(0, 0, 0); font-size: 28px">确认取消该商品？</span>',
+        '<span style="color: rgba(0, 0, 0); font-size: 28px">确认取消该活动？</span>',
         {
             dangerouslyUseHTMLString: true,
             confirmButtonText: '确认',
@@ -249,6 +229,14 @@ function cancelActivity(index) {
         }
     ).then(() => {
         activityData.value.splice(index, 1);
+        //management.deleteActivityApi(id).then(() => {
+        ElMessage({
+            message: '取消成功',
+            type: 'success',
+            showClose: true,
+            customClass: 'success-message'
+        });
+        //})
     }).catch(() => {
         return;
     })
@@ -259,16 +247,30 @@ function searchActivity() {
         return;
     }
     currentActivity.value = activityData.value.filter((item) => {
-        return item.name.includes(activitySearch.value);
+        return item.title.includes(activitySearch.value);
     });
+}
+function handleApply(item) {
+    if (item.status === '已处理') return;
+    adminStores.userData = item;
+    router.push({ name: 'appealDetail' });
 }
 watch(activityData, () => {
     currentActivity.value = activityData.value;
 });
 
 // 添加活动
+const tag = ref([]);
+watch(tag, () => {
+    ruleForm.tag = tag.value.join(' '); 
+})
+const link = ref('');
 const dialogAddActivity = ref(false);
 const ruleFormRef = ref<FormInstance>();
+const handleChildData = (data) => {
+    ruleForm.address = data.name;
+    link.value = data.link;
+}
 const nameRule = (rule: any, value: any, callback: any) => {
     if (value === '') {
         callback(new Error('请填写活动名称'))
@@ -280,7 +282,7 @@ const infoRule = (rule: any, value: any, callback: any) => {
     } else callback();
 }
 const addressRule = (rule: any, value: any, callback: any) => {
-    if (value === '') {
+    if (value === ''&& ruleForm.sort === '线下') {
         callback(new Error('请填写活动地址'))
     } else callback();
 }
@@ -300,12 +302,9 @@ const imgRule = (rule: any, value: any, callback: any) => {
     } else callback();
 }
 const tagRule = (rule: any, value: any, callback: any) => {
-    if (value.length === 0) {
+    ruleForm.tag = tag.value.join(' '); 
+    if (!value) {
         callback(new Error('请填写活动标签'))
-    } else if (value.length > 3) {
-        callback(new Error('标签不能超过3个'))
-    } else if (value.length < 1) {
-        callback(new Error('标签至少需要1个'))
     } else callback();
 }
 const uidRule = (rule: any, value: any, callback: any) => {
@@ -319,7 +318,7 @@ const messageRule = (rule: any, value: any, callback: any) => {
     } else callback();
 }
 const moneyRule = (rule: any, value: any, callback: any) => {
-    if (!value) {
+    if (value === null) {
         callback(new Error('请填写活动金额'))
     } else callback();
 }
@@ -331,12 +330,11 @@ const ruleForm = reactive({
     startTime: '',
     endTime: '',
     money: null,
-    tag: [],
+    tag: '',
     sort: '线下',
     uid: null,
     message: ''
 })
-const link = ref('');
 const fileList = ref<string[]>([]);
 watch(fileList, () => ruleForm.img = fileList.value)
 const rules = reactive<FormRules<typeof ruleForm>>({
@@ -392,16 +390,38 @@ const submitForm = (formEl: FormInstance | undefined) => { // 发布活动
                     customClass: 'confirm-addGoods'
                 }
             ).then(() => {
-                activityData.value.push({
-                    url: fileList.value[0],
-                    name: ruleForm.name,
-                    time: ruleForm.time,
+                const data = {
+                    title: ruleForm.name,
+                    firstType: ruleForm.sort,
+                    startTime: ruleForm.startTime,
+                    endTime: ruleForm.endTime,
+                    chargeAmount: ruleForm.money,
+                    tag: ruleForm.tag,//?
+                    activityAddresses: {
+                        addressDetail: ruleForm.address,
+                        gaodeMapLink: link.value,
+                    },
+                    description: ruleForm.info,
+                    participationInstructions: ruleForm.message,
+                    relatedUserId: ruleForm.uid,
+                    acmedias: fileList.value
+                }
+                // management.addActivityApi(data).then(() => {
+                //     //待后端补充
+                // })
+                console.log(fileList.value);
+                activityData.value.unshift({
+                    acmedias: fileList.value.map((item) => ({url:item})),
+                    title: ruleForm.name,
+                    startTime: ruleForm.startTime,
+                    endTime: ruleForm.endTime,
                     tag: ruleForm.tag,
                     money: ruleForm.money
                 });
                 dialogAddActivity.value = false;
                 ruleFormRef?.value.resetFields();
                 fileList.value = [];
+                tag.value = [];
                 ElMessage({
                     message: '发布成功',
                     type: 'success',
@@ -419,15 +439,28 @@ const tableData = ref([]);
 
 watch(title, () => {
     if (title.value === '运营管理') {
-        if(tableData.value.length !== 0) return;
+        if (tableData.value.length !== 0) return;
         management.getBillApi().then(res => {
-            tableData.value = res.data.data; 
+            tableData.value = res.data.data;
             tableData.value.forEach((item: any) => {
                 item.updatedTime = item.updatedTime.replace('T', ' ');
             })
         })
-    } 
-},{ immediate: true})
+    } else if (title.value === '活动管理') {
+        getLocationActivityApi().then(res => {
+            activityData.value = res.data.data;
+            activityData.value.forEach((item: any) => {
+                item.startTime = item.startTime.replace('T', ' ');
+                item.endTime = item.endTime.replace('T', ' ');
+            })
+            currentActivity.value = activityData.value;
+        })
+    } else {
+        management.getAppealApi().then(res => {
+            appealData.value = res.data.data;
+        })
+    }
+}, { immediate: true })
 </script>
 
 <style scoped>
@@ -448,6 +481,18 @@ watch(title, () => {
     max-width: 300px;
     border-top-right-radius: 30px;
     border-bottom-right-radius: 30px;
+
+    .blueCloud {
+        z-index: 1;
+        position: absolute;
+        bottom: -100px;
+        right: -90px;
+        background-size: cover;
+        background-size: 100% 50%;
+        height: 70vh;
+        background-repeat: no-repeat;
+        opacity: 0.5;
+    }
 }
 
 .user {
@@ -457,11 +502,14 @@ watch(title, () => {
     flex-direction: column;
     gap: 10px;
     margin-top: 20px;
+    position: relative;
+    z-index: 2;
 
     .avatar {
         margin-bottom: 10px;
         /* box-shadow: 2px 2px 25px 13px rgba(194, 128, 63, 0.25); */
         animation: breathe-shadow 2s infinite alternate;
+        border: solid 2px rgba(194, 128, 63, 0.25);
     }
 
     .name {
@@ -486,6 +534,8 @@ watch(title, () => {
 
 .menu-list {
     margin-top: 20px;
+    position: relative;
+    z-index: 2;
 
     .item {
         display: flex;
@@ -504,6 +554,8 @@ watch(title, () => {
 
 .logout {
     text-align: center;
+    position: relative;
+    z-index: 2;
 
     .logout-btn {
         margin-top: 20px;
@@ -511,12 +563,23 @@ watch(title, () => {
         height: 35px;
         padding: 5px 10px;
         color: rgba(152, 123, 91, 1);
-        background-color: #fff;
+        background-color: rgb(255, 255, 255, 0.75);
         border: solid 1px rgba(141, 82, 37, 1);
     }
 }
 
 /*appeal*/
+:deep(.el-table) {
+    background-color: rgba(255, 255, 255, 0.5);
+    /* 设置表格整体背景颜色 */
+}
+
+:deep(.el-table th),
+:deep(.el-table tr) {
+    background-color: rgba(255, 255, 255, 0.5);
+    /* 设置表头和行的背景颜色 */
+}
+
 .appeal-title,
 .activity-title,
 .bill-title {
@@ -535,6 +598,7 @@ watch(title, () => {
         gap: 10px;
         font-size: 15px;
         padding: 10px 0;
+        background-color: rgb(255, 255, 255, 0.75);
 
         .appeal-right {
             display: flex;
@@ -557,12 +621,14 @@ watch(title, () => {
 
             .appeal-bottom {
                 display: flex;
-                align-items: center;
+                align-items: flex-start;
                 justify-content: space-between;
                 padding-bottom: 20px;
                 border-bottom: solid 1px rgba(228, 228, 228, 1);
+                position: relative;
 
                 .appeal-content {
+                    width: 80%;
                     color: rgba(178, 178, 178, 1);
                 }
 
@@ -577,12 +643,21 @@ watch(title, () => {
                     font-size: 18px;
                     color: rgba(255, 0, 0, 1);
                 }
+
+                .fish {
+                    position: absolute;
+                    width: 100%;
+                    background-repeat: no-repeat;
+                    bottom: 0;
+                    z-index: -1;
+                }
             }
         }
     }
 }
 
 /*activity*/
+
 
 .activity-top {
     display: flex;
@@ -647,6 +722,15 @@ watch(title, () => {
             flex-direction: column;
             flex: 1;
             gap: 5px;
+            position: relative;
+
+            .goldCloud {
+                position: absolute;
+                width: 200px;
+                z-index: -1;
+                top: 0;
+                opacity: 0.5;
+            }
 
             .activity-name {
                 font-size: 20px;
@@ -728,10 +812,20 @@ watch(title, () => {
     box-shadow: none;
     border-bottom: solid 1px rgba(177, 151, 128, 0.5);
     border-radius: 0;
+    background: transparent;
 }
 
 :deep(.el-form-item.is-error .el-input-tag__wrapper) {
     box-shadow: none;
+    background: transparent;
+}
+
+:deep(.el-input__wrapper) {
+    background: rgb(255, 255, 255, 0.5);
+}
+
+:deep(.el-form-item.is-error .el-input__wrapper:hover) {
+    box-shadow: none; 
 }
 
 .simple-input {
@@ -743,6 +837,7 @@ watch(title, () => {
     padding: 5px 10px;
     margin-top: 5px;
     color: #606266;
+    background: transparent;
 }
 
 .simple-input:focus {
@@ -758,6 +853,7 @@ watch(title, () => {
     box-shadow: none;
     border-bottom: solid 1px rgba(177, 151, 128, 0.5);
     border-radius: 0;
+    background: transparent;
 }
 
 .el-input-tag.is-hovering:not(.is-focused) {

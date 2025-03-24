@@ -136,3 +136,9 @@ export const useHistoryStore = defineStore('history', {
   }),
   persist: true,
 });
+
+export const useAdminStore = defineStore('appeal', {
+  state: () => ({
+    userData: [],
+  })
+});
