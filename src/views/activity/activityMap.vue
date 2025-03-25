@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref,onMounted } from 'vue'
 
 declare const AMap: any;
 let map = null;
@@ -17,15 +17,25 @@ const prop = defineProps({
     long: Number,
     lat: Number,
 })
+const long = ref();
+const lat = ref();
+if (!prop.long || !prop.lat) {
+    long.value = 116.4074
+    lat.value = 39.9042
+} else {
+    long.value = prop.long
+    lat.value = prop.lat
+}
 
 onMounted(() => {
+    console.log('prop', prop)
     map = new AMap.Map('map', {
-        center: [prop.lat, prop.long],
+        center: [long.value, lat.value],
         // center: [116.4074, 39.9042],
         zoom: 10,
     });
     const marker = new AMap.Marker({
-        position: [prop.lat, prop.long],
+        position: [long.value, lat.value],
         // position: [116.4074, 39.9042],
     })
     marker.setMap(map)
