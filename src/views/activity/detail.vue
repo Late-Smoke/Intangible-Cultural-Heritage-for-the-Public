@@ -30,8 +30,7 @@
                     </div>
                 </div>
 
-                <div style="display: flex; flex-direction: column; align-items: center; padding: 4px;"
-                    @click="setFav(!activity.currentUserFavorite)">
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 4px;" @click="setFav(!activity.currentUserFavorite)">
                     <mdiStar v-if="activity.currentUserFavorite" color="gold" style="font-size: 2em;" />
                     <mdiStarOutline v-else style="font-size: 2em;" />
                     <span style="font-size: 0.8em;">{{ activity.favoritesNumber }}人收藏</span>
@@ -54,8 +53,8 @@
                 </div>
             </div>
 
-            <div v-if="!isOnline" id="map" class="map" @click="goToLink(activity.activityAddresses.gaodeMapLink)">
-                <Map :long="activity.activityAddresses.longitude" :lat="activity.activityAddresses.latitude" />
+            <div v-if="!isOnline" id="map" class="map" @click="openUrl(activity.activityAddresses?.gaodeMapLink)">
+                <Map :long="activity.activityAddresses?.longitude" :lat="activity.activityAddresses?.latitude" />
                 <!-- <div class="btn">导航</div> -->
             </div>
         </div>
@@ -89,7 +88,7 @@ import { useRoute } from 'vue-router';
 import * as Activity from '@/axios/api/activity'
 import ErrorPage from '@/views/error/ErrorPage.vue';
 import router from '@/router';
-import { promiseSuccess, timeRange2txt, tryShowErrorMsg } from '@/utils';
+import { promiseSuccess, timeRange2txt, tryShowErrorMsg, openUrl } from '@/utils';
 import { computed } from 'vue';
 import { HistoryController, historyType } from '@/controllers/history';
 import { ElMessageBox } from 'element-plus';
@@ -147,9 +146,6 @@ function initMap(lat, long) {
         zoom: 10,
     });
 }
-const goToLink = (url) => {
-    window.location.href = url;
-};
 
 onMounted(() => {
     loadActivity()
@@ -235,7 +231,6 @@ onMounted(() => {
         margin: 8px;
         // background-color: white;
         height: 25vh;
-        width: 95%;
         overflow: hidden;
         border-radius: 8px;
         box-shadow: 0 4px 8px 2px #ddd;
@@ -251,14 +246,9 @@ onMounted(() => {
             bottom: 16px;
             left: 25%;
             right: 25%;
-            z-index: 99;
+            z-index: 5;
         }
     }
-}
-
-.map {
-    height: 25vh;
-    width: 100%;
 }
 
 .el-tab-pane>div {

@@ -9,6 +9,7 @@ import PostListItem from '@/components/posts/PostListItem.vue'
 import ActivityListItem from '@/components/activity/ActivityListItem.vue';
 import Map from '@/components/slot/gaode.vue';
 import { ArrowDownBold } from '@element-plus/icons-vue';
+import { promiseSuccess, tryShowErrorMsg } from '@/utils';
 
 const loading1 = ref(true);
 const loading2 = ref(true);
@@ -252,7 +253,7 @@ watch(TabName, () => {
   } else if (TabName.value === 'heritage') {
     watch(() => [heritageArea.value, heritageOptions.value.map(item => item.value)], () => { //选项发生变化-非遗项目
       loading1.value = true;
-      getFromAdcodeApi(concatADCode(heritageArea.value)).then(res => {
+      promiseSuccess(getFromAdcodeApi(concatADCode(heritageArea.value))).then(res => {
         heritageData.value = res.data.data;
         if (!heritageData.value) return;
         heritageData.value = heritageData.value.filter(item => {
@@ -260,8 +261,11 @@ watch(TabName, () => {
             (item.type === heritageOptions.value[1].value || !heritageOptions.value[1].value) &&
             (item.secondType === heritageOptions.value[2].value || !heritageOptions.value[2].value);
         })
-        loading1.value = false;
-      })
+      }).catch(r => {
+        if (tryShowErrorMsg(r)) {
+          heritageData.value = []
+        }
+      }).finally(() => loading1.value = false)
     }, { immediate: true })
   } else
     watch(() => [artistArea.value, artistOptions.value.map(item => item.value)], () => { //选项发生变化-非遗传承人

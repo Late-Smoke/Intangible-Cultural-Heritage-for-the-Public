@@ -125,6 +125,10 @@ export function gotoActivityParticipateDetail(id) {
     })
 }
 
+export function openUrl(url: string | URL) {
+    window.open(url, undefined, 'noopener')
+}
+
 
 // API
 export function promiseSuccess<T>(axiosPromise: Promise<AxiosResponse<Response<T>, any>>): Promise<AxiosResponse<Response<T>, any>> {
@@ -136,10 +140,12 @@ export function promiseSuccess<T>(axiosPromise: Promise<AxiosResponse<Response<T
     })
 }
 
-export function tryShowErrorMsg(r: AxiosResponse<Response<any>>) {
+export function tryShowErrorMsg(r: AxiosResponse<Response<any>>): boolean {
     if (r?.data?.errorMsg) {
         ElMessage.error(r.data.errorMsg)
+        return true
     }
+    return false
 }
 
 const debounceMap = new Map<() => Promise<any>, Promise<any>>()

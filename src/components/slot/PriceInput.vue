@@ -42,7 +42,7 @@ watch(inputNum, newValue => {
 watch(model, newValue => {
     if (newValue == null) {
         if (inputNum.value != '') inputNum.value = ''
-    } else if (newValue.toString() != inputNum.value) {
+    } else if (newValue != parseFloat(inputNum.value)) {
         inputNum.value = newValue.toFixed(2)
     }
 }, { immediate: true })
