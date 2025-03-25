@@ -495,6 +495,7 @@ function showDetail(data) {
     box-shadow: 3px 3px 4px 1px rgba(0, 0, 0, 0.25);
     overflow: hidden;
     transition: max-height 0.3s ease;
+    justify-items: center;
 }
 
 .sort-btn {

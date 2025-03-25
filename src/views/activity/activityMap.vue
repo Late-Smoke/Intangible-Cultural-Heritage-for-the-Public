@@ -28,7 +28,6 @@ if (!prop.long || !prop.lat) {
 }
 
 onMounted(() => {
-    console.log('prop', prop)
     map = new AMap.Map('map', {
         center: [long.value, lat.value],
         // center: [116.4074, 39.9042],
