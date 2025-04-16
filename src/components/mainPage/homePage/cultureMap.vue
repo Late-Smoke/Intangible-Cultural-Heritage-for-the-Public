@@ -469,8 +469,6 @@ watch(TabName, () => {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: url('/icon/map-background.png') no-repeat center center;
-  background-size: contain;
   border: 2px solid rgba(230, 219, 205, 1);
 }
 

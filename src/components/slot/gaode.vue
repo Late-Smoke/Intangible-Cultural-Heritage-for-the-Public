@@ -1,13 +1,12 @@
 <template>
     <div id="outer-box" style="width:100%;height:100%">
-        <el-dialog class="dialog" :append-to-body="true" width="100%" style="margin:115px 0 0;aspect-ratio: 1 / 1;box-shadow: none;
-        border: 2px solid rgba(230, 219, 205, 1);" :modal="false" v-model="dialogVisible"
-            :before-close="closeDialog()">
-            <template #header="{ close, titleId }">
-                <div class="custom-dialog-header">
-                    <span :id="titleId" class="custom-title">筛选标点</span>
-                </div>
-            </template>
+        <div v-show="dialogVisible" class="dialog">
+            <div class="custom-dialog-header">
+                <span class="custom-title">筛选标点</span>
+                <el-icon class="close-icon" size="24px" @click="closeDialog">
+                    <Close />
+                </el-icon>
+            </div>
             <el-tabs v-model="tabsName" tab-position="left" class="demo-tabs">
                 <el-tab-pane v-for="firstType in categories"
                     :label="firstType.title.length > 4 ? firstType.title.slice(0, 4) + '...' : firstType.title"
@@ -15,7 +14,7 @@
                     <el-scrollbar height="270px">
                         <el-collapse class="collapse-box" accordion v-model="activeNames" @change="handleChange">
                             <el-collapse-item v-for="(secondType, index) in firstType.children" :name="secondType"
-                                icon="" @click="handleSecondLevel(firstType, secondType, index); startLoading();">
+                                icon="" @click="handleSecondLevel(firstType, secondType, index);">
                                 <template #title>
                                     <div class="custom-collapse-title" :style="{ borderColor: borderColor[index] }">
                                         <span :style="{ color: borderColor[index] }">{{ secondType }}</span>
@@ -23,27 +22,23 @@
                                 </template>
                                 <el-scrollbar height="200px">
                                     <el-checkbox-group v-model="selectHeritage" size="small">
-                                        <el-checkbox-button v-for="(detail, key) in firstType.data[index]" :key="key"
-                                            :value="detail">
-                                            <el-skeleton :loading="pointLoading" animated>
-                                                <template #default>
-                                                    <el-badge
-                                                        @click="firstType.visible[index][key] = !firstType.visible[index][key];"
-                                                        :hidden="!firstType.visible[index][key]" :offset="[10, 0]"
-                                                        :value="clickHeritage(firstType, index, key, detail)"
-                                                        class="item-badge" type="warning">
-                                                        {{ detail.title.length > 8 ? detail.title.slice(0, 8) + '...' :
-                                                            detail.title
-                                                        }}【{{
-                                                            detail.unit.length > 5 ? detail.unit.slice(0, 5) + '...' :
+                                        <div v-if="firstType.data[index].length === 0" class="no-data">
+                                            <el-skeleton :rows="5" animated />
+                                        </div>
+                                        <el-checkbox-button v-else v-for="(detail, key) in firstType.data[index]"
+                                            :key="key" :value="detail">
+                                            <el-badge
+                                                @click="firstType.visible[index][key] = !firstType.visible[index][key];"
+                                                :hidden="!firstType.visible[index][key]" :offset="[10, 0]"
+                                                :value="clickHeritage(firstType, index, key, detail)" class="item-badge"
+                                                type="warning">
+                                                {{ detail.title.length > 8 ? detail.title.slice(0, 8) + '...' :
+                                                    detail.title
+                                                }}【{{
+                                                    detail.unit.length > 5 ? detail.unit.slice(0, 5) + '...' :
                                                         detail.unit
-                                                        }}】
-                                                    </el-badge>
-                                                </template>
-                                                <template #template>
-                                                    <el-skeleton-item variant="text" style="width: 250px;" />
-                                                </template>
-                                            </el-skeleton>
+                                                }}】
+                                            </el-badge>
                                         </el-checkbox-button>
                                     </el-checkbox-group>
                                 </el-scrollbar>
@@ -60,7 +55,7 @@
                     <div>重置</div>
                 </div>
                 <div class="viewPoints"
-                    @click="ifViewPoints = true; dialogVisible = false; positionStore.firstPoint = selectHeritage[0];">
+                    @click="if (selectHeritage.length > 0) { ifViewPoints = true; dialogVisible = false; positionStore.firstPoint = selectHeritage[0]; }">
                     <div class="svgPoints">
                         <svg width="17" height="15" viewBox="0 0 17 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -71,7 +66,7 @@
                     <div>查看标点</div>
                 </div>
             </div>
-        </el-dialog>
+        </div>
         <div id="container" v-loading="loading" tabindex="0">
         </div>
         <div class="btn-position">
@@ -107,17 +102,8 @@ import { ElMessage, skeletonItemProps } from 'element-plus';
 import { usePositionStore } from '@/stores/user';
 import { getFromAdcodeApi, postHeritageApi } from '@/axios/api/mainPage';
 import { pinPost } from '@/axios/api/posts';
-
 const loading = ref(true);
-const pointLoading = ref(true);
 const oldIndex = ref(null);
-
-function startLoading() {
-    pointLoading.value = true;
-    setTimeout(() => {
-        pointLoading.value = false;
-    }, 300);
-}
 
 const dialogVisible = ref(false);
 const tabsName = ref('民间文学');
@@ -271,6 +257,7 @@ function clickRefresh() { //重置
 }
 function closeDialog() {
     if (!dialogVisible.value) ifRefresh.value = false;
+    dialogVisible.value = false;
 }
 
 // 地图对象
@@ -344,6 +331,7 @@ onMounted(() => {
                     enableHighAccuracy: true,
                     timeout: 10000,
                     showCircle: false,
+                    showButton: false,
                     buttonDom: button,
                     // zoomToAccuracy: true,
                 });
@@ -456,11 +444,10 @@ onMounted(() => {
                 pointSimplifierIns.setData(heritageData.value);
             });
         })
-
         watch(ifViewPoints, () => { // 显示筛选标点
             if (ifViewPoints.value) {
                 var data = selectHeritage.value.filter(item => item.lng != null && item.lat != null).map(item => [item.lng, item.lat]);
-                pointSimplifierIns.setData(data);
+                pointSimplifierIns.setData();
                 data.forEach((position, index) => {
                     var text = new AMap.Text({
                         text: (index + 1).toString(), // 显示索引
@@ -492,6 +479,12 @@ onMounted(() => {
         watch(ifRefresh, () => { // 重置
             if (ifRefresh.value) {
                 pointSimplifierIns.setData(heritageData.value);
+                map.getAllOverlays().forEach(overlay => {
+                    if (overlay instanceof AMap.Text) {
+                        overlay.setMap(null);
+                    }
+                });
+                ifViewPoints.value = false;
             }
         })
     });
@@ -508,8 +501,12 @@ onMounted(() => {
     z-index: 999 !important;
 }
 
-:deep(.el-dialog) {
+.dialog {
     height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 170;
+    background-color: rgb(255, 255, 255);
 }
 
 .collapse-box {
@@ -537,7 +534,7 @@ onMounted(() => {
 }
 
 :deep(.el-checkbox-button__inner) {
-    border: none;
+    border: none !important;
     border-radius: 7px;
 }
 
@@ -591,6 +588,12 @@ onMounted(() => {
     align-items: center;
 }
 
+.custom-dialog-header {
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
 .custom-title {
     position: relative;
     right: -45vw;
@@ -607,7 +610,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    bottom: 0;
+    bottom: 20px;
     opacity: 0.8;
 }
 
@@ -621,6 +624,7 @@ onMounted(() => {
 :deep(.amap-geolocation-con) {
     z-index: 10 !important;
 }
+
 
 .btn-position div {
     color: rgba(0, 0, 0, 1);
